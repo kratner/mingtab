@@ -1,6 +1,6 @@
 {
   "//": "Sync service and sign-in settings, shared by the manifest and the app. VITE_SYNC_URL overrides syncUrl at build time (tests use a local server).",
-  "syncUrl": "https://mingtab-sync.REPLACE-WITH-SUBDOMAIN.workers.dev",
+  "syncUrl": "https://mingtab-sync.mingtab-sync.workers.dev",
   "googleClientId": "453066917507-acsc56hkjjnrl461cvga9fmkqnlnllp0.apps.googleusercontent.com",
   "extensionId": "jclkedgbnlmbonoihhobgnmdoehmddpo",
   "manifestKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5jfQfxjHtOh5qo9keUhtB/5jws3zO7B+J7294PZfJSOcjliz+YqKr6F/BsEgZfozcMDQ3NtIdEquXMdhUq7RG1/+zE5exAlXbBaKAIKj+qm0dxeqkePII43+Snj+MO0AOaNi/oATdZbNOUs4IaT+5iK1JxTy0YwDW0prOYIafttvZX9nYT7Nkhnbf9fh7ZTkXpPm1v0ZZhlOalDixIwcX2A5ulV5dm+AnNK2eaKb+L3wc0NTa0YWR7J0MwVJuVVksezbtBtky5P4PL60sIU/PS8pkOt9HqboqOkWmWmx0X3zeJdF9qS3JdW0hHBKuMFiPf1Fv3VnYVIDdtkXkACDyQIDAQAB"

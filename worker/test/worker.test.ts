@@ -31,6 +31,10 @@ describe('sign-in', () => {
     const forged = `${h}.${p!.slice(0, -4)}AAAA.${s}`;
     const res = await api('/v1/auth/google', { method: 'POST', body: JSON.stringify({ idToken: forged }) });
     expect(res.status).toBe(401);
+    for (const junk of ['a.b.c', 'not-a-jwt', '!!!.@@@.###']) {
+      const r = await api('/v1/auth/google', { method: 'POST', body: JSON.stringify({ idToken: junk }) });
+      expect(r.status).toBe(401);
+    }
   });
 
   it('requires a device token for everything else; sign-out revokes it', async () => {

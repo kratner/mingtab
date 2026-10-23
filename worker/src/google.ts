@@ -27,7 +27,13 @@ const b64urlToBytes = (s: string) => {
   const b64 = s.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(s.length / 4) * 4, '=');
   return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 };
-const b64urlJson = (s: string) => JSON.parse(new TextDecoder().decode(b64urlToBytes(s)));
+const b64urlJson = (s: string) => {
+  try {
+    return JSON.parse(new TextDecoder().decode(b64urlToBytes(s)));
+  } catch {
+    throw new AuthError('Malformed token');
+  }
+};
 
 export class AuthError extends Error {}
 
@@ -46,7 +52,13 @@ export async function verifyGoogleIdToken(
   const jwk = (await keys()).keys.find((k) => k.kid === header.kid);
   if (!jwk) throw new AuthError('Unknown signing key');
   const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
-  const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64urlToBytes(sig), new TextEncoder().encode(`${h}.${p}`));
+  let signature: Uint8Array;
+  try {
+    signature = b64urlToBytes(sig);
+  } catch {
+    throw new AuthError('Malformed token');
+  }
+  const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, new TextEncoder().encode(`${h}.${p}`));
   if (!ok) throw new AuthError('Bad signature');
 
   const claims = b64urlJson(p) as {
