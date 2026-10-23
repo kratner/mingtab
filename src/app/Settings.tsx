@@ -1,3 +1,4 @@
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useState } from 'react';
 import { db } from '../db/db';
 import { exportAll, parseMingTabExport, restoreAll } from '../import/mingtab';
@@ -81,6 +82,9 @@ export function Settings({
           ))}
         </div>
       </section>
+
+      <ToolbarButton />
+      <Shortcuts />
 
       <section className="settings-section">
         <h3>Saving tabs</h3>
@@ -395,6 +399,60 @@ export function About() {
         </p>
         {version && <p className="muted">Version {version}</p>}
       </div>
+    </section>
+  );
+}
+
+/** Whether the toolbar button opens the side panel or a popup (applied by the background worker). */
+function ToolbarButton() {
+  const [mode, setMode] = useState<'panel' | 'popup' | null>(null);
+  useEffect(() => {
+    if (typeof chrome === 'undefined' || !chrome.storage) return;
+    chrome.storage.local.get('mingtab.actionMode').then((v) => setMode((v['mingtab.actionMode'] as 'panel' | 'popup') ?? 'panel'));
+  }, []);
+  if (!mode) return null;
+  const pick = (m: 'panel' | 'popup') => {
+    setMode(m);
+    void chrome.storage.local.set({ 'mingtab.actionMode': m });
+  };
+  return (
+    <section className="settings-section">
+      <h3>Toolbar button</h3>
+      <div className="segmented" role="radiogroup" aria-label="Toolbar button opens">
+        <label>
+          <input type="radio" name="action" checked={mode === 'panel'} onChange={() => pick('panel')} />
+          Opens the side panel
+        </label>
+        <label>
+          <input type="radio" name="action" checked={mode === 'popup'} onChange={() => pick('popup')} />
+          Opens a popup
+        </label>
+      </div>
+    </section>
+  );
+}
+
+/** Every to/ shortcut, so they're easy to remember. Set them in a card's edit form. */
+function Shortcuts() {
+  const cards = useLiveQuery(() => db.cards.filter((c) => c.deletedAt === null && !!c.shortcut).toArray());
+  return (
+    <section className="settings-section" aria-labelledby="shortcuts-heading">
+      <h3 id="shortcuts-heading">Address-bar shortcuts</h3>
+      <p className="muted">
+        Type <b>to</b>, a space, then a shortcut in Chrome's address bar to open that card: <code>to docs</code>. Give a
+        card a shortcut from its edit form (✎).
+      </p>
+      {cards && cards.length > 0 && (
+        <ul className="shortcut-list">
+          {[...cards]
+            .sort((a, b) => a.shortcut!.localeCompare(b.shortcut!))
+            .map((c) => (
+              <li key={c.id}>
+                <code>to/{c.shortcut}</code> <span className="muted">{displayTitle(c)}</span>
+              </li>
+            ))}
+        </ul>
+      )}
     </section>
   );
 }

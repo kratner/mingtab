@@ -86,6 +86,13 @@ test('two devices stay in sync: create, edit, delete; edits sync on their own; s
     await syncNow(a);
     await expect.poll(() => order(a)).toEqual(['Synced and renamed']);
 
+    // Mac queues the card in Next; PC's Next has it.
+    await a.locator('.card').first().hover();
+    await a.getByRole('button', { name: /^Add .* to Next$/ }).click();
+    await syncNow(a);
+    await syncNow(b);
+    await expect(b.getByRole('navigation', { name: 'Spaces' }).getByRole('button', { name: /▶ Next/ })).toContainText('1');
+
     // Mac deletes the collection; PC loses it too.
     await a.getByRole('button', { name: 'Delete Synced and renamed' }).click();
     await syncNow(a);

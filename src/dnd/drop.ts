@@ -1,7 +1,8 @@
 import type { MingTabDB } from '../db/db';
 import { positionAfterLast, positionAt, reorderPosition } from '../db/position';
 import { addCard, listCards, listCollections, updateCard, updateCollection } from '../db/repo';
-import type { Card, Collection, Space } from '../db/schema';
+import { moveNext } from '../db/next';
+import type { Card, Collection, NextItem, Space } from '../db/schema';
 import { tabToCard } from '../tabs/tabs';
 
 // What can be dragged, and what it can land on. dnd-kit carries these in
@@ -10,18 +11,21 @@ import { tabToCard } from '../tabs/tabs';
 export type DragData =
   | { type: 'collection'; collection: Collection }
   | { type: 'card'; card: Card }
-  | { type: 'tab'; tab: Pick<chrome.tabs.Tab, 'url' | 'title' | 'favIconUrl'> };
+  | { type: 'tab'; tab: Pick<chrome.tabs.Tab, 'url' | 'title' | 'favIconUrl'> }
+  | { type: 'next'; item: NextItem };
 
 export type DropData =
   | { type: 'collection'; collection: Collection }
   | { type: 'card'; card: Card }
-  | { type: 'space'; space: Space };
+  | { type: 'space'; space: Space }
+  | { type: 'next'; item: NextItem };
 
 export const dragId = {
   collection: (id: string) => `collection:${id}`,
   card: (id: string) => `card:${id}`,
   tab: (id: number) => `tab:${id}`,
   space: (id: string) => `space:${id}`,
+  next: (id: string) => `next:${id}`,
 };
 
 /** Which drop targets each drag type accepts, innermost first. */
@@ -29,6 +33,7 @@ export const ACCEPTS: Record<DragData['type'], DropData['type'][]> = {
   collection: ['collection', 'space'],
   card: ['card', 'collection', 'space'],
   tab: ['card', 'collection'],
+  next: ['next'],
 };
 
 /**
@@ -37,6 +42,13 @@ export const ACCEPTS: Record<DragData['type'], DropData['type'][]> = {
  */
 export async function handleDrop(db: MingTabDB, active: DragData, over: DropData): Promise<string | null> {
   if (!ACCEPTS[active.type].includes(over.type)) return null;
+
+  if (active.type === 'next' && over.type === 'next') {
+    if (active.item.id === over.item.id) return null;
+    await moveNext(db, active.item.id, over.item.id);
+    return 'Moved in Next.';
+  }
+  if (active.type === 'next' || over.type === 'next') return null;
 
   if (active.type === 'collection') {
     const c = active.collection;

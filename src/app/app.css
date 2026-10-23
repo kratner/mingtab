@@ -1191,3 +1191,105 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+/* ---- M5: notes, Next, shortcuts, popup ---- */
+
+.note-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.note-title {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.note-body {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.note-body p,
+.note-line {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note-blank {
+  height: 6px;
+}
+
+.note-task {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+
+.note-task input {
+  margin-top: 3px;
+}
+
+.note-task.done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.note-bullet::before {
+  content: '•';
+  margin-right: 6px;
+  color: var(--muted);
+}
+
+.note-body a {
+  color: var(--accent-ink);
+}
+
+.shortcut-tag {
+  font-family: ui-monospace, monospace;
+}
+
+.shortcut-input {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-family: ui-monospace, monospace;
+  color: var(--text);
+}
+
+.shortcut-input input {
+  flex: 1;
+  min-width: 0;
+}
+
+.shortcut-list {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+.next-check {
+  margin-top: 3px;
+}
+
+.next-item.done .card-title {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.next-done {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.app[data-popup] {
+  width: 380px;
+  min-height: 520px;
+}

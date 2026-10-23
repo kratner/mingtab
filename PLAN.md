@@ -55,7 +55,7 @@ labels (tags) { title, color, position }
 | Search browsing history | Paid | **M4** (`history` permission, opt-in) |
 | Remove duplicates | Paid | **M4** (83 waiting) |
 | Tags + tag filter, star, sort, views (list/grid), expand/collapse | Free | **M4** |
-| Next (to-do queue of tabs) | Free | **M5** |
+| Next (to-do queue of tabs) | Free | **M5** ✅ 2026-10-23. *Passed: unit (Next queue, shortcuts, note format) + 4 e2e (notes with checklists, Next incl. drag and open tabs, shortcuts via the same resolver the address bar uses, popup setting) + Next syncing between two profiles. The address bar itself can't be driven by tests: first real `to …` is Keith's.* |
 | To/Links (`to/docs` in the address bar) | Free | **M5** via `chrome.omnibox` keyword |
 | Rich notes on the board (checklists, links) | Free | **M5** (Markdown-lite) |
 | Themes, dark mode, color-blind palette | Free | **M1** dark/light, more later |

@@ -9,7 +9,8 @@ import { requestSync } from '../sync/state';
 import { OpenTabs } from '../tabs/OpenTabs';
 import { applyTheme, usePref, type Density, type Scheme, type SortMode, type Theme } from './prefs';
 import { Settings } from './Settings';
-import { SpaceNav, STARRED } from './SpaceNav';
+import { NextView } from './NextView';
+import { NEXT, SpaceNav, STARRED } from './SpaceNav';
 import { SpaceView, StarredView } from './SpaceView';
 import type { Surface } from './surface';
 
@@ -31,7 +32,11 @@ export function App({ surface }: { surface: Surface }) {
   const [paneOpen, setPaneOpen] = useState(false);
   // The side panel is narrow, so it shows saved collections or open tabs, not both.
   const [pane, setPane] = usePref<'saved' | 'open'>('mingtab.sidepanelPane', 'saved');
-  const [query, setQuery] = useState('');
+  // "to <words>" with no matching shortcut lands here with #search=<words>.
+  const [query, setQuery] = useState(() => {
+    const m = /^#search=(.*)$/.exec(location.hash);
+    return m ? decodeURIComponent(m[1]!) : '';
+  });
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -42,6 +47,20 @@ export function App({ surface }: { surface: Surface }) {
     const onChange = () => void requestSync('soon');
     Dexie.on('storagemutated', onChange);
     return () => Dexie.on('storagemutated').unsubscribe(onChange);
+  }, []);
+
+  // A "to …" with no matching shortcut opens MingTab at #search=<words>; also
+  // handle that when this page is already open (only the hash changes).
+  useEffect(() => {
+    const onHash = () => {
+      const m = /^#search=(.*)$/.exec(location.hash);
+      if (m) {
+        setView('board');
+        setQuery(decodeURIComponent(m[1]!));
+      }
+    };
+    addEventListener('hashchange', onHash);
+    return () => removeEventListener('hashchange', onHash);
   }, []);
 
   // "/" jumps to search from anywhere that isn't a text field.
@@ -60,10 +79,12 @@ export function App({ surface }: { surface: Surface }) {
 
   // Keep a valid selection when spaces are added or deleted.
   const starred = selectedId === STARRED;
-  const selected = starred ? undefined : (spaces?.find((s) => s.id === selectedId) ?? spaces?.[0]);
+  const next = selectedId === NEXT;
+  const pseudo = starred || next;
+  const selected = pseudo ? undefined : (spaces?.find((s) => s.id === selectedId) ?? spaces?.[0]);
   useEffect(() => {
-    if (!starred && selected && selected.id !== selectedId) setSelectedId(selected.id);
-  }, [starred, selected, selectedId, setSelectedId]);
+    if (!pseudo && selected && selected.id !== selectedId) setSelectedId(selected.id);
+  }, [pseudo, selected, selectedId, setSelectedId]);
 
   if (!spaces) return null;
   const searching = query.trim().length > 0 && view === 'board';
@@ -78,7 +99,13 @@ export function App({ surface }: { surface: Surface }) {
   };
 
   return (
-    <div className="app" data-surface={surface} data-pane-open={paneOpen} data-density={density}>
+    <div
+      className="app"
+      data-surface={surface}
+      data-popup={new URLSearchParams(location.search).has('popup') || undefined}
+      data-pane-open={paneOpen}
+      data-density={density}
+    >
       <header className="app-header">
         <img className="brand-mark" src="/icons/icon-32.png" alt="" title="MingTab: from 明堂 míngtáng, the bright hall" />
         <h1>MingTab</h1>
@@ -163,7 +190,7 @@ export function App({ surface }: { surface: Surface }) {
                 <SpaceNav
                   surface={surface}
                   spaces={spaces}
-                  selectedId={starred ? STARRED : (selected?.id ?? null)}
+                  selectedId={pseudo ? selectedId : (selected?.id ?? null)}
                   onSelect={setSelectedId}
                 />
               )}
@@ -171,6 +198,8 @@ export function App({ surface }: { surface: Surface }) {
                 <main className="app-main">
                   {searching ? (
                     <SearchResults query={query} historyEnabled={historySearch === 'on'} onGoTo={goTo} />
+                  ) : next ? (
+                    <NextView />
                   ) : starred ? (
                     <StarredView onGoTo={goTo} />
                   ) : selected ? (

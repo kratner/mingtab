@@ -190,7 +190,7 @@ function resolveSpaceNames(map: TobySpaceMap): Map<string, string> {
  * any existing ones; 'replace' wipes MingTab first.
  */
 export async function applyImport(db: MingTabDB, plan: ImportPlan, mode: 'add' | 'replace') {
-  await db.transaction('rw', db.spaces, db.collections, db.cards, db.tags, async () => {
+  await db.transaction('rw', [db.spaces, db.collections, db.cards, db.tags, db.next], async () => {
     if (mode === 'replace') await wipeAll(db);
     const t = Date.now();
     const meta = () => ({ id: crypto.randomUUID(), createdAt: t, updatedAt: t, deletedAt: null });

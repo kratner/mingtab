@@ -45,7 +45,7 @@ export async function collectLocalChanges(db: MingTabDB, since: number): Promise
 export async function applyRemoteChanges(db: MingTabDB, changes: Change[]): Promise<number> {
   if (changes.length === 0) return 0;
   let applied = 0;
-  await db.transaction('rw', db.spaces, db.collections, db.cards, db.tags, async () => {
+  await db.transaction('rw', [db.spaces, db.collections, db.cards, db.tags, db.next], async () => {
     for (const c of changes) {
       const table = tableOf(db, c.table);
       const local = await table.get(c.id);

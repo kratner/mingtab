@@ -29,6 +29,10 @@ is in the extension under **Settings → About MingTab**.
 - **Manage open tabs.** See every window and tab group, rename and recolor groups, and merge all
   windows into one.
 - **Import from Toby**, including which space each collection was in.
+- **Next, notes and shortcuts.** A to-read queue, notes with checklists, and `to docs`-style
+  shortcuts in the address bar.
+- **Sync** across Chrome profiles and computers, through a small sync service on your own
+  Cloudflare account, signed in with Google.
 - **Light and dark themes**, in a black-and-yellow KR scheme or a terracotta one.
 
 | Board in light mode | Side panel | Search |
@@ -156,6 +160,11 @@ Then click **Remove** on MingTab in `chrome://extensions`.
 | Tag a collection | **#** in its header |
 | Merge two collections | **⇲** in the header of the one to merge away |
 | See starred collections | **★ Starred** at the top of the spaces list |
+| Line up what to read next | **▶** on a card or an open tab; then **▶ Next** at the top of the spaces list. Tick items off, drag to reorder. |
+| Write a note | **✎** in a collection's header. `- [ ] task` makes a checklist; `**bold**`, `*italic*` and links work. |
+| Jump to a page from the address bar | Give a card a shortcut (✎ → Shortcut), then type **to**, a space, and the shortcut: `to docs`. All shortcuts are listed in Settings. |
+| Use a popup instead of the side panel | Settings → **Toolbar button** |
+| Sync another profile or computer | Settings → **Sign in with Google** |
 | Remove duplicates | Settings → **Find duplicates** (nothing is removed until you confirm) |
 | Keep tabs open when saving | Settings → untick **Close tabs after saving** |
 
@@ -180,12 +189,15 @@ site.
 **Back up**: Settings → **Download backup** saves everything as one JSON file. **Restore from
 backup** replaces what's in MingTab with the file's contents.
 
-### Sync across machines and phone
+### Sync across machines
 
-Not built yet. Today each Chrome profile on each machine has its own MingTab. The design (a
-small sync service on your own Cloudflare account, and a web app for the phone, since Chrome on
-phones doesn't run extensions) is in [SYNC.md](SYNC.md). Until then, move data between machines
-with **Download backup** and **Restore from backup**.
+Settings → **Sign in with Google** in each Chrome profile, on each computer. Everything syncs
+through the MingTab sync service (`worker/`, a Cloudflare Worker with a D1 database on Keith's
+Cloudflare account), which accepts only the allowed Google account. Syncing runs every minute,
+at startup, and a couple of seconds after any change. Signing out keeps your data on that device.
+
+The phone version (a web app, since Chrome on phones doesn't run extensions) is next; see
+[SYNC.md](SYNC.md).
 
 ### Permissions
 
@@ -196,6 +208,10 @@ with **Download backup** and **Restore from backup**.
 | `storage`, `unlimitedStorage` | Keep your collections locally, without Chrome's size cap |
 | `favicon` | Show site icons from Chrome's own cache (no third-party icon service) |
 | `history` (optional) | Only if you turn on history search; Chrome asks first |
+| `identity` | Google sign-in for sync |
+| `alarms` | Sync every minute |
+| Access to `mingtab-sync.mingtab-sync.workers.dev` | The sync service, and no other site |
+| Address-bar keyword `to` | `to docs` opens your shortcut |
 | New-tab page override | Show the board on new tabs |
 
 MingTab never reads the content of the pages you visit, only the title, address and icon of tabs
@@ -218,8 +234,8 @@ before using MingTab day to day, or it stops working when the dev server isn't r
 |---|---|
 | `npm run typecheck` | TypeScript, no output |
 | `npm test` | Unit tests (Vitest): data layer, import, search, duplicates, drag-and-drop logic |
-| `npm run e2e` | Builds, then Playwright loads `dist/` into Chromium and drives it: saving windows and tab groups, drag and drop, import, search, layout at phone-to-desktop widths |
-| `npm run check` | All three |
+| `npm run e2e` | Builds `dist-test/` (never `dist/`, which your Chrome loads) against a local copy of the sync service, then Playwright drives it in Chromium: saving windows and tab groups, drag and drop, import, search, notes, Next, shortcuts, layout at phone-to-desktop widths, and two profiles syncing |
+| `npm run check` | All of the above, plus the sync service's tests |
 
 The first browser-test run needs `npx playwright install chromium`. Tests that use a real Toby
 export run only when one is present in `imports/`, a folder git ignores.
@@ -257,6 +273,6 @@ sync can be added without migrating data.
 [PLAN.md](PLAN.md) has the full feature comparison with Toby and the milestones:
 
 - ✅ M0 scaffold · M1 spaces, collections, Toby import · M2 saving windows and tab groups ·
-  M3 drag and drop · M4 search, tags, duplicates
-- ⏳ M5 "Next" reading queue, `to/` address-bar shortcuts, richer notes
-- ⏳ Sync across machines, a phone web app ([SYNC.md](SYNC.md))
+  M3 drag and drop · M4 search, tags, duplicates · M5 Next, notes, `to/` shortcuts, popup
+- ✅ S1 sync across Chrome profiles and computers ([SYNC.md](SYNC.md))
+- ⏳ S2 phone web app

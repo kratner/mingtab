@@ -102,6 +102,13 @@ describe('sync', () => {
     expect(second.body.hasMore).toBe(false);
   });
 
+  it('syncs Next-queue items (M5)', async () => {
+    const t = (await signIn()).body.token!;
+    const item = { table: 'next', id: 'n1', updatedAt: 100, deletedAt: null, data: { id: 'n1', url: 'https://a.example', title: 'A' } };
+    expect((await syncAs(t, 0, [item])).res.status).toBe(200);
+    expect((await syncAs(t, 0)).body.changes.map((c) => c.id)).toEqual(['n1']);
+  });
+
   it('rejects malformed and oversized pushes', async () => {
     const t = (await signIn()).body.token!;
     expect((await syncAs(t, 0, [{ table: 'secrets', id: 'x', updatedAt: 1, data: { id: 'x' } }])).res.status).toBe(400);

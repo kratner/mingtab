@@ -28,6 +28,8 @@ export default defineManifest({
   side_panel: {
     default_path: 'src/sidepanel/index.html',
   },
+  // "to docs" in the address bar opens the card with shortcut "docs".
+  omnibox: { keyword: 'to' },
   chrome_url_overrides: {
     newtab: 'src/newtab/index.html',
   },

@@ -1,6 +1,6 @@
 // Wire format shared with the sync Worker (worker/src/sync.ts). Keep in step.
 
-export const SYNC_TABLES = ['spaces', 'collections', 'cards', 'tags'] as const;
+export const SYNC_TABLES = ['spaces', 'collections', 'cards', 'tags', 'next'] as const;
 export type SyncTable = (typeof SYNC_TABLES)[number];
 
 export interface Change {

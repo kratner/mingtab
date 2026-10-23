@@ -1,5 +1,7 @@
 import { useDroppable } from '@dnd-kit/core';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
+import { listNext } from '../db/next';
 import { db } from '../db/db';
 import { createSpace, deleteSpace, renameSpace } from '../db/repo';
 import type { Space } from '../db/schema';
@@ -25,6 +27,8 @@ function SpaceLink({ space, selected, onSelect }: { space: Space; selected: bool
 
 /** Pseudo-space id for the "Starred" view (starred collections from every space). */
 export const STARRED = '__starred__';
+/** Pseudo-space id for the Next queue. */
+export const NEXT = '__next__';
 
 interface Props {
   surface: Surface;
@@ -35,6 +39,7 @@ interface Props {
 
 export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
   const [creating, setCreating] = useState(false);
+  const nextCount = useLiveQuery(async () => (await listNext(db)).pending.length) ?? 0;
   const [name, setName] = useState('');
   const selected = spaces.find((s) => s.id === selectedId); // undefined for Starred
 
@@ -90,6 +95,7 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
     return (
       <div className="space-select">
         <select aria-label="Space" value={selectedId ?? ''} onChange={(e) => onSelect(e.target.value)}>
+          <option value={NEXT}>▶ Next ({nextCount})</option>
           <option value={STARRED}>★ Starred</option>
           {spaces.map((s) => (
             <option key={s.id} value={s.id}>
@@ -114,6 +120,14 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
           +
         </button>
       </div>
+      <button
+        type="button"
+        className={`space-link starred-link ${selectedId === NEXT ? 'active' : ''}`}
+        aria-current={selectedId === NEXT ? 'page' : undefined}
+        onClick={() => onSelect(NEXT)}
+      >
+        ▶ Next <span className="count">{nextCount}</span>
+      </button>
       <button
         type="button"
         className={`space-link starred-link ${selectedId === STARRED ? 'active' : ''}`}

@@ -1,6 +1,6 @@
 import type { MingTabDB } from '../db/db';
 import { wipeAll } from '../db/repo';
-import type { Card, Collection, Space, Tag } from '../db/schema';
+import type { Card, Collection, NextItem, Space, Tag } from '../db/schema';
 import { ImportError } from './toby';
 
 // MingTab's own backup format: the live records, verbatim. Restoring it makes
@@ -14,17 +14,20 @@ export interface MingTabExport {
   collections: Collection[];
   cards: Card[];
   tags: Tag[];
+  /** The Next queue (added in M5; absent from older backups). */
+  next?: NextItem[];
 }
 
 const live = <T extends { deletedAt: number | null }>(r: T) => r.deletedAt === null;
 const byId = <T extends { id: string }>(a: T, b: T) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
 export async function exportAll(db: MingTabDB): Promise<MingTabExport> {
-  const [spaces, collections, cards, tags] = await Promise.all([
+  const [spaces, collections, cards, tags, next] = await Promise.all([
     db.spaces.filter(live).toArray(),
     db.collections.filter(live).toArray(),
     db.cards.filter(live).toArray(),
     db.tags.filter(live).toArray(),
+    db.next.filter(live).toArray(),
   ]);
   return {
     kind: 'mingtab-export',
@@ -34,6 +37,7 @@ export async function exportAll(db: MingTabDB): Promise<MingTabExport> {
     collections: collections.sort(byId),
     cards: cards.sort(byId),
     tags: tags.sort(byId),
+    next: next.sort(byId),
   };
 }
 
@@ -56,11 +60,12 @@ export function parseMingTabExport(raw: unknown): MingTabExport {
 export async function restoreAll(db: MingTabDB, data: MingTabExport) {
   const t = Date.now();
   const touch = <T extends { updatedAt: number }>(rows: T[]) => rows.map((r) => ({ ...r, updatedAt: t }));
-  await db.transaction('rw', db.spaces, db.collections, db.cards, db.tags, async () => {
+  await db.transaction('rw', [db.spaces, db.collections, db.cards, db.tags, db.next], async () => {
     await wipeAll(db, t - 1);
     await db.spaces.bulkPut(touch(data.spaces));
     await db.collections.bulkPut(touch(data.collections));
     await db.cards.bulkPut(touch(data.cards));
     await db.tags.bulkPut(touch(data.tags));
+    await db.next.bulkPut(touch(data.next ?? []));
   });
 }

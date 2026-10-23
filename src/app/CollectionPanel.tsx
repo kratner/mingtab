@@ -47,6 +47,11 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
   const [title, setTitle] = useState('');
   const [error, setError] = useState('');
   const [merging, setMerging] = useState(false);
+  const [newNoteId, setNewNoteId] = useState<string | null>(null);
+  const addNote = async () => {
+    if (collection.collapsed) await updateCollection(db, collection.id, { collapsed: false });
+    setNewNoteId((await addCard(db, collection.id, { url: '', title: 'Note' })).id);
+  };
   const others = useLiveQuery(
     async () => (merging ? (await listCollections(db, collection.spaceId)).filter((c) => c.id !== collection.id) : []),
     [merging, collection.spaceId, collection.id],
@@ -180,6 +185,9 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
           <button type="button" className="icon-btn" aria-label={`Add card to ${collection.title}`} onClick={() => setAdding(true)}>
             +
           </button>
+          <button type="button" className="icon-btn" aria-label={`Add note to ${collection.title}`} title="Add a note" onClick={addNote}>
+            ✎
+          </button>
           <button
             type="button"
             className="icon-btn"
@@ -297,7 +305,7 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
             <SortableContext items={cards.map((c) => dragId.card(c.id))} strategy={verticalListSortingStrategy}>
               <ul className="cards">
                 {cards.map((c) => (
-                  <CardRow key={c.id} card={c} />
+                  <CardRow key={c.id} card={c} startEditing={c.id === newNoteId} />
                 ))}
               </ul>
             </SortableContext>

@@ -5,7 +5,7 @@
 // replaces the stored one only if it is strictly newer, so replays and
 // devices re-sending what they just pulled change nothing.
 
-export const TABLES = ['spaces', 'collections', 'cards', 'tags'] as const;
+export const TABLES = ['spaces', 'collections', 'cards', 'tags', 'next'] as const;
 export type Table = (typeof TABLES)[number];
 
 export interface Change {

@@ -20,6 +20,7 @@ import {
   type SaveResult,
 } from './tabs';
 import { dragId } from '../dnd/drop';
+import { addToNext } from '../db/next';
 import { runsOf, useOpenWindows } from './useOpenWindows';
 
 interface Props {
@@ -211,6 +212,21 @@ function OpenTabRow({
         {icon ? <img className="favicon" src={icon} alt="" /> : <span className="favicon favicon-blank" aria-hidden />}
         <span className="open-tab-title">{title}</span>
       </button>
+      {savable && !picking && (
+        <button
+          type="button"
+          className="icon-btn"
+          aria-label={`Add ${title} to Next`}
+          title="Add to Next"
+          onClick={async () => {
+            const card = tabToCard(tab);
+            const { added } = await addToNext(db, { ...card, title: card.title || card.url });
+            onSaved(added ? `Added "${title}" to Next.` : `"${title}" is already in Next.`);
+          }}
+        >
+          ▶
+        </button>
+      )}
       {savable &&
         (picking ? (
           <select

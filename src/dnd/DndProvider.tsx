@@ -71,6 +71,7 @@ class AcceptedContainers extends Map<string | number, Parameters<CollisionDetect
 function label(d: DragData) {
   if (d.type === 'collection') return d.collection.title;
   if (d.type === 'card') return displayTitle(d.card);
+  if (d.type === 'next') return d.item.title;
   return d.tab.title || d.tab.url || 'Tab';
 }
 

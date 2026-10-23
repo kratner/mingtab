@@ -163,8 +163,8 @@ export const deleteCard = (db: MingTabDB, id: string) => {
  * than clearing the tables, so sync tells other devices about the removal.
  */
 export const wipeAll = (db: MingTabDB, t = now()) =>
-  db.transaction('rw', db.spaces, db.collections, db.cards, db.tags, async () => {
-    for (const table of [db.spaces, db.collections, db.cards, db.tags] as const) {
+  db.transaction('rw', [db.spaces, db.collections, db.cards, db.tags, db.next], async () => {
+    for (const table of [db.spaces, db.collections, db.cards, db.tags, db.next] as const) {
       await (table as unknown as Dexie.Table<{ deletedAt: number | null; updatedAt: number }>)
         .filter(live)
         .modify({ deletedAt: t, updatedAt: t });
