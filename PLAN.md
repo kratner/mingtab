@@ -1,9 +1,12 @@
-# Tab Manager — Plan
+# MingTab — Plan
 
 A personal Toby replacement, built as a Chrome extension (Manifest V3).
 Single user and local-first for now, with the data model ready for sync and sharing later.
 
 Created 2026-10-22.
+
+**Name:** MingTab, from *mingtang* (明堂, "bright hall"), the open, uncluttered space in front of a
+building in feng shui, where qi gathers. A cleared tab bar is the bright hall; MingTab keeps it clear.
 
 ---
 
@@ -139,8 +142,6 @@ merges into existing data without asking.
 
 ## 5. Open questions
 
-1. **Name.** "tab-manager" is a placeholder; the repo name on GitHub should be decided before the
-   first push.
-2. **New-tab override on by default?** Toby 2.0 moved to the side panel by default. Proposal:
+1. **New-tab override on by default?** Toby 2.0 moved to the side panel by default. Proposal:
    side panel first, new-tab override as a setting.
-3. **Chrome Web Store** publication, or keep it unpacked/private? Unpacked is enough for one user.
+2. **Chrome Web Store** publication, or keep it unpacked/private? Unpacked is enough for one user.
