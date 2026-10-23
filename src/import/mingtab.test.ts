@@ -21,8 +21,24 @@ describe('MingTab backup', () => {
     await restoreAll(fresh, parseMingTabExport(JSON.parse(JSON.stringify(first))));
     const second = await exportAll(fresh);
 
-    const strip = ({ exportedAt: _e, ...rest }: typeof first) => rest;
+    // Same records and content; only edit timestamps move (restore stamps them as new).
+    const strip = ({ exportedAt: _e, ...rest }: typeof first) =>
+      Object.fromEntries(
+        Object.entries(rest).map(([k, v]) => [k, Array.isArray(v) ? v.map(({ updatedAt: _u, ...r }) => r) : v]),
+      );
     expect(strip(second)).toEqual(strip(first));
+  });
+
+  it('restoring over existing data marks the rest deleted (so sync propagates it)', async () => {
+    const db = new MingTabDB(`test-${crypto.randomUUID()}`);
+    const keep = await createSpace(db, 'Keep');
+    const backup = await exportAll(db);
+    const extra = await createSpace(db, 'Added after backup');
+    await restoreAll(db, backup);
+    expect((await db.spaces.get(extra.id))!.deletedAt).not.toBeNull();
+    const kept = (await db.spaces.get(keep.id))!;
+    expect(kept.deletedAt).toBeNull();
+    expect(kept.updatedAt).toBeGreaterThan(keep.updatedAt);
   });
 
   it('rejects files that are not MingTab backups', () => {

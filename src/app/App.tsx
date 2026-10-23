@@ -1,9 +1,11 @@
+import Dexie from 'dexie';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useRef, useState } from 'react';
 import { db } from '../db/db';
 import { createSpace, listSpaces } from '../db/repo';
 import { DndProvider } from '../dnd/DndProvider';
 import { SearchResults } from '../search/SearchResults';
+import { requestSync } from '../sync/state';
 import { OpenTabs } from '../tabs/OpenTabs';
 import { applyTheme, usePref, type Density, type Scheme, type SortMode, type Theme } from './prefs';
 import { Settings } from './Settings';
@@ -12,7 +14,11 @@ import { SpaceView, StarredView } from './SpaceView';
 import type { Surface } from './surface';
 
 export function App({ surface }: { surface: Surface }) {
-  const spaces = useLiveQuery(() => listSpaces(db));
+  const allSpaces = useLiveQuery(() => listSpaces(db));
+  // Spaces hidden on this device (Settings → Spaces on this device). They still sync.
+  const [hiddenJson, setHiddenJson] = usePref<string>('mingtab.hiddenSpaces', '[]');
+  const hiddenSpaces = parseIds(hiddenJson);
+  const spaces = allSpaces?.filter((s) => !hiddenSpaces.includes(s.id));
   const [selectedId, setSelectedId] = usePref<string>('mingtab.space', '');
   const [theme, setTheme] = usePref<Theme>('mingtab.theme', 'system');
   const [scheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'kr');
@@ -30,6 +36,13 @@ export function App({ surface }: { surface: Surface }) {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => applyTheme(theme, scheme), [theme, scheme]);
+
+  // A local edit asks the background worker to sync in a couple of seconds.
+  useEffect(() => {
+    const onChange = () => void requestSync('soon');
+    Dexie.on('storagemutated', onChange);
+    return () => Dexie.on('storagemutated').unsubscribe(onChange);
+  }, []);
 
   // "/" jumps to search from anywhere that isn't a text field.
   useEffect(() => {
@@ -120,6 +133,8 @@ export function App({ surface }: { surface: Surface }) {
             onCloseOnSave={(v) => setCloseOnSave(v ? 'true' : 'false')}
             historySearch={historySearch === 'on'}
             onHistorySearch={(v) => setHistorySearch(v ? 'on' : 'off')}
+            hiddenSpaces={hiddenSpaces}
+            onHiddenSpaces={(ids) => setHiddenJson(JSON.stringify(ids))}
             hasData={spaces.length > 0}
             onDone={() => setView('board')}
           />
@@ -181,7 +196,7 @@ export function App({ surface }: { surface: Surface }) {
                           Create a space
                         </button>
                         <button type="button" onClick={() => setView('settings')}>
-                          Import from Toby
+                          Import from Toby, restore a backup, or sign in to sync
                         </button>
                       </div>
                     </div>
@@ -201,4 +216,13 @@ export function App({ surface }: { surface: Surface }) {
       )}
     </div>
   );
+}
+
+function parseIds(json: string): string[] {
+  try {
+    const v: unknown = JSON.parse(json);
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
 }

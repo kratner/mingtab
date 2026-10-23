@@ -21,3 +21,7 @@ test('toolbar icon is set to open the side panel', async ({ serviceWorker }) => 
     )
     .toBe(true);
 });
+
+test('the extension has its fixed ID (manifest key), the one Google sign-in redirects to', async ({ extensionId }) => {
+  expect(extensionId).toBe('jclkedgbnlmbonoihhobgnmdoehmddpo');
+});

@@ -3,8 +3,8 @@ import { wipeAll } from '../db/repo';
 import type { Card, Collection, Space, Tag } from '../db/schema';
 import { ImportError } from './toby';
 
-// MingTab's own backup format: the live records, verbatim. Importing it
-// replaces everything, so export → wipe → import round-trips exactly.
+// MingTab's own backup format: the live records, verbatim. Restoring it makes
+// MingTab match the backup exactly (apart from edit timestamps; see restoreAll).
 
 export interface MingTabExport {
   kind: 'mingtab-export';
@@ -48,12 +48,19 @@ export function parseMingTabExport(raw: unknown): MingTabExport {
   return r as MingTabExport;
 }
 
+/**
+ * Makes MingTab match the backup. Everything not in it is marked deleted, and
+ * the backup's records are stamped as edited now, so with sync on the restored
+ * state wins on every device rather than losing to older copies.
+ */
 export async function restoreAll(db: MingTabDB, data: MingTabExport) {
+  const t = Date.now();
+  const touch = <T extends { updatedAt: number }>(rows: T[]) => rows.map((r) => ({ ...r, updatedAt: t }));
   await db.transaction('rw', db.spaces, db.collections, db.cards, db.tags, async () => {
-    await wipeAll(db);
-    await db.spaces.bulkAdd(data.spaces);
-    await db.collections.bulkAdd(data.collections);
-    await db.cards.bulkAdd(data.cards);
-    await db.tags.bulkAdd(data.tags);
+    await wipeAll(db, t - 1);
+    await db.spaces.bulkPut(touch(data.spaces));
+    await db.collections.bulkPut(touch(data.collections));
+    await db.cards.bulkPut(touch(data.cards));
+    await db.tags.bulkPut(touch(data.tags));
   });
 }

@@ -1,3 +1,4 @@
+import type Dexie from 'dexie';
 import type { MingTabDB } from './db';
 import { initialPositions, positionAfterLast, positionBeforeFirst, positionBetween } from './position';
 import type { Card, Collection, Space, Tag } from './schema';
@@ -157,10 +158,17 @@ export const deleteCard = (db: MingTabDB, id: string) => {
   return db.cards.update(id, { deletedAt: t, updatedAt: t });
 };
 
-/** Hard-deletes everything. Used by import-replace and tests. */
-export const wipeAll = (db: MingTabDB) =>
+/**
+ * Marks everything deleted (import "replace", restore). Tombstones rather
+ * than clearing the tables, so sync tells other devices about the removal.
+ */
+export const wipeAll = (db: MingTabDB, t = now()) =>
   db.transaction('rw', db.spaces, db.collections, db.cards, db.tags, async () => {
-    await Promise.all([db.spaces.clear(), db.collections.clear(), db.cards.clear(), db.tags.clear()]);
+    for (const table of [db.spaces, db.collections, db.cards, db.tags] as const) {
+      await (table as unknown as Dexie.Table<{ deletedAt: number | null; updatedAt: number }>)
+        .filter(live)
+        .modify({ deletedAt: t, updatedAt: t });
+    }
   });
 
 /** Moves all of `sourceId`'s cards to the end of `targetId`, then deletes the source. */

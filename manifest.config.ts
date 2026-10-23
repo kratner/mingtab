@@ -1,9 +1,15 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 import pkg from './package.json' with { type: 'json' };
+import sync from './sync.config.json' with { type: 'json' };
+
+const syncOrigin = new URL(process.env.VITE_SYNC_URL || sync.syncUrl).origin;
 
 export default defineManifest({
   manifest_version: 3,
   name: 'MingTab',
+  // Public key that fixes the extension ID (sync.config.json → extensionId)
+  // on every machine; Google sign-in redirects to that ID.
+  key: sync.manifestKey,
   description: pkg.description,
   version: pkg.version,
   icons: {
@@ -25,7 +31,9 @@ export default defineManifest({
   chrome_url_overrides: {
     newtab: 'src/newtab/index.html',
   },
-  permissions: ['sidePanel', 'storage', 'unlimitedStorage', 'tabs', 'tabGroups', 'favicon'],
+  permissions: ['sidePanel', 'storage', 'unlimitedStorage', 'tabs', 'tabGroups', 'favicon', 'identity', 'alarms'],
+  // Only the MingTab sync service.
+  host_permissions: [`${syncOrigin}/*`],
   // Requested only when history search is turned on in Settings.
   optional_permissions: ['history'],
 });

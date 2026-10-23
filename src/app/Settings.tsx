@@ -14,6 +14,7 @@ import { deleteCards, listAllCardsInOrder, listAllCollectionsInOrder, listSpaces
 import { displayTitle } from '../db/schema';
 import { findDuplicates, type DuplicateGroup } from '../dedupe/dedupe';
 import { downloadJson, readJsonFile, timestamp } from './files';
+import { SyncSettings } from '../sync/SyncSettings';
 import type { Scheme, Theme } from './prefs';
 
 interface Props {
@@ -25,6 +26,8 @@ interface Props {
   onCloseOnSave: (v: boolean) => void;
   historySearch: boolean;
   onHistorySearch: (v: boolean) => void;
+  hiddenSpaces: string[];
+  onHiddenSpaces: (ids: string[]) => void;
   hasData: boolean;
   onDone: () => void;
 }
@@ -43,6 +46,8 @@ export function Settings({
   onCloseOnSave,
   historySearch,
   onHistorySearch,
+  hiddenSpaces,
+  onHiddenSpaces,
   hasData,
   onDone,
 }: Props) {
@@ -54,6 +59,8 @@ export function Settings({
           Back to board
         </button>
       </div>
+
+      <SyncSettings hiddenSpaces={hiddenSpaces} onHiddenSpaces={onHiddenSpaces} />
 
       <section className="settings-section">
         <h3>Appearance</h3>

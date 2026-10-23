@@ -3,9 +3,21 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import path from 'node:path';
 
-const distDir = path.resolve(import.meta.dirname, '../dist');
+// dist-test/ is built by global-setup.ts, pointed at the local sync server.
+export const distDir = path.resolve(import.meta.dirname, '../dist-test');
 
-// Loads the built extension (dist/) into a fresh Chromium profile and exposes
+/** A fresh Chromium profile with MingTab loaded: one "device". */
+export async function launchDevice() {
+  const context = await chromium.launchPersistentContext('', {
+    channel: 'chromium',
+    args: [`--disable-extensions-except=${distDir}`, `--load-extension=${distDir}`],
+  });
+  let [worker] = context.serviceWorkers();
+  if (!worker) worker = await context.waitForEvent('serviceworker');
+  return { context, serviceWorker: worker, extensionId: new URL(worker.url()).host };
+}
+
+// Loads the built extension (dist-test/) into a fresh Chromium profile and exposes
 // its id. Extensions need a persistent context; channel 'chromium' allows
 // them to run headless.
 //

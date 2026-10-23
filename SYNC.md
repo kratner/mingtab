@@ -91,9 +91,27 @@ recommended: it doesn't grow into mobile or sharing.
 3. **Mobile milestone (S2):** PWA on the same Worker; Android share target.
 4. **Later:** unlisted Web Store listing; shared spaces.
 
-## Open decisions for Keith
+## Decisions (2026-10-23)
 
-1. Sync backend: A (Cloudflare, recommended), B (Dexie Cloud) or C (Drive).
-2. One MingTab account across work and personal Chrome profiles, with per-device space filters?
-3. Sign-in method: Google sign-in, passkey, or email magic link.
-4. Domain for the web app and API (e.g. a subdomain of a domain you already own on Cloudflare).
+1. **Backend: A, Cloudflare Workers + D1** on keith.ratner@gmail.com's Cloudflare account.
+2. **One shared MingTab** across work and personal Chrome profiles, with a per-device "Spaces on
+   this device" filter (Settings).
+3. **Sign-in: Google**, through Chrome's web-auth flow with Google's account chooser (not
+   `getAuthToken`, which would use the work profile's own account). OAuth client "MingTab
+   extension" in Google Cloud project `mingtab`, External / Testing, keith.ratner@gmail.com the
+   only test user. The Worker also allows only that email (`ALLOWED_EMAILS`).
+4. **Domain: none yet**; the Worker runs at `mingtab-sync.<subdomain>.workers.dev`.
+
+## S1 as built
+
+- `worker/`: the sync service. `POST /v1/auth/google` checks the Google ID token (signature
+  against Google's keys, audience, expiry, verified email, allow list) and issues a per-device
+  token (only its SHA-256 is stored). `POST /v1/sync` pushes up to 40 changes and returns
+  changes since the device's cursor (pages of 500). Last writer wins per record by `updatedAt`.
+- Extension: `src/sync/`. Background worker syncs every minute, at startup, on "Sync now", and
+  about two seconds after a local edit. Import "replace" and backup restore now mark old records
+  deleted instead of erasing them, so deletions reach other devices.
+- Fixed extension ID `jclkedgbnlmbonoihhobgnmdoehmddpo` (manifest `key`; private key in
+  git-ignored `.keys/`).
+- Tests: Worker (11, real D1 in Miniflare), sync engine with two simulated devices (7), and two
+  real Chromium profiles syncing through the Worker running locally (`e2e/sync.spec.ts`).

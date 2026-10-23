@@ -1,0 +1,24 @@
+{
+  // MingTab sync service. Deploy: npm run db:migrate:remote && npm run deploy
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mingtab-sync",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mingtab",
+      "database_id": "7491edd2-d6a0-4079-b696-329308faf2ce",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    // Google OAuth client "MingTab extension" in Google Cloud project "mingtab" (keith.ratner@gmail.com).
+    "GOOGLE_CLIENT_ID": "453066917507-acsc56hkjjnrl461cvga9fmkqnlnllp0.apps.googleusercontent.com",
+    "ALLOWED_EMAILS": "keith.ratner@gmail.com",
+    // The extension's fixed ID (manifest "key"); the phone web app's origin gets added here later.
+    "ALLOWED_ORIGINS": "chrome-extension://jclkedgbnlmbonoihhobgnmdoehmddpo"
+  }
+}
