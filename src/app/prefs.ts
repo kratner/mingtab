@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 // new-tab page (same extension origin) and survives restarts.
 
 export type Theme = 'system' | 'light' | 'dark';
+export type Scheme = 'kr' | 'terracotta';
 
 function read<T extends string>(key: string, fallback: T): T {
   try {
@@ -32,7 +33,10 @@ export function usePref<T extends string>(key: string, fallback: T): [T, (v: T) 
   return [value, set];
 }
 
-export function applyTheme(theme: Theme) {
-  if (theme === 'system') delete document.documentElement.dataset.theme;
-  else document.documentElement.dataset.theme = theme;
+export function applyTheme(theme: Theme, scheme: Scheme) {
+  const root = document.documentElement.dataset;
+  if (theme === 'system') delete root.theme;
+  else root.theme = theme;
+  if (scheme === 'kr') delete root.scheme;
+  else root.scheme = scheme;
 }

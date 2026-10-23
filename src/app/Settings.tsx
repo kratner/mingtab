@@ -11,16 +11,23 @@ import {
   type TobySpaceMap,
 } from '../import/toby';
 import { downloadJson, readJsonFile, timestamp } from './files';
-import type { Theme } from './prefs';
+import type { Scheme, Theme } from './prefs';
 
 interface Props {
   theme: Theme;
   onTheme: (t: Theme) => void;
+  scheme: Scheme;
+  onScheme: (s: Scheme) => void;
   hasData: boolean;
   onDone: () => void;
 }
 
-export function Settings({ theme, onTheme, hasData, onDone }: Props) {
+const SCHEMES: { id: Scheme; label: string }[] = [
+  { id: 'kr', label: 'KR (black and yellow)' },
+  { id: 'terracotta', label: 'Terracotta' },
+];
+
+export function Settings({ theme, onTheme, scheme, onScheme, hasData, onDone }: Props) {
   return (
     <div className="settings">
       <div className="space-toolbar">
@@ -37,6 +44,14 @@ export function Settings({ theme, onTheme, hasData, onDone }: Props) {
             <label key={t}>
               <input type="radio" name="theme" checked={theme === t} onChange={() => onTheme(t)} />
               {t[0]!.toUpperCase() + t.slice(1)}
+            </label>
+          ))}
+        </div>
+        <div className="segmented" role="radiogroup" aria-label="Color scheme">
+          {SCHEMES.map((s) => (
+            <label key={s.id}>
+              <input type="radio" name="scheme" checked={scheme === s.id} onChange={() => onScheme(s.id)} />
+              {s.label}
             </label>
           ))}
         </div>

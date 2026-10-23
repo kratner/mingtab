@@ -2,7 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useState } from 'react';
 import { db } from '../db/db';
 import { createSpace, listSpaces } from '../db/repo';
-import { applyTheme, usePref, type Theme } from './prefs';
+import { applyTheme, usePref, type Scheme, type Theme } from './prefs';
 import { Settings } from './Settings';
 import { SpaceNav } from './SpaceNav';
 import { SpaceView } from './SpaceView';
@@ -12,9 +12,10 @@ export function App({ surface }: { surface: Surface }) {
   const spaces = useLiveQuery(() => listSpaces(db));
   const [selectedId, setSelectedId] = usePref<string>('mingtab.space', '');
   const [theme, setTheme] = usePref<Theme>('mingtab.theme', 'system');
+  const [scheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'kr');
   const [view, setView] = useState<'board' | 'settings'>('board');
 
-  useEffect(() => applyTheme(theme), [theme]);
+  useEffect(() => applyTheme(theme, scheme), [theme, scheme]);
 
   // Keep a valid selection when spaces are added or deleted.
   const selected = spaces?.find((s) => s.id === selectedId) ?? spaces?.[0];
@@ -27,6 +28,7 @@ export function App({ surface }: { surface: Surface }) {
   return (
     <div className="app" data-surface={surface}>
       <header className="app-header">
+        <img className="brand-mark" src="/icons/icon-32.png" alt="" />
         <h1>MingTab</h1>
         <span className="surface-tag">{surface === 'newtab' ? 'Board' : 'Side panel'}</span>
         <button
@@ -42,7 +44,14 @@ export function App({ surface }: { surface: Surface }) {
 
       {view === 'settings' ? (
         <main className="app-main">
-          <Settings theme={theme} onTheme={setTheme} hasData={spaces.length > 0} onDone={() => setView('board')} />
+          <Settings
+            theme={theme}
+            onTheme={setTheme}
+            scheme={scheme}
+            onScheme={setScheme}
+            hasData={spaces.length > 0}
+            onDone={() => setView('board')}
+          />
         </main>
       ) : spaces.length === 0 ? (
         <main className="app-main">

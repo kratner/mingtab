@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Concept B "Tab doorway": a browser tab drawn as a doorway, standing on the
+       tab bar. Straight sides with a small flare at the bar, like a real tab.
+       Reads as "tabs" and as the bright hall. KR palette. -->
+  <rect x="2" y="2" width="124" height="124" rx="10" fill="#000000"/>
+  <path fill="#FFF200" d="
+    M14 106 V96 H28 A8 8 0 0 0 36 88 V40 A12 12 0 0 1 48 28 H80 A12 12 0 0 1 92 40
+    V88 A8 8 0 0 0 100 96 H114 V106 Z"/>
+</svg>

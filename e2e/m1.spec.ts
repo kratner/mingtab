@@ -84,6 +84,11 @@ test('create, edit and delete a space, collection and card; edits persist', asyn
   await page.getByRole('button', { name: 'Delete Great article' }).click();
   await expect(page.locator('.card')).toHaveCount(0);
 
+  await page.getByRole('button', { name: 'Star Reading' }).click();
+  await expect(page.getByRole('button', { name: 'Unstar Reading' })).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Unstar Reading' })).toBeVisible();
+
   await page.getByRole('button', { name: 'Delete Reading' }).click();
   await expect(page.getByRole('region', { name: 'Reading' })).toHaveCount(0);
 });

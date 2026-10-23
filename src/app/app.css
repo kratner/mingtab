@@ -1,7 +1,72 @@
-/* Tokens. Light by default, dark via system preference or explicit choice
-   (html[data-theme]). Explicit choice wins over the system. */
+/* Tokens. Two axes:
+   - scheme (html[data-scheme]): KR (default; Keith's black + #FFF200 yellow) or terracotta.
+   - mode: light by default, dark via system preference or explicit choice
+     (html[data-theme]); an explicit choice wins over the system.
+   --accent is a fill (buttons, highlights) and always pairs with --accent-text.
+   --accent-ink is the accent for text and outlines on the page background;
+   in KR light it is near-black, because yellow text on white is unreadable. */
+
+/* KR, light */
 :root {
   color-scheme: light;
+  --bg: #f5f5f0;
+  --surface: #ffffff;
+  --surface-2: #ececE4;
+  --text: #111111;
+  --muted: #5c5c55;
+  --accent: #fff200;
+  --accent-text: #000000;
+  --accent-border: #111111;
+  --accent-ink: #111111;
+  --accent-soft: #fff9a8;
+  --border: #dcdcd2;
+  --danger: #b3261e;
+  --warn: #7a5600;
+  --star: #9c7c00;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+
+/* KR, dark */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0a0a0a;
+    --surface: #151515;
+    --surface-2: #202020;
+    --text: #f2f2ec;
+    --muted: #9a9a90;
+    --accent: #fff200;
+    --accent-text: #000000;
+    --accent-border: #fff200;
+    --accent-ink: #fff200;
+    --accent-soft: #2a2800;
+    --border: #2a2a2a;
+    --danger: #f28b82;
+    --warn: #e6b450;
+    --star: #fff200;
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0a0a0a;
+  --surface: #151515;
+  --surface-2: #202020;
+  --text: #f2f2ec;
+  --muted: #9a9a90;
+  --accent: #fff200;
+  --accent-text: #000000;
+  --accent-border: #fff200;
+  --accent-ink: #fff200;
+  --accent-soft: #2a2800;
+  --border: #2a2a2a;
+  --danger: #f28b82;
+  --warn: #e6b450;
+  --star: #fff200;
+}
+
+/* Terracotta, light */
+:root[data-scheme='terracotta'] {
   --bg: #f6f4ef;
   --surface: #ffffff;
   --surface-2: #efece5;
@@ -9,17 +74,18 @@
   --muted: #6f6a62;
   --accent: #b5452f;
   --accent-text: #ffffff;
+  --accent-border: #b5452f;
+  --accent-ink: #b5452f;
+  --accent-soft: #f6e3dd;
   --border: #e2ddd3;
   --danger: #b3261e;
   --warn: #8a5a00;
   --star: #c98a00;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  font-size: 14px;
 }
 
+/* Terracotta, dark */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
+  :root[data-scheme='terracotta']:not([data-theme='light']) {
     --bg: #1b1a18;
     --surface: #252320;
     --surface-2: #2e2b27;
@@ -27,15 +93,16 @@
     --muted: #9c968c;
     --accent: #e0745c;
     --accent-text: #1b1a18;
+    --accent-border: #e0745c;
+    --accent-ink: #e0745c;
+    --accent-soft: #3a2621;
     --border: #3a3732;
     --danger: #f28b82;
     --warn: #e6b450;
     --star: #f0c040;
   }
 }
-
-:root[data-theme='dark'] {
-  color-scheme: dark;
+:root[data-scheme='terracotta'][data-theme='dark'] {
   --bg: #1b1a18;
   --surface: #252320;
   --surface-2: #2e2b27;
@@ -43,6 +110,9 @@
   --muted: #9c968c;
   --accent: #e0745c;
   --accent-text: #1b1a18;
+  --accent-border: #e0745c;
+  --accent-ink: #e0745c;
+  --accent-soft: #3a2621;
   --border: #3a3732;
   --danger: #f28b82;
   --warn: #e6b450;
@@ -81,7 +151,7 @@ button:hover {
 
 button.primary {
   background: var(--accent);
-  border-color: var(--accent);
+  border-color: var(--accent-border);
   color: var(--accent-text);
 }
 
@@ -99,7 +169,7 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-ink);
   outline-offset: 1px;
 }
 
@@ -163,7 +233,14 @@ a {
 .app-header h1 {
   margin: 0;
   font-size: 18px;
-  color: var(--accent);
+  color: var(--accent-ink);
+  letter-spacing: -0.01em;
+}
+
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  align-self: center;
 }
 
 .surface-tag {
@@ -252,8 +329,9 @@ a {
 }
 
 .space-link.active {
-  background: var(--surface-2);
-  color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  box-shadow: inset 3px 0 0 var(--accent-border);
   font-weight: 600;
 }
 
@@ -424,7 +502,7 @@ a {
 }
 
 a.card-title:hover {
-  color: var(--accent);
+  color: var(--accent-ink);
   text-decoration: underline;
 }
 

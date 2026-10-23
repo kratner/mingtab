@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Concept A "Doorway": the bright hall (mingtang) as an open, lit doorway.
+       KR palette: #FFF200 on black, tight corner radius like the KR GitHub avatar. -->
+  <rect x="2" y="2" width="124" height="124" rx="10" fill="#000000"/>
+  <path fill="#FFF200" d="M38 104 V54 A26 26 0 0 1 90 54 V104 Z"/>
+</svg>
