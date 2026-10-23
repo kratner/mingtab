@@ -250,7 +250,7 @@ sync can be added without migrating data.
 
 **Branding**: KR palette (`#FFF200` on black, from the KR mark). Icon concepts are in
 `branding/icons/`; `node branding/render.mjs` renders a comparison sheet, and
-`node branding/render.mjs --ship <name>` installs one as the extension icon.
+`node branding/render.mjs --ship <name>` installs one as the extension icon (currently `d-ming`, 明; the 明-in-doorway logo `e-ming-doorway` is used for About and this README).
 
 ## Roadmap
 
