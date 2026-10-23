@@ -14,6 +14,7 @@ import {
   mergeWindowsInto,
   ungroup,
   updateGroup,
+  saveAllWindows,
   saveGroup,
   saveWindow,
   tabToCard,
@@ -55,19 +56,37 @@ export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
     <aside className="open-tabs" aria-label="Open tabs">
       <div className="pane-head">
         <h2 className="pane-title">Open tabs</h2>
-        {state.windows.length > 1 && (
+        <div className="pane-actions">
+          {state.windows.length > 1 && (
+            <button
+              type="button"
+              className="small"
+              onClick={async () => {
+                const current = state.windows.find((w) => w.isCurrent) ?? state.windows[0]!;
+                await mergeWindowsInto(current.id);
+                setStatus(`Merged ${state.windows.length} windows into this one.`);
+              }}
+            >
+              Merge windows
+            </button>
+          )}
           <button
             type="button"
-            className="small"
+            className="primary small"
+            disabled={!state.windows.some((w) => w.tabs.some((t) => !t.pinned && isSavableUrl(t.url, origin)))}
+            title="Save every window into one collection, keeping windows and tab groups"
             onClick={async () => {
-              const current = state.windows.find((w) => w.isCurrent) ?? state.windows[0]!;
-              await mergeWindowsInto(current.id);
-              setStatus(`Merged ${state.windows.length} windows into this one.`);
+              const r = await saveAllWindows(db, { spaceId: await ensureSpace(), close: closeOnSave });
+              setStatus(
+                r
+                  ? `Saved ${r.saved} tab${r.saved === 1 ? '' : 's'} from ${r.windows} window${r.windows === 1 ? '' : 's'} to "${r.collection.title}"${closeOnSave ? ' and closed them' : ''}.`
+                  : 'Nothing to save.',
+              );
             }}
           >
-            Merge windows
+            Save all
           </button>
-        )}
+        </div>
       </div>
       {status && (
         <p className="pane-status" role="status">

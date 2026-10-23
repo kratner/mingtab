@@ -935,6 +935,11 @@ button:disabled {
   margin: 0;
 }
 
+.pane-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .window-header .count {
   margin-right: auto;
 }

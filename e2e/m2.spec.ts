@@ -116,3 +116,54 @@ test('side panel switches between saved collections and open tabs', async ({ pag
   await page.getByRole('tab', { name: 'Saved' }).click();
   await expect(page.getByRole('button', { name: 'Create a space' })).toBeVisible();
 });
+
+test('save all windows in one click: one collection, then Open all rebuilds the windows and groups', async ({
+  page,
+  extensionId,
+  serviceWorker: sw,
+  site,
+}) => {
+  await board(page, extensionId);
+  const first = urls(site, ['w1a', 'w1b']);
+  const second = urls(site, ['w2a', 'w2b', 'w2c']);
+  await openWindow(sw, first);
+  const secondId = await openWindow(sw, second, { group: { title: 'Research', color: 'green' } });
+  await sw.evaluate((id) => chrome.windows.update(id, { left: 40, top: 60, width: 700, height: 500 }), secondId);
+
+  await page.getByRole('complementary', { name: 'Open tabs' }).getByRole('button', { name: 'Save all' }).click();
+  await expect(page.getByRole('complementary', { name: 'Open tabs' }).getByRole('status')).toContainText(
+    'Saved 5 tabs from 2 windows to "All windows',
+  );
+  await expect.poll(() => openSiteTabs(sw, site)).toHaveLength(0);
+  // Emptied windows close outright instead of each keeping a new tab.
+  await expect.poll(() => sw.evaluate((id) => chrome.windows.get(id).then(() => true, () => false), secondId)).toBe(false);
+
+  const collection = page.locator('section.collection').filter({ has: page.getByRole('button', { name: /^Collection title: All windows / }) });
+  await expect(collection.locator('.card')).toHaveCount(5);
+  await expect(collection).toContainText('2 windows');
+
+  await collection.getByRole('button', { name: /^Open all in / }).click();
+  await expect.poll(async () => (await openSiteTabs(sw, site)).length).toBe(5);
+  const reopened = await sw.evaluate(async (site) => {
+    const wins = await chrome.windows.getAll({ populate: true });
+    return Promise.all(
+      wins
+        .filter((w) => (w.tabs ?? []).some((t) => (t.url || t.pendingUrl || '').startsWith(site)))
+        .map(async (w) => ({
+          urls: w.tabs!.map((t) => t.url || t.pendingUrl),
+          left: w.left,
+          top: w.top,
+          groups: await Promise.all(
+            [...new Set(w.tabs!.map((t) => t.groupId).filter((g) => g !== -1))].map((g) => chrome.tabGroups.get(g!)),
+          ),
+        })),
+    );
+  }, site);
+  const byFirst = (u: string) => reopened.find((w) => w.urls[0] === u)!;
+  expect(byFirst(first[0]!).urls).toEqual(first);
+  expect(byFirst(first[0]!).groups).toHaveLength(0);
+  expect(byFirst(second[0]!).urls).toEqual(second);
+  // Position, not size: Playwright resizes every page it attaches to to its 1280×720 viewport.
+  expect(byFirst(second[0]!)).toMatchObject({ left: 40, top: 60 });
+  expect(byFirst(second[0]!).groups).toMatchObject([{ title: 'Research', color: 'green' }]);
+});

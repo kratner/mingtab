@@ -46,6 +46,7 @@ labels (tags) { title, color, position }
 | Card notes / custom titles | Free | **M1** |
 | Save the current window as a session (close tabs or keep them open) | Free | **M2** |
 | Save a Chrome tab group with its color; restore it as a group | Free | **M2** |
+| Save all windows in one click, keeping windows (size, place, maximized) and tab groups | n/a | ✅ 2026-10-23. *Passed: snapshot/restore/close-plan unit tests + 1 e2e (2 windows, one grouped → one collection → windows reopen with the same tabs, group and position). Window size can't be checked in e2e (Playwright resizes pages it attaches to): Keith's check.* |
 | Open-tabs pane (all windows), drag a tab into a collection | Free | **M2** |
 | Open one card / a whole collection; drop a collection onto open tabs | Free | **M2** |
 | Drag and drop everything (cards, collections, merge collections) | Free | **M3** ✅ 2026-10-23. *Passed: 11 drop-logic unit tests + 9 e2e with real mouse drags (collection reorder + persist, keyboard reorder, card within/between collections, open tab → collection, collection → other space, click still opens link, merge, group/rename/recolor/ungroup, merge windows); plus layout e2e (no overflow at 320/400/768/1280). Awaiting Keith's check.* |

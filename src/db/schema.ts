@@ -24,6 +24,31 @@ export interface Collection extends Base {
   /** Set when the collection was saved from a Chrome tab group; reopening
    * recreates the group in this color. Absent on older records. */
   groupColor?: string | null;
+  /** Set when the collection was saved from all windows at once; "Open all"
+   * rebuilds those windows and their tab groups. Absent on older records. */
+  session?: SessionLayout | null;
+}
+
+/** A saved window: its size and place on screen. */
+export interface SessionWindow {
+  state: 'normal' | 'maximized' | 'fullscreen' | 'minimized';
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  focused: boolean;
+}
+
+export interface SessionGroup {
+  title: string;
+  color: string;
+  collapsed: boolean;
+}
+
+/** Windows and tab groups of a session; cards point into them by index (Card.layout). */
+export interface SessionLayout {
+  windows: SessionWindow[];
+  groups: SessionGroup[];
 }
 
 export interface Card extends Base {
@@ -39,6 +64,13 @@ export interface Card extends Base {
   position: string;
   /** "to/<shortcut>" in the address bar opens this card. Lowercase; absent on older records. */
   shortcut?: string;
+  /** Where the tab sat in its collection's session (Collection.session). Absent elsewhere. */
+  layout?: CardLayout | null;
+}
+
+export interface CardLayout {
+  window: number;
+  group: number | null;
 }
 
 /** An entry in the Next queue: a page to get through, in order. */

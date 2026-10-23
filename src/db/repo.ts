@@ -1,7 +1,7 @@
 import type Dexie from 'dexie';
 import type { MingTabDB } from './db';
 import { initialPositions, positionAfterLast, positionBeforeFirst, positionBetween } from './position';
-import type { Card, Collection, Space, Tag } from './schema';
+import type { Card, CardLayout, Collection, SessionLayout, Space, Tag } from './schema';
 
 const now = () => Date.now();
 const uuid = () => crypto.randomUUID();
@@ -76,7 +76,7 @@ export async function createCollectionWithCards(
   spaceId: string,
   title: string,
   cards: NewCard[],
-  opts: { atTop?: boolean; groupColor?: string | null } = {},
+  opts: { atTop?: boolean; groupColor?: string | null; session?: SessionLayout | null } = {},
 ): Promise<Collection> {
   return db.transaction('rw', db.collections, db.cards, async () => {
     const siblings = await listCollections(db, spaceId);
@@ -89,6 +89,7 @@ export async function createCollectionWithCards(
       collapsed: false,
       tagIds: [],
       groupColor: opts.groupColor ?? null,
+      ...(opts.session ? { session: opts.session } : {}),
     };
     await db.collections.add(collection);
     const positions = initialPositions(cards.length);
@@ -102,6 +103,7 @@ export async function createCollectionWithCards(
         note: c.note ?? '',
         favIconUrl: c.favIconUrl ?? '',
         position: positions[i]!,
+        ...(c.layout ? { layout: c.layout } : {}),
       })),
     );
     return collection;
@@ -130,6 +132,7 @@ export interface NewCard {
   customTitle?: string;
   note?: string;
   favIconUrl?: string;
+  layout?: CardLayout;
 }
 
 export async function addCard(db: MingTabDB, collectionId: string, input: NewCard): Promise<Card> {
