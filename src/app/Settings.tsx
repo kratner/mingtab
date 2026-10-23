@@ -113,6 +113,7 @@ export function Settings({
 
       <TobyImport hasData={hasData} onImported={onDone} />
       <Backup />
+      <About />
     </div>
   );
 }
@@ -367,6 +368,33 @@ function Backup() {
         </p>
       )}
       {status && <p role="status">{status}</p>}
+    </section>
+  );
+}
+
+/** The name, briefly. Also linked from the welcome screen. */
+export function About() {
+  const version = typeof chrome !== 'undefined' && chrome.runtime?.getManifest ? chrome.runtime.getManifest().version : '';
+  return (
+    <section className="settings-section about" id="about" aria-labelledby="about-heading">
+      <img className="about-logo" src="/brand/ming-doorway.svg" alt="明 in a bright doorway, the MingTab logo" />
+      <div>
+        <h3 id="about-heading">About MingTab</h3>
+        <p>
+          <b lang="zh">明堂</b> <i>míngtáng</i>, "the bright hall", is the open, uncluttered space in front of a building in
+          feng shui: the place where qi, the energy of a place, gathers before it flows inside. Clutter there blocks it; a
+          clear approach lets it in.
+        </p>
+        <p>
+          <b lang="zh">明</b> <i>míng</i>, "bright", joins <span lang="zh">日</span> (sun) and <span lang="zh">月</span>{' '}
+          (moon).
+        </p>
+        <p>
+          Forty open tabs are a cluttered approach. MingTab keeps yours clear: put away what you aren't using, and find it
+          again when you need it.
+        </p>
+        {version && <p className="muted">Version {version}</p>}
+      </div>
     </section>
   );
 }

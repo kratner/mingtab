@@ -80,7 +80,7 @@ export function App({ surface }: { surface: Surface }) {
   return (
     <div className="app" data-surface={surface} data-pane-open={paneOpen} data-density={density}>
       <header className="app-header">
-        <img className="brand-mark" src="/icons/icon-32.png" alt="" />
+        <img className="brand-mark" src="/icons/icon-32.png" alt="" title="MingTab: from 明堂 míngtáng, the bright hall" />
         <h1>MingTab</h1>
         <span className="surface-tag">{surface === 'newtab' ? 'Board' : 'Side panel'}</span>
         <input
@@ -186,7 +186,20 @@ export function App({ surface }: { surface: Surface }) {
                     />
                   ) : (
                     <div className="welcome">
-                      <p className="empty">Your bright hall is clear. Saved collections will appear here.</p>
+                      <img className="welcome-logo" src="/brand/ming-doorway.svg" alt="" />
+                      <p className="empty">
+                        Your bright hall is clear. Saved collections will appear here.{' '}
+                        <button
+                          type="button"
+                          className="link-btn"
+                          onClick={() => {
+                            setView('settings');
+                            setTimeout(() => document.getElementById('about')?.scrollIntoView({ block: 'start' }), 50);
+                          }}
+                        >
+                          Why "bright hall"?
+                        </button>
+                      </p>
                       <div className="row">
                         <button
                           type="button"

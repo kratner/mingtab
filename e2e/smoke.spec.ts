@@ -25,3 +25,15 @@ test('toolbar icon is set to open the side panel', async ({ serviceWorker }) => 
 test('the extension has its fixed ID (manifest key), the one Google sign-in redirects to', async ({ extensionId }) => {
   expect(extensionId).toBe('jclkedgbnlmbonoihhobgnmdoehmddpo');
 });
+
+test('the welcome screen links to About, which explains the name', async ({ page, extensionId }) => {
+  await page.setViewportSize({ width: 400, height: 700 });
+  await page.goto(`chrome-extension://${extensionId}/src/sidepanel/index.html`);
+  await page.getByRole('button', { name: 'Why "bright hall"?' }).click();
+  const about = page.getByRole('region', { name: 'About MingTab' });
+  await expect(about).toBeInViewport();
+  await expect(about).toContainText('明堂');
+  await expect(about).toContainText('the bright hall');
+  await expect(about.getByRole('img', { name: /明 in a bright doorway/ })).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath('about.png') });
+});

@@ -6,8 +6,13 @@ replacement for [Toby](https://www.gettoby.com/) that keeps everything on your o
 
 ![The MingTab board: spaces on the left, collections in the middle, open tabs on the right](docs/images/board-dark.png)
 
-The name comes from *mingtang* (明堂, "bright hall"), the open, uncluttered space in front of a
-building in feng shui, where energy gathers. A cleared tab bar is the bright hall.
+<img src="docs/images/logo-ming-doorway.svg" alt="明 in a bright doorway, the MingTab logo" width="96" align="right">
+
+**Why "MingTab"?** 明堂 *míngtáng*, "the bright hall", is the open, uncluttered space in front of
+a building in feng shui: the place where qi, the energy of a place, gathers before it flows
+inside. Clutter there blocks it; a clear approach lets it in. 明 *míng*, "bright", joins 日 (sun)
+and 月 (moon). Forty open tabs are a cluttered approach; MingTab keeps yours clear. The same note
+is in the extension under **Settings → About MingTab**.
 
 ## What it does
 

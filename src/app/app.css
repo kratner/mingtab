@@ -1152,3 +1152,42 @@ button:disabled {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ---- about ---- */
+
+.about {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.about-logo {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.about p {
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.welcome-logo {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 8px;
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent-ink);
+  text-decoration: underline;
+}
+
+@media (max-width: 420px) {
+  .about {
+    flex-direction: column;
+  }
+}

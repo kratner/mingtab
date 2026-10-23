@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Concept F "Sun and moon": 明 = 日 (sun) + 月 (moon), "bright". A square sun with the
+       日 bar, beside a crescent moon. Reads at 16 px where the full character can't. -->
+  <defs>
+    <mask id="crescent">
+      <rect width="128" height="128" fill="#fff"/>
+      <circle cx="98" cy="54" r="30" fill="#000"/>
+    </mask>
+  </defs>
+  <rect x="2" y="2" width="124" height="124" rx="10" fill="#000000"/>
+  <path fill="#FFF200" fill-rule="evenodd" d="M16 36 H56 V92 H16 Z M24 60 H48 V68 H24 Z"/>
+  <circle cx="84" cy="64" r="32" fill="#FFF200" mask="url(#crescent)"/>
+</svg>
