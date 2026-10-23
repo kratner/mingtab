@@ -1,5 +1,5 @@
 import type { MingTabDB } from './db';
-import { initialPositions, positionAfterLast, positionBeforeFirst } from './position';
+import { initialPositions, positionAfterLast, positionBeforeFirst, positionBetween } from './position';
 import type { Card, Collection, Space } from './schema';
 
 const now = () => Date.now();
@@ -162,3 +162,18 @@ export const wipeAll = (db: MingTabDB) =>
   db.transaction('rw', db.spaces, db.collections, db.cards, db.tags, async () => {
     await Promise.all([db.spaces.clear(), db.collections.clear(), db.cards.clear(), db.tags.clear()]);
   });
+
+/** Moves all of `sourceId`'s cards to the end of `targetId`, then deletes the source. */
+export async function mergeCollections(db: MingTabDB, sourceId: string, targetId: string) {
+  if (sourceId === targetId) return;
+  await db.transaction('rw', db.collections, db.cards, async () => {
+    const [moving, existing] = await Promise.all([listCards(db, sourceId), listCards(db, targetId)]);
+    let last = existing.at(-1)?.position ?? null;
+    const t = now();
+    for (const card of moving) {
+      last = positionBetween(last, null);
+      await db.cards.update(card.id, { collectionId: targetId, position: last, updatedAt: t });
+    }
+    await db.collections.update(sourceId, { deletedAt: t, updatedAt: t });
+  });
+}

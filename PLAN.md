@@ -48,7 +48,7 @@ labels (tags) { title, color, position }
 | Save a Chrome tab group with its color; restore it as a group | Free | **M2** |
 | Open-tabs pane (all windows), drag a tab into a collection | Free | **M2** |
 | Open one card / a whole collection; drop a collection onto open tabs | Free | **M2** |
-| Drag and drop everything (cards, collections, merge collections) | Free | **M3** |
+| Drag and drop everything (cards, collections, merge collections) | Free | **M3** ✅ 2026-10-23. *Passed: 11 drop-logic unit tests + 9 e2e with real mouse drags (collection reorder + persist, keyboard reorder, card within/between collections, open tab → collection, collection → other space, click still opens link, merge, group/rename/recolor/ungroup, merge windows); plus layout e2e (no overflow at 320/400/768/1280). Awaiting Keith's check.* |
 | Tab-group controls (group, rename, recolor, ungroup), merge windows | Free | **M3** |
 | Side panel (Toby 2.0 default), new-tab override, toolbar popup | Free | **M1** side panel + new tab; popup later |
 | Search across spaces, collections, cards and open tabs | Free | **M4** |

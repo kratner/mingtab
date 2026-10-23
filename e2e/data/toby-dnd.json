@@ -1,0 +1,17 @@
+{
+  "version": 3,
+  "lists": [
+    { "title": "A", "labels": [], "cards": [
+      { "title": "a1", "url": "https://a1.example/", "favIconUrl": "", "customTitle": "", "customDescription": "" },
+      { "title": "a2", "url": "https://a2.example/", "favIconUrl": "", "customTitle": "", "customDescription": "" },
+      { "title": "a3", "url": "https://a3.example/", "favIconUrl": "", "customTitle": "", "customDescription": "" }
+    ] },
+    { "title": "B", "labels": [], "cards": [
+      { "title": "b1", "url": "https://b1.example/", "favIconUrl": "", "customTitle": "", "customDescription": "" },
+      { "title": "b2", "url": "https://b2.example/", "favIconUrl": "", "customTitle": "", "customDescription": "" }
+    ] },
+    { "title": "C", "labels": [], "cards": [
+      { "title": "c1", "url": "https://c1.example/", "favIconUrl": "", "customTitle": "", "customDescription": "" }
+    ] }
+  ]
+}

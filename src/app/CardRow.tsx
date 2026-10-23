@@ -1,7 +1,10 @@
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { db } from '../db/db';
 import { deleteCard, updateCard } from '../db/repo';
 import { displayTitle, type Card } from '../db/schema';
+import { dragId } from '../dnd/drop';
 import { chromeFaviconUrl, hostOf } from './favicon';
 
 function Favicon({ card }: { card: Card }) {
@@ -17,6 +20,15 @@ export function CardRow({ card }: { card: Card }) {
   const [note, setNote] = useState(card.note);
   const title = displayTitle(card);
   const isNote = !card.url;
+  // The whole row is the drag source; the 6px activation distance keeps clicks working.
+  const { setNodeRef, attributes: sortableAttrs, listeners, transform, transition, isDragging } = useSortable({
+    id: dragId.card(card.id),
+    data: { type: 'card', card },
+    disabled: editing,
+  });
+  // dnd-kit marks a disabled source aria-disabled, which would make the edit
+  // form's inputs read as disabled too. Only "can't drag right now" is meant.
+  const { 'aria-disabled': _disabled, ...attributes } = sortableAttrs;
 
   const save = async () => {
     await updateCard(db, card.id, { customTitle: customTitle.trim(), note: note.trim() });
@@ -24,7 +36,17 @@ export function CardRow({ card }: { card: Card }) {
   };
 
   return (
-    <li className="card" data-card-id={card.id}>
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Translate.toString(transform), transition }}
+      className={`card ${isDragging ? 'dragging' : ''}`}
+      data-card-id={card.id}
+      {...attributes}
+      {...listeners}
+      role="listitem"
+      aria-roledescription="draggable card"
+      aria-label={title}
+    >
       <div className="card-main">
         <Favicon card={card} />
         <div className="card-text">

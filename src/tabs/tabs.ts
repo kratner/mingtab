@@ -133,3 +133,38 @@ export async function focusTab(tab: chrome.tabs.Tab) {
   await chrome.tabs.update(tab.id!, { active: true });
   await chrome.windows.update(tab.windowId, { focused: true });
 }
+
+// ---- tab-group and window controls (M3) --------------------------------------
+
+/** Groups the window's ungrouped, unpinned tabs into a new group. */
+export async function groupLooseTabs(windowId: number, title = 'New group'): Promise<number | null> {
+  const loose = (await chrome.tabs.query({ windowId })).filter((t) => !t.pinned && (t.groupId ?? -1) === -1);
+  if (loose.length === 0) return null;
+  const groupId: number = await chrome.tabs.group({
+    tabIds: loose.map((t) => t.id!) as [number, ...number[]],
+    createProperties: { windowId },
+  });
+  await chrome.tabGroups.update(groupId, { title });
+  return groupId;
+}
+
+export const updateGroup = (groupId: number, changes: { title?: string; color?: string }) =>
+  chrome.tabGroups.update(groupId, changes as chrome.tabGroups.UpdateProperties);
+
+export async function ungroup(groupId: number) {
+  const tabs = await chrome.tabs.query({ groupId });
+  if (tabs.length) await chrome.tabs.ungroup(tabs.map((t) => t.id!) as [number, ...number[]]);
+}
+
+/** Moves every tab from other normal windows into `targetWindowId`, keeping tab groups intact. */
+export async function mergeWindowsInto(targetWindowId: number) {
+  const windows = await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] });
+  for (const w of windows) {
+    if (w.id === targetWindowId) continue;
+    const tabs = w.tabs ?? [];
+    const groupIds = [...new Set(tabs.map((t) => t.groupId ?? -1).filter((g) => g !== -1))];
+    for (const g of groupIds) await chrome.tabGroups.move(g, { windowId: targetWindowId, index: -1 });
+    const loose = tabs.filter((t) => (t.groupId ?? -1) === -1).map((t) => t.id!);
+    if (loose.length) await chrome.tabs.move(loose, { windowId: targetWindowId, index: -1 });
+  }
+}

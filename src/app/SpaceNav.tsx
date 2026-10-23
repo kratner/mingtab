@@ -1,8 +1,27 @@
+import { useDroppable } from '@dnd-kit/core';
 import { useState } from 'react';
 import { db } from '../db/db';
 import { createSpace, deleteSpace, renameSpace } from '../db/repo';
 import type { Space } from '../db/schema';
+import { dragId, type DragData } from '../dnd/drop';
 import type { Surface } from './surface';
+
+function SpaceLink({ space, selected, onSelect }: { space: Space; selected: boolean; onSelect: (id: string) => void }) {
+  const { setNodeRef, isOver, active } = useDroppable({ id: dragId.space(space.id), data: { type: 'space', space } });
+  const type = (active?.data.current as DragData | undefined)?.type;
+  const target = isOver && (type === 'collection' || type === 'card') && !selected;
+  return (
+    <button
+      ref={setNodeRef}
+      type="button"
+      className={`space-link ${selected ? 'active' : ''} ${target ? 'drop-target' : ''}`}
+      aria-current={selected ? 'page' : undefined}
+      onClick={() => onSelect(space.id)}
+    >
+      {space.name}
+    </button>
+  );
+}
 
 interface Props {
   surface: Surface;
@@ -94,14 +113,7 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
       <ul>
         {spaces.map((s) => (
           <li key={s.id}>
-            <button
-              type="button"
-              className={`space-link ${s.id === selectedId ? 'active' : ''}`}
-              aria-current={s.id === selectedId ? 'page' : undefined}
-              onClick={() => onSelect(s.id)}
-            >
-              {s.name}
-            </button>
+            <SpaceLink space={s} selected={s.id === selectedId} onSelect={onSelect} />
           </li>
         ))}
       </ul>

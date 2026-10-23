@@ -1,18 +1,25 @@
+import { useDraggable } from '@dnd-kit/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { db } from '../db/db';
 import { addCard, createCollection, createSpace, listCollections } from '../db/repo';
 import { chromeFaviconUrl } from '../app/favicon';
+import { InlineEdit } from '../app/InlineEdit';
 import {
   GROUP_COLORS,
   extensionOrigin,
   focusTab,
+  groupLooseTabs,
   isSavableUrl,
+  mergeWindowsInto,
+  ungroup,
+  updateGroup,
   saveGroup,
   saveWindow,
   tabToCard,
   type SaveResult,
 } from './tabs';
+import { dragId } from '../dnd/drop';
 import { runsOf, useOpenWindows } from './useOpenWindows';
 
 interface Props {
@@ -45,7 +52,22 @@ export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
 
   return (
     <aside className="open-tabs" aria-label="Open tabs">
-      <h2 className="pane-title">Open tabs</h2>
+      <div className="pane-head">
+        <h2 className="pane-title">Open tabs</h2>
+        {state.windows.length > 1 && (
+          <button
+            type="button"
+            className="small"
+            onClick={async () => {
+              const current = state.windows.find((w) => w.isCurrent) ?? state.windows[0]!;
+              await mergeWindowsInto(current.id);
+              setStatus(`Merged ${state.windows.length} windows into this one.`);
+            }}
+          >
+            Merge windows
+          </button>
+        )}
+      </div>
       {status && (
         <p className="pane-status" role="status">
           {status}
@@ -54,11 +76,21 @@ export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
       {state.windows.map((w, i) => {
         const label = w.isCurrent ? 'This window' : `Window ${i + 1}`;
         const savable = w.tabs.filter((t) => !t.pinned && isSavableUrl(t.url, origin)).length;
+        const loose = w.tabs.filter((t) => !t.pinned && (t.groupId ?? -1) === -1).length;
         return (
           <section key={w.id} className="window" aria-label={`${label}, ${w.tabs.length} tabs`}>
             <header className="window-header">
               <span className="window-title">{label}</span>
               <span className="count">{w.tabs.length} tabs</span>
+              <button
+                type="button"
+                className="small"
+                disabled={loose === 0}
+                title="Put this window's ungrouped tabs into a new tab group"
+                onClick={() => groupLooseTabs(w.id)}
+              >
+                Group
+              </button>
               <button
                 type="button"
                 className="primary small"
@@ -78,8 +110,37 @@ export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
               return (
                 <div key={`g-${group.id}`} className="tab-group" role="group" aria-label={`Tab group ${name}`}>
                   <header className="tab-group-header">
-                    <span className="group-dot" style={{ background: GROUP_COLORS[group.color] }} aria-hidden />
-                    <span className="tab-group-title">{name}</span>
+                    <label className="group-color" title="Group color">
+                      <span className="group-dot" style={{ background: GROUP_COLORS[group.color] }} aria-hidden />
+                      <select
+                        aria-label={`Color of ${name}`}
+                        value={group.color}
+                        onChange={(e) => updateGroup(group.id, { color: e.target.value })}
+                      >
+                        {Object.keys(GROUP_COLORS).map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <InlineEdit
+                      className="tab-group-title"
+                      label="Group name"
+                      value={group.title ?? ''}
+                      placeholder="Unnamed group"
+                      allowEmpty
+                      onSave={(t) => updateGroup(group.id, { title: t })}
+                    />
+                    <button
+                      type="button"
+                      className="icon-btn"
+                      aria-label={`Ungroup ${name}`}
+                      title="Ungroup"
+                      onClick={() => ungroup(group.id)}
+                    >
+                      ⊟
+                    </button>
                     <button
                       type="button"
                       className="small"
@@ -121,6 +182,12 @@ function OpenTabRow({
   const title = tab.title || tab.url || 'Untitled';
   const icon = tab.favIconUrl && /^(https?:|data:)/.test(tab.favIconUrl) ? tab.favIconUrl : chromeFaviconUrl(tab.url ?? '');
   const savable = isSavableUrl(tab.url, origin);
+  const { setNodeRef, attributes: dragAttrs, listeners, isDragging } = useDraggable({
+    id: dragId.tab(tab.id!),
+    data: { type: 'tab', tab },
+    disabled: !savable,
+  });
+  const { 'aria-disabled': _disabled, ...attributes } = dragAttrs; // see CardRow
 
   const saveTo = async (choice: string) => {
     setPicking(false);
@@ -132,7 +199,14 @@ function OpenTabRow({
   };
 
   return (
-    <li className={`open-tab ${tab.active ? 'active' : ''}`}>
+    <li
+      ref={setNodeRef}
+      className={`open-tab ${tab.active ? 'active' : ''} ${isDragging ? 'dragging' : ''}`}
+      {...attributes}
+      {...listeners}
+      role="listitem"
+      aria-roledescription="draggable tab"
+    >
       <button type="button" className="open-tab-main" title={tab.url} onClick={() => focusTab(tab)}>
         {icon ? <img className="favicon" src={icon} alt="" /> : <span className="favicon favicon-blank" aria-hidden />}
         <span className="open-tab-title">{title}</span>

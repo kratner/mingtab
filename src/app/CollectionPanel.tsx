@@ -1,7 +1,10 @@
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { db } from '../db/db';
-import { addCard, deleteCollection, listCards, updateCollection } from '../db/repo';
+import { addCard, deleteCollection, listCards, listCollections, mergeCollections, updateCollection } from '../db/repo';
+import { dragId, type DragData } from '../dnd/drop';
 import type { Collection } from '../db/schema';
 import { GROUP_COLORS, openCards } from '../tabs/tabs';
 import { CardRow } from './CardRow';
@@ -23,6 +26,15 @@ export function CollectionPanel({ collection, isNew }: { collection: Collection;
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [error, setError] = useState('');
+  const [merging, setMerging] = useState(false);
+  const others = useLiveQuery(
+    async () => (merging ? (await listCollections(db, collection.spaceId)).filter((c) => c.id !== collection.id) : []),
+    [merging, collection.spaceId, collection.id],
+  );
+  const { setNodeRef, setActivatorNodeRef, attributes, listeners, transform, transition, isDragging, isOver, active } =
+    useSortable({ id: dragId.collection(collection.id), data: { type: 'collection', collection } });
+  const activeType = (active?.data.current as DragData | undefined)?.type;
+  const isDropTarget = isOver && (activeType === 'card' || activeType === 'tab');
 
   const submit = async () => {
     const normalized = normalizeUrl(url);
@@ -43,8 +55,25 @@ export function CollectionPanel({ collection, isNew }: { collection: Collection;
   };
 
   return (
-    <section className="collection" data-collection-id={collection.id} aria-label={collection.title}>
+    <section
+      ref={setNodeRef}
+      style={{ transform: CSS.Translate.toString(transform), transition }}
+      className={`collection ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''}`}
+      data-collection-id={collection.id}
+      aria-label={collection.title}
+    >
       <header className="collection-header">
+        <button
+          type="button"
+          ref={setActivatorNodeRef}
+          className="icon-btn drag-handle"
+          aria-label={`Drag ${collection.title}`}
+          title="Drag to reorder or move to another space"
+          {...attributes}
+          {...listeners}
+        >
+          ⠿
+        </button>
         <button
           type="button"
           className="icon-btn"
@@ -95,12 +124,50 @@ export function CollectionPanel({ collection, isNew }: { collection: Collection;
           <button type="button" className="icon-btn" aria-label={`Add card to ${collection.title}`} onClick={() => setAdding(true)}>
             +
           </button>
+          <button
+            type="button"
+            className="icon-btn"
+            aria-label={`Merge ${collection.title} into another collection`}
+            title="Merge into…"
+            aria-expanded={merging}
+            onClick={() => setMerging(!merging)}
+          >
+            ⇲
+          </button>
           <button type="button" className="icon-btn danger" aria-label={`Delete ${collection.title}`} onClick={remove}>
             ✕
           </button>
         </div>
       </header>
 
+      {merging && (
+        <div className="merge-row">
+          <select
+            autoFocus
+            aria-label={`Merge ${collection.title} into`}
+            defaultValue=""
+            onChange={async (e) => {
+              const target = others?.find((o) => o.id === e.target.value);
+              if (target && confirm(`Move ${cards.length} card${cards.length === 1 ? '' : 's'} into "${target.title}" and delete "${collection.title}"?`)) {
+                await mergeCollections(db, collection.id, target.id);
+              }
+              setMerging(false);
+            }}
+          >
+            <option value="" disabled>
+              Merge into…
+            </option>
+            {(others ?? []).map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.title}
+              </option>
+            ))}
+          </select>
+          <button type="button" className="small" onClick={() => setMerging(false)}>
+            Cancel
+          </button>
+        </div>
+      )}
       {!collection.collapsed && (
         <>
           {adding && (
@@ -125,11 +192,13 @@ export function CollectionPanel({ collection, isNew }: { collection: Collection;
             </form>
           )}
           {cards.length > 0 ? (
-            <ul className="cards">
-              {cards.map((c) => (
-                <CardRow key={c.id} card={c} />
-              ))}
-            </ul>
+            <SortableContext items={cards.map((c) => dragId.card(c.id))} strategy={verticalListSortingStrategy}>
+              <ul className="cards">
+                {cards.map((c) => (
+                  <CardRow key={c.id} card={c} />
+                ))}
+              </ul>
+            </SortableContext>
           ) : (
             !adding && <p className="empty small">No cards yet.</p>
           )}

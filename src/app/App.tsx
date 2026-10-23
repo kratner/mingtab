@@ -7,6 +7,7 @@ import { Settings } from './Settings';
 import { SpaceNav } from './SpaceNav';
 import { SpaceView } from './SpaceView';
 import { OpenTabs } from '../tabs/OpenTabs';
+import { DndProvider } from '../dnd/DndProvider';
 import type { Surface } from './surface';
 
 export function App({ surface }: { surface: Surface }) {
@@ -91,6 +92,7 @@ export function App({ surface }: { surface: Surface }) {
               ))}
             </div>
           )}
+          <DndProvider>
           <div className="layout">
             {showSaved && spaces.length > 0 && (
               <SpaceNav surface={surface} spaces={spaces} selectedId={selected?.id ?? null} onSelect={setSelectedId} />
@@ -122,6 +124,7 @@ export function App({ surface }: { surface: Surface }) {
               <OpenTabs spaceId={selected?.id ?? null} onSpaceCreated={setSelectedId} closeOnSave={closeOnSave === 'true'} />
             )}
           </div>
+          </DndProvider>
         </>
       )}
     </div>

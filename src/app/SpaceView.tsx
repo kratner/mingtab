@@ -1,8 +1,10 @@
+import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { db } from '../db/db';
 import { createCollection, listCollections } from '../db/repo';
 import type { Space } from '../db/schema';
+import { dragId } from '../dnd/drop';
 import { CollectionPanel } from './CollectionPanel';
 
 export function SpaceView({ space }: { space: Space }) {
@@ -29,11 +31,13 @@ export function SpaceView({ space }: { space: Space }) {
       {collections.length === 0 ? (
         <p className="empty">This space is empty. Add a collection to start.</p>
       ) : (
-        <div className="collections">
-          {collections.map((c) => (
-            <CollectionPanel key={c.id} collection={c} isNew={c.id === newId} />
-          ))}
-        </div>
+        <SortableContext items={collections.map((c) => dragId.collection(c.id))} strategy={rectSortingStrategy}>
+          <div className="collections">
+            {collections.map((c) => (
+              <CollectionPanel key={c.id} collection={c} isNew={c.id === newId} />
+            ))}
+          </div>
+        </SortableContext>
       )}
     </div>
   );

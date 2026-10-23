@@ -855,3 +855,110 @@ button:disabled {
     padding: 0;
   }
 }
+
+/* ---- drag and drop (M3) ---- */
+
+.drag-handle {
+  cursor: grab;
+  padding: 2px 3px;
+  min-width: 18px;
+  letter-spacing: -1px;
+}
+
+.card,
+.open-tab {
+  touch-action: none;
+}
+
+.dragging {
+  opacity: 0.4;
+}
+
+.collection.drop-target,
+.space-link.drop-target {
+  outline: 2px dashed var(--accent-ink);
+  outline-offset: 2px;
+}
+
+.drag-overlay {
+  max-width: 280px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--accent-border);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 30%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: grabbing;
+}
+
+.drag-overlay.drag-collection {
+  font-weight: 600;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent-border);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 25%);
+  z-index: 20;
+}
+
+.merge-row {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 6px 30px;
+}
+
+.merge-row select {
+  flex: 1;
+  min-width: 0;
+}
+
+.pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pane-head .pane-title {
+  margin: 0;
+}
+
+.window-header .count {
+  margin-right: auto;
+}
+
+.window-header button,
+.tab-group-header button:last-child {
+  margin-left: 0;
+}
+
+.tab-group-header .tab-group-title {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The color picker is a native select laid invisibly over the swatch. */
+.group-color {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.group-color select {
+  position: absolute;
+  inset: -4px;
+  opacity: 0;
+  cursor: pointer;
+}
