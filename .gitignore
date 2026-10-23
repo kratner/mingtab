@@ -12,3 +12,6 @@ imports/*
 
 # Extension signing key (private). Only the public half goes in the manifest.
 .keys/
+
+# Built release zips (published on GitHub Releases)
+release/

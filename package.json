@@ -1,6 +1,6 @@
 {
   "name": "mingtab",
-  "version": "0.0.1",
+  "version": "0.6.0",
   "private": true,
   "description": "A local-first tab manager for Chrome: save, organize and restore tabs.",
   "type": "module",
@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
-    "check": "npm run typecheck && npm test && npm run e2e && npm --prefix worker test"
+    "check": "npm run typecheck && npm test && npm run e2e && npm --prefix worker test",
+    "package": "node scripts/package.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

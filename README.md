@@ -43,76 +43,51 @@ is in the extension under **Settings → About MingTab**.
 
 ## Install
 
-MingTab isn't in the Chrome Web Store. You build it from this repository and load it into
-Chrome yourself. It takes about five minutes the first time.
+MingTab isn't in the Chrome Web Store. Each release is a zip on this repository's
+[Releases page](https://github.com/kratner/mingtab/releases); you load it into Chrome yourself.
+About two minutes.
 
-### What you need
+### 1. Download and unzip
 
-| | Version | Get it |
-|---|---|---|
-| Google Chrome | Current | [google.com/chrome](https://www.google.com/chrome/) |
-| Node.js (includes npm) | **22.12 or newer** (the LTS release is fine) | [nodejs.org](https://nodejs.org/) |
-| Git | Any recent | macOS: `xcode-select --install` · Windows: [git-scm.com](https://git-scm.com/download/win) |
-| Access to this repository | | It's private: you need to be signed in to GitHub as `kratner`, or have been given access |
+Download the latest **`mingtab-<version>.zip`** from
+[Releases](https://github.com/kratner/mingtab/releases) (you need to be signed in to GitHub with
+access to this repository). Unzip it into a folder you'll keep, for example
+`~/Applications/MingTab` on a Mac or `C:\Users\<you>\MingTab` on Windows.
 
-Check what you have with `node --version` and `git --version`.
+Every copy of MingTab has the same extension ID (`jclkedgbnlmbonoihhobgnmdoehmddpo`, fixed by the
+manifest's `key`), so the folder name and location don't matter.
 
-### 1. Pick a permanent folder and get the code
-
-Chrome identifies an unpacked extension by the folder it was loaded from, and MingTab's data
-belongs to that identity. **Choose a folder you'll keep**, and update in place rather than
-moving it (see [Your data](#your-data)).
-
-macOS (Terminal):
-
-```sh
-mkdir -p ~/Projects && cd ~/Projects
-git clone git@github.com:kratner/mingtab.git
-cd mingtab
-```
-
-Windows (PowerShell):
-
-```powershell
-mkdir $HOME\Projects -Force; cd $HOME\Projects
-git clone https://github.com/kratner/mingtab.git
-cd mingtab
-```
-
-Use the `git@github.com:` address if this machine has an SSH key for your GitHub account, or
-the `https://` address to sign in through the browser instead. Either works on either system.
-
-### 2. Build
-
-```sh
-npm ci
-npm run build
-```
-
-`npm ci` installs exactly the versions in `package-lock.json`. `npm run build` writes the
-extension to the `dist` folder.
-
-### 3. Load it into Chrome
+### 2. Load it into Chrome
 
 1. Open `chrome://extensions`.
 2. Turn on **Developer mode** (top right).
-3. Click **Load unpacked** and choose the **`dist`** folder inside `mingtab`
-   (for example `~/Projects/mingtab/dist`, or `C:\Users\<you>\Projects\mingtab\dist`).
+3. Click **Load unpacked** and choose the folder you unzipped into (the one containing
+   `manifest.json`).
 4. Click the puzzle-piece icon in the toolbar and **pin MingTab**.
 
 Now:
 
-- **Click the MingTab icon** to open the side panel.
+- **Click the MingTab icon** (明) to open the side panel.
 - **Open a new tab** to see the full board.
 
-> **If Toby (or another extension) also replaces the new-tab page**, Chrome can only use one.
-> It usually goes with the most recently installed or enabled one, and may ask "Is this the new tab page you expected?".
-> Keep MingTab, or turn the other extension off in `chrome://extensions`.
+> **If Toby (or another extension) also replaces the new-tab page or uses the `to/` keyword**,
+> Chrome can only give each to one extension. Turn the other extension off in
+> `chrome://extensions`, then restart Chrome (⌘Q) if it still wins.
 
-Each Chrome profile is separate. To use MingTab in your work and personal profiles, load it in
-each one; for now each keeps its own data (see [Sync](#sync-across-machines-and-phone)).
+Other browsers: Edge, Brave and Vivaldi load the same zip from their own extensions page. See
+[BROWSERS.md](BROWSERS.md) for what's tested and what isn't.
 
-### 4. Bring over your Toby data (optional)
+### 3. Sign in to sync
+
+**Settings (⚙) → Sign in with Google**, and choose your Google account. Everything you have in
+MingTab elsewhere arrives within a minute. Do this in each Chrome profile and on each computer.
+
+### Updating
+
+Download the new zip and unzip it **over the same folder** (replace everything), then click the
+reload icon (↻) on MingTab in `chrome://extensions`. Your data stays.
+
+### Bring over your Toby data (optional)
 
 1. In Toby, open **Settings → Export** and choose **.JSON**. Save the file.
 2. *(Optional, keeps your spaces.)* Toby's export is a flat list of collections with no spaces.
@@ -126,18 +101,6 @@ each one; for now each keeps its own data (see [Sync](#sync-across-machines-and-
 
 Empty collections are skipped by default; untick **Skip empty collections** to keep them.
 Toby's note cards come across as titles only, because Toby doesn't export the note text.
-
-### Updating
-
-From the `mingtab` folder:
-
-```sh
-git pull
-npm ci
-npm run build
-```
-
-Then click the reload icon (↻) on MingTab's card in `chrome://extensions`. Your data stays.
 
 ### Uninstalling
 
@@ -183,7 +146,7 @@ site.
 | Your data survives | Your data does **not** survive |
 |---|---|
 | Restarting Chrome or the computer | Removing the extension |
-| Reloading the extension, `git pull`, rebuilding | Loading `dist` from a different folder (that's a new extension to Chrome) |
+| Reloading the extension, updating from a new zip, rebuilding | Removing the extension, then loading it again (unless you're signed in to sync, which brings everything back) |
 | Turning the extension off and on | Clearing data for the extension |
 
 **Back up**: Settings → **Download backup** saves everything as one JSON file. **Restore from
@@ -220,6 +183,31 @@ you choose to save.
 ---
 
 ## Development
+
+### Build from source
+
+Needs Node.js 22.12 or newer and access to this repository:
+
+```sh
+git clone git@github.com:kratner/mingtab.git   # or https://github.com/kratner/mingtab.git
+cd mingtab
+npm ci
+npm run build      # writes dist/; Load unpacked that folder
+```
+
+### Making a release
+
+Bump `version` in `package.json`, commit, then tag and push:
+
+```sh
+git tag v0.7.0 && git push origin v0.7.0
+```
+
+The **Release** workflow (`.github/workflows/release.yml`) checks the tag matches
+`package.json`, typechecks, runs the unit tests, builds, and publishes `mingtab-<version>.zip` on a
+GitHub Release with install notes. `npm run package` makes the same zip locally in `release/`.
+
+### Everyday commands
 
 ```sh
 npm run dev        # live-reloading build in dist/ (needs the dev server running)
