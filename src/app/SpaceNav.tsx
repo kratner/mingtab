@@ -1,0 +1,112 @@
+import { useState } from 'react';
+import { db } from '../db/db';
+import { createSpace, deleteSpace, renameSpace } from '../db/repo';
+import type { Space } from '../db/schema';
+import type { Surface } from './surface';
+
+interface Props {
+  surface: Surface;
+  spaces: Space[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+}
+
+export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
+  const [creating, setCreating] = useState(false);
+  const [name, setName] = useState('');
+  const selected = spaces.find((s) => s.id === selectedId);
+
+  const create = async () => {
+    const n = name.trim();
+    setCreating(false);
+    setName('');
+    if (n) onSelect((await createSpace(db, n)).id);
+  };
+
+  const rename = () => {
+    if (!selected) return;
+    const n = prompt('Rename space', selected.name)?.trim();
+    if (n && n !== selected.name) void renameSpace(db, selected.id, n);
+  };
+
+  const remove = () => {
+    if (selected && confirm(`Delete the space "${selected.name}" and everything in it?`)) void deleteSpace(db, selected.id);
+  };
+
+  const newSpaceForm = creating && (
+    <form
+      className="new-space"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void create();
+      }}
+    >
+      <input
+        autoFocus
+        aria-label="New space name"
+        placeholder="Space name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onBlur={() => void create()}
+        onKeyDown={(e) => e.key === 'Escape' && setCreating(false)}
+      />
+    </form>
+  );
+
+  const spaceActions = selected && (
+    <>
+      <button type="button" className="icon-btn" aria-label={`Rename ${selected.name}`} onClick={rename}>
+        ✎
+      </button>
+      <button type="button" className="icon-btn danger" aria-label={`Delete ${selected.name}`} onClick={remove}>
+        ✕
+      </button>
+    </>
+  );
+
+  if (surface === 'sidepanel') {
+    return (
+      <div className="space-select">
+        <select aria-label="Space" value={selectedId ?? ''} onChange={(e) => onSelect(e.target.value)}>
+          {spaces.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+        {spaceActions}
+        <button type="button" className="icon-btn" aria-label="New space" onClick={() => setCreating(true)}>
+          +
+        </button>
+        {newSpaceForm}
+      </div>
+    );
+  }
+
+  return (
+    <nav className="sidebar" aria-label="Spaces">
+      <div className="sidebar-head">
+        <span>Spaces</span>
+        <button type="button" className="icon-btn" aria-label="New space" onClick={() => setCreating(true)}>
+          +
+        </button>
+      </div>
+      <ul>
+        {spaces.map((s) => (
+          <li key={s.id}>
+            <button
+              type="button"
+              className={`space-link ${s.id === selectedId ? 'active' : ''}`}
+              aria-current={s.id === selectedId ? 'page' : undefined}
+              onClick={() => onSelect(s.id)}
+            >
+              {s.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+      {newSpaceForm}
+      {selected && <div className="sidebar-actions">{spaceActions}</div>}
+    </nav>
+  );
+}

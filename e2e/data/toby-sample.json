@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "lists": [
+    {
+      "title": "Research",
+      "labels": [],
+      "cards": [
+        { "title": "MDN", "url": "https://developer.mozilla.org/", "favIconUrl": "", "customTitle": "", "customDescription": "" },
+        { "title": "Chrome extensions", "url": "https://developer.chrome.com/docs/extensions", "favIconUrl": "", "customTitle": "Extension docs", "customDescription": "MV3 reference" }
+      ]
+    },
+    { "title": "Empty", "labels": [], "cards": [] },
+    {
+      "title": "Later",
+      "labels": [],
+      "cards": [
+        { "title": "Example", "url": "https://example.com/", "favIconUrl": "", "customTitle": "", "customDescription": "" }
+      ]
+    }
+  ]
+}

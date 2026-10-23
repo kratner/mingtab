@@ -1,0 +1,45 @@
+// Every record carries sync metadata from day one so a sync server can be
+// added later without migrating data: stable UUIDs, updatedAt for
+// last-writer-wins, and deletedAt tombstones instead of hard deletes.
+export interface Base {
+  id: string;
+  createdAt: number;
+  updatedAt: number;
+  deletedAt: number | null;
+}
+
+export interface Space extends Base {
+  name: string;
+  /** Fractional-index key; sort ascending as strings. */
+  position: string;
+}
+
+export interface Collection extends Base {
+  spaceId: string;
+  title: string;
+  position: string;
+  starred: boolean;
+  collapsed: boolean;
+  tagIds: string[];
+}
+
+export interface Card extends Base {
+  collectionId: string;
+  url: string;
+  /** Page title captured when the tab was saved. */
+  title: string;
+  /** User override of the title; shown instead of `title` when set. */
+  customTitle: string;
+  note: string;
+  /** Icon captured at save time (http URL or data URI). Rendering prefers Chrome's favicon cache. */
+  favIconUrl: string;
+  position: string;
+}
+
+export interface Tag extends Base {
+  name: string;
+  color: string;
+}
+
+export const displayTitle = (card: Pick<Card, 'customTitle' | 'title' | 'url'>) =>
+  card.customTitle || card.title || card.url;
