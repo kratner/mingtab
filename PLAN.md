@@ -116,7 +116,7 @@ done, Keith also loads it unpacked in his own Chrome.
 
 | # | Scope | Done when |
 |---|---|---|
-| **M0** | Scaffold: Vite + CRXJS + React + TS, manifest, side panel, new tab, Vitest + Playwright wired up | `npm run build` gives a loadable `dist/`; an e2e smoke test opens the side panel and sees the app |
+| **M0** ✅ 2026-10-22 | Scaffold: Vite + CRXJS + React + TS, manifest, side panel, new tab, Vitest + Playwright wired up | `npm run build` gives a loadable `dist/`; an e2e smoke test opens the side panel and sees the app. *Passed: typecheck, 2 unit, 3 e2e (side panel renders, new tab overridden, toolbar opens side panel). Awaiting Keith's load-unpacked check.* |
 | **M1** | Spaces / collections / cards CRUD, notes, custom titles, dark/light theme, JSON export/import, **Toby import** | Import of Keith's Toby export shows 86 collections / 454 cards (or the export's true counts) with titles, notes and spaces intact; export → wipe → import round-trips identically |
 | **M2** | Open-tabs pane, save window as session (close/keep), save + restore tab group with color, open card/collection | e2e: open 5 tabs → save → tabs closed → collection has 5 cards → restore → same 5 URLs open; tab group comes back in the same color |
 | **M3** | Drag and drop (tab → collection, card ↔ collection, reorder, merge collections), tab-group controls, merge windows | e2e drag tests; position strings stay ordered after 100 random moves (unit) |
