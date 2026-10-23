@@ -1,43 +1,257 @@
 # MingTab
 
-A local-first tab manager for Chrome: save windows as collections, organize them into spaces,
-and restore them later. A personal replacement for Toby. See [PLAN.md](PLAN.md) for the feature
-evaluation and milestones.
+**A tab manager for Chrome that keeps your tab bar clear.** Save whole windows as collections,
+organize them into spaces, and bring them back when you need them. MingTab is a personal
+replacement for [Toby](https://www.gettoby.com/) that keeps everything on your own machine.
+
+![The MingTab board: spaces on the left, collections in the middle, open tabs on the right](docs/images/board-dark.png)
 
 The name comes from *mingtang* (明堂, "bright hall"), the open, uncluttered space in front of a
-building in feng shui. A cleared tab bar is the bright hall; MingTab keeps it clear.
+building in feng shui, where energy gathers. A cleared tab bar is the bright hall.
 
-## Load it in Chrome
+## What it does
+
+- **Save tabs without losing them.** Save a window, a tab group or a single tab as a collection.
+  Saving closes the tabs by default (you can keep them open instead).
+- **Organize.** Spaces hold collections, and collections hold cards. Drag to reorder, move cards
+  between collections, or drop a collection onto another space. Tag, star, sort and merge
+  collections.
+- **Bring them back.** Open one card, or a whole collection at once. A collection saved from a
+  tab group reopens as a tab group with the same name and color.
+- **Find anything.** One search across everything you've saved, your open tabs and (if you turn
+  it on) your browsing history.
+- **Tidy up.** Find pages saved more than once and remove the extra copies.
+- **Manage open tabs.** See every window and tab group, rename and recolor groups, and merge all
+  windows into one.
+- **Import from Toby**, including which space each collection was in.
+- **Light and dark themes**, in a black-and-yellow KR scheme or a terracotta one.
+
+| Board in light mode | Side panel | Search |
+|---|---|---|
+| ![Board, light theme](docs/images/board-light.png) | ![Side panel](docs/images/sidepanel.png) | ![Search results for "lisbon"](docs/images/search.png) |
+
+---
+
+## Install
+
+MingTab isn't in the Chrome Web Store. You build it from this repository and load it into
+Chrome yourself. It takes about five minutes the first time.
+
+### What you need
+
+| | Version | Get it |
+|---|---|---|
+| Google Chrome | Current | [google.com/chrome](https://www.google.com/chrome/) |
+| Node.js (includes npm) | **22.12 or newer** (the LTS release is fine) | [nodejs.org](https://nodejs.org/) |
+| Git | Any recent | macOS: `xcode-select --install` · Windows: [git-scm.com](https://git-scm.com/download/win) |
+| Access to this repository | | It's private: you need to be signed in to GitHub as `kratner`, or have been given access |
+
+Check what you have with `node --version` and `git --version`.
+
+### 1. Pick a permanent folder and get the code
+
+Chrome identifies an unpacked extension by the folder it was loaded from, and MingTab's data
+belongs to that identity. **Choose a folder you'll keep**, and update in place rather than
+moving it (see [Your data](#your-data)).
+
+macOS (Terminal):
 
 ```sh
-npm install
+mkdir -p ~/Projects && cd ~/Projects
+git clone git@github.com:kratner/mingtab.git
+cd mingtab
+```
+
+Windows (PowerShell):
+
+```powershell
+mkdir $HOME\Projects -Force; cd $HOME\Projects
+git clone https://github.com/kratner/mingtab.git
+cd mingtab
+```
+
+Use the `git@github.com:` address if this machine has an SSH key for your GitHub account, or
+the `https://` address to sign in through the browser instead. Either works on either system.
+
+### 2. Build
+
+```sh
+npm ci
 npm run build
 ```
 
-Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and pick
-the `dist/` folder. Click the MingTab toolbar icon to open the side panel; new tabs open the board.
+`npm ci` installs exactly the versions in `package-lock.json`. `npm run build` writes the
+extension to the `dist` folder.
 
-For live reload while developing, run `npm run dev` and load `dist/` the same way.
+### 3. Load it into Chrome
 
-## Checks
+1. Open `chrome://extensions`.
+2. Turn on **Developer mode** (top right).
+3. Click **Load unpacked** and choose the **`dist`** folder inside `mingtab`
+   (for example `~/Projects/mingtab/dist`, or `C:\Users\<you>\Projects\mingtab\dist`).
+4. Click the puzzle-piece icon in the toolbar and **pin MingTab**.
+
+Now:
+
+- **Click the MingTab icon** to open the side panel.
+- **Open a new tab** to see the full board.
+
+> **If Toby (or another extension) also replaces the new-tab page**, Chrome can only use one.
+> It usually goes with the most recently installed or enabled one, and may ask "Is this the new tab page you expected?".
+> Keep MingTab, or turn the other extension off in `chrome://extensions`.
+
+Each Chrome profile is separate. To use MingTab in your work and personal profiles, load it in
+each one; for now each keeps its own data (see [Sync](#sync-across-machines-and-phone)).
+
+### 4. Bring over your Toby data (optional)
+
+1. In Toby, open **Settings → Export** and choose **.JSON**. Save the file.
+2. *(Optional, keeps your spaces.)* Toby's export is a flat list of collections with no spaces.
+   To keep them, sign in at [web.gettoby.com](https://web.gettoby.com), open the browser's
+   DevTools console (⌥⌘J on Mac, Ctrl+Shift+J on Windows), paste the contents of
+   [`scripts/toby-space-map.js`](scripts/toby-space-map.js) and press Enter. It downloads
+   `toby-space-map.json`. The script only reads; it sends nothing anywhere and changes nothing
+   in Toby.
+3. In MingTab, open **Settings (⚙) → Import from Toby**, choose the export and, if you made one,
+   the space map. Check the preview's counts, then click **Import**.
+
+Empty collections are skipped by default; untick **Skip empty collections** to keep them.
+Toby's note cards come across as titles only, because Toby doesn't export the note text.
+
+### Updating
+
+From the `mingtab` folder:
+
+```sh
+git pull
+npm ci
+npm run build
+```
+
+Then click the reload icon (↻) on MingTab's card in `chrome://extensions`. Your data stays.
+
+### Uninstalling
+
+**Download a backup first** (Settings → Backup): removing the extension deletes its data.
+Then click **Remove** on MingTab in `chrome://extensions`.
+
+---
+
+## Using MingTab
+
+| To | Do this |
+|---|---|
+| Save a whole window | Open tabs pane → **Save window** |
+| Save a tab group | Open tabs pane → **Save group** on the group |
+| Save one tab | Hover it in the open tabs pane → **⤓** → pick a collection, or drag it onto one (board only) |
+| Reopen a collection | **⧉** in its header (a saved tab group comes back as a group) |
+| Search | Type in the search box, or press **/** from anywhere. **Esc** clears. |
+| Reorder | Drag a collection by **⠿**, or drag a card. Keyboard: focus it, **Space**, arrow keys, **Space**. |
+| Move a collection to another space | Drag its **⠿** onto the space in the sidebar |
+| Tag a collection | **#** in its header |
+| Merge two collections | **⇲** in the header of the one to merge away |
+| See starred collections | **★ Starred** at the top of the spaces list |
+| Remove duplicates | Settings → **Find duplicates** (nothing is removed until you confirm) |
+| Keep tabs open when saving | Settings → untick **Close tabs after saving** |
+
+Pinned tabs are never saved with a window or closed.
+
+---
+
+## Your data
+
+Everything is stored **locally, inside the extension, in the Chrome profile you loaded it into**
+(IndexedDB, plus a few display preferences in local storage). MingTab has no server and your
+collections never leave the machine. The only network requests are site icons: Chrome's own
+icon cache comes first, and if it doesn't have one, the icon saved with the card loads from that
+site.
+
+| Your data survives | Your data does **not** survive |
+|---|---|
+| Restarting Chrome or the computer | Removing the extension |
+| Reloading the extension, `git pull`, rebuilding | Loading `dist` from a different folder (that's a new extension to Chrome) |
+| Turning the extension off and on | Clearing data for the extension |
+
+**Back up**: Settings → **Download backup** saves everything as one JSON file. **Restore from
+backup** replaces what's in MingTab with the file's contents.
+
+### Sync across machines and phone
+
+Not built yet. Today each Chrome profile on each machine has its own MingTab. The design (a
+small sync service on your own Cloudflare account, and a web app for the phone, since Chrome on
+phones doesn't run extensions) is in [SYNC.md](SYNC.md). Until then, move data between machines
+with **Download backup** and **Restore from backup**.
+
+### Permissions
+
+| Permission | Why |
+|---|---|
+| `tabs`, `tabGroups` | List open tabs and groups, save them, reopen them, group/ungroup |
+| `sidePanel` | Open MingTab in Chrome's side panel |
+| `storage`, `unlimitedStorage` | Keep your collections locally, without Chrome's size cap |
+| `favicon` | Show site icons from Chrome's own cache (no third-party icon service) |
+| `history` (optional) | Only if you turn on history search; Chrome asks first |
+| New-tab page override | Show the board on new tabs |
+
+MingTab never reads the content of the pages you visit, only the title, address and icon of tabs
+you choose to save.
+
+---
+
+## Development
+
+```sh
+npm run dev        # live-reloading build in dist/ (needs the dev server running)
+npm run build      # production build in dist/
+npm run check      # typecheck + unit tests + browser tests
+```
+
+`npm run dev` makes a build that loads code from a local dev server. Run `npm run build` again
+before using MingTab day to day, or it stops working when the dev server isn't running.
 
 | Command | What it runs |
 |---|---|
-| `npm run typecheck` | TypeScript, no emit |
-| `npm test` | Vitest unit tests (`src/**/*.test.ts`) |
-| `npm run e2e` | Builds, then Playwright loads `dist/` into Chromium and drives it |
+| `npm run typecheck` | TypeScript, no output |
+| `npm test` | Unit tests (Vitest): data layer, import, search, duplicates, drag-and-drop logic |
+| `npm run e2e` | Builds, then Playwright loads `dist/` into Chromium and drives it: saving windows and tab groups, drag and drop, import, search, layout at phone-to-desktop widths |
 | `npm run check` | All three |
 
-First run of the e2e tests needs `npx playwright install chromium`.
+The first browser-test run needs `npx playwright install chromium`. Tests that use a real Toby
+export run only when one is present in `imports/`, a folder git ignores.
 
-## Branding
+**Stack:** TypeScript, React, Vite with [CRXJS](https://crxjs.dev/) (Manifest V3), Dexie
+(IndexedDB), dnd-kit (drag and drop), Vitest, Playwright.
 
-KR palette: `#FFF200` yellow on black, tight corner radius, from Keith's KR GitHub mark. The UI has
-two color schemes (Settings → Appearance): **KR** (default) and **Terracotta**, each in light
-and dark.
+```
+src/
+  app/        UI: board, side panel, collections, cards, settings
+  db/         records, database, ordering (fractional positions), create/edit/delete
+  dnd/        drag-and-drop rules (what can drop where) and the drag context
+  import/     Toby import, MingTab backup/restore
+  search/     search index and results
+  dedupe/     duplicate detection
+  tabs/       Chrome tabs, windows and tab groups; the open-tabs pane
+  background.ts, sidepanel/, newtab/
+e2e/          Playwright tests and fixtures
+scripts/      toby-space-map.js, README screenshots, original icon script
+branding/     icon concepts, render script, UI screenshots
+```
 
-Icon concepts live in `branding/icons/*.svg`. `node branding/render.mjs` renders them and a
-comparison sheet (`branding/preview/sheet.png`, 128/32/16 px on dark and light);
-`node branding/render.mjs --ship <name>` writes the chosen one to `public/icons/`.
-`node branding/screenshots.mjs` (after `npm run build`) captures the UI in every scheme.
-The original terracotta icon script is `scripts/make-icons.py`.
+Every record carries a UUID, `updatedAt`, a `deletedAt` tombstone and a fractional position, so
+sync can be added without migrating data.
+
+**Screenshots** in this README come from demo data, never personal collections:
+`npm run build && node scripts/readme-screenshots.mjs`.
+
+**Branding**: KR palette (`#FFF200` on black, from the KR mark). Icon concepts are in
+`branding/icons/`; `node branding/render.mjs` renders a comparison sheet, and
+`node branding/render.mjs --ship <name>` installs one as the extension icon.
+
+## Roadmap
+
+[PLAN.md](PLAN.md) has the full feature comparison with Toby and the milestones:
+
+- ✅ M0 scaffold · M1 spaces, collections, Toby import · M2 saving windows and tab groups ·
+  M3 drag and drop · M4 search, tags, duplicates
+- ⏳ M5 "Next" reading queue, `to/` address-bar shortcuts, richer notes
+- ⏳ Sync across machines, a phone web app ([SYNC.md](SYNC.md))

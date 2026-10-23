@@ -1,0 +1,99 @@
+{
+  "version": 3,
+  "lists": [
+    {
+      "title": "October release",
+      "labels": [],
+      "cards": [
+        {
+          "title": "October release plan - Google Docs",
+          "url": "https://docs.google.com/document/d/demo",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": "Needs a final read"
+        },
+        {
+          "title": "Checkout redirect fix \u00b7 Pull Request #482 \u00b7 GitHub",
+          "url": "https://github.com/example/web/pull/482",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": "Ship before the freeze"
+        },
+        {
+          "title": "Landing page v3 \u2013 Figma",
+          "url": "https://www.figma.com/file/demo",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        }
+      ]
+    },
+    {
+      "title": "Lisbon trip",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Lisbon - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Lisbon",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "Lisbon Travel 2026 - Lonely Planet",
+          "url": "https://www.lonelyplanet.com/portugal/lisbon",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": "Book Alfama walking tour"
+        },
+        {
+          "title": "Flights to Portugal",
+          "url": "https://www.google.com/travel/flights",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        }
+      ]
+    },
+    {
+      "title": "Reading",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Array.prototype.flat() - JavaScript | MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "Chrome Extensions: side panel",
+          "url": "https://developer.chrome.com/docs/extensions/reference/api/sidePanel",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        }
+      ]
+    },
+    {
+      "title": "Team docs",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Customer survey results - Google Sheets",
+          "url": "https://docs.google.com/spreadsheets/d/demo",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": "Not cleaned up yet"
+        },
+        {
+          "title": "Competitor teardown - Google Slides",
+          "url": "https://docs.google.com/presentation/d/demo",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        }
+      ]
+    }
+  ]
+}

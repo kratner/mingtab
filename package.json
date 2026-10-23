@@ -4,6 +4,9 @@
   "private": true,
   "description": "A local-first tab manager for Chrome: save, organize and restore tabs.",
   "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
