@@ -4,3 +4,7 @@ test-results/
 playwright-report/
 *.local
 .DS_Store
+
+# Personal data exports (Toby etc.) — never commit
+imports/*
+!imports/.gitkeep
