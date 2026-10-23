@@ -16,6 +16,8 @@ export function App({ surface }: { surface: Surface }) {
   const [scheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'kr');
   const [closeOnSave, setCloseOnSave] = usePref<'true' | 'false'>('mingtab.closeOnSave', 'true');
   const [view, setView] = useState<'board' | 'settings'>('board');
+  // Board below 1100px: open-tabs pane is a drawer.
+  const [paneOpen, setPaneOpen] = useState(false);
   // The side panel is narrow, so it shows saved collections or open tabs, not both.
   const [pane, setPane] = usePref<'saved' | 'open'>('mingtab.sidepanelPane', 'saved');
 
@@ -32,11 +34,21 @@ export function App({ surface }: { surface: Surface }) {
   const showOpen = surface === 'newtab' || pane === 'open';
 
   return (
-    <div className="app" data-surface={surface}>
+    <div className="app" data-surface={surface} data-pane-open={paneOpen}>
       <header className="app-header">
         <img className="brand-mark" src="/icons/icon-32.png" alt="" />
         <h1>MingTab</h1>
         <span className="surface-tag">{surface === 'newtab' ? 'Board' : 'Side panel'}</span>
+        {surface === 'newtab' && view === 'board' && (
+          <button
+            type="button"
+            className="small pane-toggle"
+            aria-expanded={paneOpen}
+            onClick={() => setPaneOpen(!paneOpen)}
+          >
+            Open tabs
+          </button>
+        )}
         <button
           type="button"
           className="icon-btn header-settings"

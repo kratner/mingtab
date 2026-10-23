@@ -33,7 +33,14 @@ export function CardRow({ card }: { card: Card }) {
               {title} <span className="badge">note</span>
             </span>
           ) : (
-            <a className="card-title" href={card.url} target="_blank" rel="noreferrer" title={card.url}>
+            <a
+              className="card-title"
+              href={card.url}
+              target="_blank"
+              rel="noreferrer"
+              draggable={false}
+              title={title === card.url ? card.url : `${title}\n${card.url}`}
+            >
               {title}
             </a>
           )}

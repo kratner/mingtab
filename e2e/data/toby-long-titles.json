@@ -1,0 +1,45 @@
+{
+  "version": 3,
+  "lists": [
+    {
+      "title": "Work with a very long collection title that keeps going and going beyond any sensible width",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Anchor Software: Address Validation and Data Quality Solutions for Enterprise Customers Worldwide",
+          "url": "https://anchorcomputersoftware.com/",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "",
+          "url": "https://internal.anchorcomputersoftware.com/asp/dnn-download-updates/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "Short",
+          "url": "https://example.com/",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": "A note that is also rather long and should wrap inside the card instead of pushing it wider than the panel yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+        }
+      ]
+    },
+    {
+      "title": "Second",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Trello",
+          "url": "https://trello.com/",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        }
+      ]
+    }
+  ]
+}
