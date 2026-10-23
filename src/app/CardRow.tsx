@@ -173,7 +173,7 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
           </label>
           {!isNote && (
             <label>
-              Shortcut: type <b>to</b> then this in the address bar
+              Shortcut: type <b>to/</b>, Space, then this in the address bar
               <span className="shortcut-input">
                 <span aria-hidden>to/</span>
                 <input aria-label="Shortcut" value={shortcut} placeholder="docs" onChange={(e) => setShortcut(e.target.value)} />

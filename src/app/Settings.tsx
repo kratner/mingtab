@@ -439,8 +439,9 @@ function Shortcuts() {
     <section className="settings-section" aria-labelledby="shortcuts-heading">
       <h3 id="shortcuts-heading">Address-bar shortcuts</h3>
       <p className="muted">
-        Type <b>to</b>, a space, then a shortcut in Chrome's address bar to open that card: <code>to docs</code>. Give a
-        card a shortcut from its edit form (✎).
+        Type <b>to/</b> in Chrome's address bar, press Space, then a shortcut to open that card: <code>to/ docs</code>.
+        Give a card a shortcut from its edit form (✎). If Toby is also installed it owns <b>to/</b> too: turn Toby off
+        in chrome://extensions.
       </p>
       {cards && cards.length > 0 && (
         <ul className="shortcut-list">

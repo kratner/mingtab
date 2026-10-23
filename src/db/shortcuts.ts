@@ -1,7 +1,7 @@
 import type { MingTabDB } from './db';
 import { displayTitle, type Card } from './schema';
 
-// to/<shortcut>: a short name on a card, typed after the "to" keyword in
+// to/<shortcut>: a short name on a card, typed after the "to/" keyword in
 // Chrome's address bar. Lowercase letters, digits and - _ . / only.
 
 export class ShortcutError extends Error {}

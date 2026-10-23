@@ -28,8 +28,10 @@ export default defineManifest({
   side_panel: {
     default_path: 'src/sidepanel/index.html',
   },
-  // "to docs" in the address bar opens the card with shortcut "docs".
-  omnibox: { keyword: 'to' },
+  // "to/" then "docs" in the address bar opens the card with shortcut "docs".
+  // Same keyword as Toby's To/Links, so the habit carries over (only one
+  // extension can own it: turn Toby off).
+  omnibox: { keyword: 'to/' },
   chrome_url_overrides: {
     newtab: 'src/newtab/index.html',
   },

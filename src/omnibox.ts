@@ -1,8 +1,8 @@
 import type { MingTabDB } from './db/db';
 import { findByShortcut, suggestShortcuts } from './db/shortcuts';
 
-// "to" in Chrome's address bar: "to docs" opens the card whose shortcut is
-// "docs". Suggestions list matching shortcuts, then matching card titles.
+// "to/" in Chrome's address bar: "to/" then "docs" opens the card whose
+// shortcut is "docs". Suggestions list matching shortcuts, then matching card titles.
 // Anything else opens MingTab with a search for what was typed.
 
 const xml = (s: string) => s.replace(/[&<>"']/g, (c) => `&${{ '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot', "'": 'apos' }[c]};`);

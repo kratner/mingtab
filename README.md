@@ -30,7 +30,7 @@ is in the extension under **Settings → About MingTab**.
   windows into one.
 - **Import from Toby**, including which space each collection was in.
 - **Next, notes and shortcuts.** A to-read queue, notes with checklists, and `to docs`-style
-  shortcuts in the address bar.
+  shortcuts in the address bar (`to/ docs`).
 - **Sync** across Chrome profiles and computers, through a small sync service on your own
   Cloudflare account, signed in with Google.
 - **Light and dark themes**, in a black-and-yellow KR scheme or a terracotta one.
@@ -162,7 +162,7 @@ Then click **Remove** on MingTab in `chrome://extensions`.
 | See starred collections | **★ Starred** at the top of the spaces list |
 | Line up what to read next | **▶** on a card or an open tab; then **▶ Next** at the top of the spaces list. Tick items off, drag to reorder. |
 | Write a note | **✎** in a collection's header. `- [ ] task` makes a checklist; `**bold**`, `*italic*` and links work. |
-| Jump to a page from the address bar | Give a card a shortcut (✎ → Shortcut), then type **to**, a space, and the shortcut: `to docs`. All shortcuts are listed in Settings. |
+| Jump to a page from the address bar | Give a card a shortcut (✎ → Shortcut), then type **to/**, press Space, and type the shortcut: `to/ docs`. All shortcuts are listed in Settings. Toby uses the same keyword, so turn Toby off. |
 | Use a popup instead of the side panel | Settings → **Toolbar button** |
 | Sync another profile or computer | Settings → **Sign in with Google** |
 | Remove duplicates | Settings → **Find duplicates** (nothing is removed until you confirm) |
@@ -211,7 +211,7 @@ The phone version (a web app, since Chrome on phones doesn't run extensions) is 
 | `identity` | Google sign-in for sync |
 | `alarms` | Sync every minute |
 | Access to `mingtab-sync.mingtab-sync.workers.dev` | The sync service, and no other site |
-| Address-bar keyword `to` | `to docs` opens your shortcut |
+| Address-bar keyword `to/` | `to/ docs` opens your shortcut (Toby's keyword too: only one can have it) |
 | New-tab page override | Show the board on new tabs |
 
 MingTab never reads the content of the pages you visit, only the title, address and icon of tabs
