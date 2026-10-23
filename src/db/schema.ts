@@ -21,6 +21,9 @@ export interface Collection extends Base {
   starred: boolean;
   collapsed: boolean;
   tagIds: string[];
+  /** Set when the collection was saved from a Chrome tab group; reopening
+   * recreates the group in this color. Absent on older records. */
+  groupColor?: string | null;
 }
 
 export interface Card extends Base {

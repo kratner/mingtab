@@ -1,5 +1,5 @@
 import type { MingTabDB } from './db';
-import { positionAfterLast } from './position';
+import { initialPositions, positionAfterLast, positionBeforeFirst } from './position';
 import type { Card, Collection, Space } from './schema';
 
 const now = () => Date.now();
@@ -66,10 +66,51 @@ export async function createCollection(db: MingTabDB, spaceId: string, title: st
   return collection;
 }
 
+/**
+ * Creates a collection already filled with cards, in one transaction. Used
+ * when saving windows and tab groups; `atTop` puts it first in the space.
+ */
+export async function createCollectionWithCards(
+  db: MingTabDB,
+  spaceId: string,
+  title: string,
+  cards: NewCard[],
+  opts: { atTop?: boolean; groupColor?: string | null } = {},
+): Promise<Collection> {
+  return db.transaction('rw', db.collections, db.cards, async () => {
+    const siblings = await listCollections(db, spaceId);
+    const collection: Collection = {
+      ...base(),
+      spaceId,
+      title,
+      position: opts.atTop ? positionBeforeFirst(siblings) : positionAfterLast(siblings),
+      starred: false,
+      collapsed: false,
+      tagIds: [],
+      groupColor: opts.groupColor ?? null,
+    };
+    await db.collections.add(collection);
+    const positions = initialPositions(cards.length);
+    await db.cards.bulkAdd(
+      cards.map((c, i) => ({
+        ...base(),
+        collectionId: collection.id,
+        url: c.url,
+        title: c.title ?? '',
+        customTitle: c.customTitle ?? '',
+        note: c.note ?? '',
+        favIconUrl: c.favIconUrl ?? '',
+        position: positions[i]!,
+      })),
+    );
+    return collection;
+  });
+}
+
 export const updateCollection = (
   db: MingTabDB,
   id: string,
-  changes: Partial<Pick<Collection, 'title' | 'starred' | 'collapsed' | 'tagIds' | 'spaceId' | 'position'>>,
+  changes: Partial<Pick<Collection, 'title' | 'starred' | 'collapsed' | 'tagIds' | 'spaceId' | 'position' | 'groupColor'>>,
 ) => db.collections.update(id, { ...changes, updatedAt: now() });
 
 async function softDeleteCollection(db: MingTabDB, id: string, t: number) {

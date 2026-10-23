@@ -6,6 +6,7 @@ import { applyTheme, usePref, type Scheme, type Theme } from './prefs';
 import { Settings } from './Settings';
 import { SpaceNav } from './SpaceNav';
 import { SpaceView } from './SpaceView';
+import { OpenTabs } from '../tabs/OpenTabs';
 import type { Surface } from './surface';
 
 export function App({ surface }: { surface: Surface }) {
@@ -13,7 +14,10 @@ export function App({ surface }: { surface: Surface }) {
   const [selectedId, setSelectedId] = usePref<string>('mingtab.space', '');
   const [theme, setTheme] = usePref<Theme>('mingtab.theme', 'system');
   const [scheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'kr');
+  const [closeOnSave, setCloseOnSave] = usePref<'true' | 'false'>('mingtab.closeOnSave', 'true');
   const [view, setView] = useState<'board' | 'settings'>('board');
+  // The side panel is narrow, so it shows saved collections or open tabs, not both.
+  const [pane, setPane] = usePref<'saved' | 'open'>('mingtab.sidepanelPane', 'saved');
 
   useEffect(() => applyTheme(theme, scheme), [theme, scheme]);
 
@@ -24,6 +28,8 @@ export function App({ surface }: { surface: Surface }) {
   }, [selected, selectedId, setSelectedId]);
 
   if (!spaces) return null;
+  const showSaved = surface === 'newtab' || pane === 'saved';
+  const showOpen = surface === 'newtab' || pane === 'open';
 
   return (
     <div className="app" data-surface={surface}>
@@ -49,29 +55,62 @@ export function App({ surface }: { surface: Surface }) {
             onTheme={setTheme}
             scheme={scheme}
             onScheme={setScheme}
+            closeOnSave={closeOnSave === 'true'}
+            onCloseOnSave={(v) => setCloseOnSave(v ? 'true' : 'false')}
             hasData={spaces.length > 0}
             onDone={() => setView('board')}
           />
         </main>
-      ) : spaces.length === 0 ? (
-        <main className="app-main">
-          <div className="welcome">
-            <p className="empty">Your bright hall is clear. Saved collections will appear here.</p>
-            <div className="row">
-              <button type="button" className="primary" onClick={async () => setSelectedId((await createSpace(db, 'My Collections')).id)}>
-                Create a space
-              </button>
-              <button type="button" onClick={() => setView('settings')}>
-                Import from Toby
-              </button>
-            </div>
-          </div>
-        </main>
       ) : (
-        <div className="layout">
-          <SpaceNav surface={surface} spaces={spaces} selectedId={selected?.id ?? null} onSelect={setSelectedId} />
-          <main className="app-main">{selected && <SpaceView key={selected.id} space={selected} />}</main>
-        </div>
+        <>
+          {surface === 'sidepanel' && (
+            <div className="pane-switch" role="tablist" aria-label="Side panel view">
+              {(['saved', 'open'] as const).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  role="tab"
+                  aria-selected={pane === p}
+                  className={pane === p ? 'active' : ''}
+                  onClick={() => setPane(p)}
+                >
+                  {p === 'saved' ? 'Saved' : 'Open tabs'}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="layout">
+            {showSaved && spaces.length > 0 && (
+              <SpaceNav surface={surface} spaces={spaces} selectedId={selected?.id ?? null} onSelect={setSelectedId} />
+            )}
+            {showSaved && (
+              <main className="app-main">
+                {selected ? (
+                  <SpaceView key={selected.id} space={selected} />
+                ) : (
+                  <div className="welcome">
+                    <p className="empty">Your bright hall is clear. Saved collections will appear here.</p>
+                    <div className="row">
+                      <button
+                        type="button"
+                        className="primary"
+                        onClick={async () => setSelectedId((await createSpace(db, 'My Collections')).id)}
+                      >
+                        Create a space
+                      </button>
+                      <button type="button" onClick={() => setView('settings')}>
+                        Import from Toby
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </main>
+            )}
+            {showOpen && (
+              <OpenTabs spaceId={selected?.id ?? null} onSpaceCreated={setSelectedId} closeOnSave={closeOnSave === 'true'} />
+            )}
+          </div>
+        </>
       )}
     </div>
   );

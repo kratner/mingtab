@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { db } from '../db/db';
 import { addCard, deleteCollection, listCards, updateCollection } from '../db/repo';
 import type { Collection } from '../db/schema';
+import { GROUP_COLORS, openCards } from '../tabs/tabs';
 import { CardRow } from './CardRow';
 import { InlineEdit } from './InlineEdit';
 
@@ -60,8 +61,28 @@ export function CollectionPanel({ collection, isNew }: { collection: Collection;
           startEditing={isNew}
           onSave={(t) => updateCollection(db, collection.id, { title: t })}
         />
+        {collection.groupColor && (
+          <span
+            className="group-dot"
+            style={{ background: GROUP_COLORS[collection.groupColor] }}
+            title={`Reopens as a ${collection.groupColor} tab group`}
+            aria-hidden
+          />
+        )}
         <span className="count">{cards.length}</span>
         <div className="collection-actions">
+          <button
+            type="button"
+            className="icon-btn"
+            aria-label={`Open all in ${collection.title}`}
+            title={collection.groupColor ? 'Open all as a tab group' : 'Open all'}
+            disabled={!cards.some((c) => c.url)}
+            onClick={() =>
+              openCards(cards, collection.groupColor ? { title: collection.title, color: collection.groupColor } : null)
+            }
+          >
+            ⧉
+          </button>
           <button
             type="button"
             className={`icon-btn ${collection.starred ? 'starred' : ''}`}

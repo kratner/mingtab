@@ -586,3 +586,165 @@ a.card-title:hover {
   padding-left: 18px;
   color: var(--muted);
 }
+
+/* ---- open tabs (M2) ---- */
+
+button.small {
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.open-tabs {
+  padding: 12px;
+  min-width: 0;
+}
+
+.app[data-surface='newtab'] .open-tabs {
+  width: 320px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+}
+
+.pane-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pane-status {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  font-size: 12px;
+}
+
+.window {
+  margin-bottom: 14px;
+}
+
+.window-header,
+.tab-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.window-title {
+  font-weight: 600;
+}
+
+.window-header button,
+.tab-group-header button {
+  margin-left: auto;
+}
+
+.tab-group {
+  margin: 6px 0;
+  padding-left: 6px;
+  border-left: 2px solid var(--border);
+}
+
+.tab-group-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.group-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tab-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.open-tab {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+}
+
+.open-tab:hover {
+  background: var(--surface-2);
+}
+
+.open-tab.active .open-tab-title {
+  font-weight: 600;
+}
+
+.open-tab-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.open-tab-main:hover {
+  background: none;
+}
+
+.open-tab-main .favicon {
+  margin-top: 0;
+}
+
+.open-tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.open-tab select {
+  max-width: 150px;
+  font-size: 12px;
+}
+
+.open-tab .icon-btn {
+  opacity: 0;
+}
+
+.open-tab:hover .icon-btn,
+.open-tab:focus-within .icon-btn {
+  opacity: 1;
+}
+
+.pane-switch {
+  display: flex;
+  gap: 4px;
+  padding: 10px 16px 0;
+}
+
+.pane-switch button {
+  flex: 1;
+}
+
+.pane-switch button.active {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--accent-text);
+}

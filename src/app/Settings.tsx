@@ -18,6 +18,8 @@ interface Props {
   onTheme: (t: Theme) => void;
   scheme: Scheme;
   onScheme: (s: Scheme) => void;
+  closeOnSave: boolean;
+  onCloseOnSave: (v: boolean) => void;
   hasData: boolean;
   onDone: () => void;
 }
@@ -27,7 +29,7 @@ const SCHEMES: { id: Scheme; label: string }[] = [
   { id: 'terracotta', label: 'Terracotta' },
 ];
 
-export function Settings({ theme, onTheme, scheme, onScheme, hasData, onDone }: Props) {
+export function Settings({ theme, onTheme, scheme, onScheme, closeOnSave, onCloseOnSave, hasData, onDone }: Props) {
   return (
     <div className="settings">
       <div className="space-toolbar">
@@ -55,6 +57,15 @@ export function Settings({ theme, onTheme, scheme, onScheme, hasData, onDone }: 
             </label>
           ))}
         </div>
+      </section>
+
+      <section className="settings-section">
+        <h3>Saving tabs</h3>
+        <label className="check">
+          <input type="checkbox" checked={closeOnSave} onChange={(e) => onCloseOnSave(e.target.checked)} />
+          Close tabs after saving a window or tab group
+        </label>
+        <p className="muted">Pinned tabs are never saved with a window or closed.</p>
       </section>
 
       <TobyImport hasData={hasData} onImported={onDone} />
