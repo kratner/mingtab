@@ -102,7 +102,7 @@ recommended: it doesn't grow into mobile or sharing.
    only test user. The Worker also allows only that email (`ALLOWED_EMAILS`).
 4. **Domain: none yet**; the Worker runs at `mingtab-sync.<subdomain>.workers.dev`.
 
-## S1 as built
+## S1 as built (live 2026-10-23)
 
 - `worker/`: the sync service. `POST /v1/auth/google` checks the Google ID token (signature
   against Google's keys, audience, expiry, verified email, allow list) and issues a per-device
@@ -113,5 +113,8 @@ recommended: it doesn't grow into mobile or sharing.
   deleted instead of erasing them, so deletions reach other devices.
 - Fixed extension ID `jclkedgbnlmbonoihhobgnmdoehmddpo` (manifest `key`; private key in
   git-ignored `.keys/`).
+- Live: `https://mingtab-sync.mingtab-sync.workers.dev`. Keith's personal Chrome profile signed in and
+  uploaded everything on 2026-10-23 (server: 4 spaces, 69 collections, 464 cards). Still to confirm:
+  the work profile (or the PC) signs in and an edit crosses between them within a minute.
 - Tests: Worker (11, real D1 in Miniflare), sync engine with two simulated devices (7), and two
   real Chromium profiles syncing through the Worker running locally (`e2e/sync.spec.ts`).
