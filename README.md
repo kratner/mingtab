@@ -45,13 +45,12 @@ is in the extension under **Settings → About MingTab**.
 
 MingTab isn't in the Chrome Web Store. Each release is a zip on this repository's
 [Releases page](https://github.com/kratner/mingtab/releases); you load it into Chrome yourself.
-About two minutes.
+About two minutes. What changed in each release: [CHANGELOG.md](CHANGELOG.md).
 
 ### 1. Download and unzip
 
 Download the latest **`mingtab-<version>.zip`** from
-[Releases](https://github.com/kratner/mingtab/releases) (you need to be signed in to GitHub with
-access to this repository). Unzip it into a folder you'll keep, for example
+[Releases](https://github.com/kratner/mingtab/releases). Unzip it into a folder you'll keep, for example
 `~/Applications/MingTab` on a Mac or `C:\Users\<you>\MingTab` on Windows.
 
 Every copy of MingTab has the same extension ID (`jclkedgbnlmbonoihhobgnmdoehmddpo`, fixed by the
@@ -81,6 +80,11 @@ Other browsers: Edge, Brave and Vivaldi load the same zip from their own extensi
 
 **Settings (⚙) → Sign in with Google**, and choose your Google account. Everything you have in
 MingTab elsewhere arrives within a minute. Do this in each Chrome profile and on each computer.
+
+Sync is optional: everything else works without signing in. The released zips sync to the
+author's own service, which accepts only the author's Google account. To sync your copy, deploy
+the Worker in `worker/` to your Cloudflare account and point `sync.config.json` at it (see
+[SYNC.md](SYNC.md)).
 
 ### Updating
 
@@ -114,6 +118,7 @@ Then click **Remove** on MingTab in `chrome://extensions`.
 | To | Do this |
 |---|---|
 | Save a whole window | Open tabs pane → **Save window** |
+| Save every window at once | Open tabs pane → **Save all**. One collection named "All windows <date, time>"; **Open all** on it reopens each window where it was on screen, with its tab groups |
 | Save a tab group | Open tabs pane → **Save group** on the group |
 | Save one tab | Hover it in the open tabs pane → **⤓** → pick a collection, or drag it onto one (board only) |
 | Reopen a collection | **⧉** in its header (a saved tab group comes back as a group) |
@@ -197,7 +202,8 @@ npm run build      # writes dist/; Load unpacked that folder
 
 ### Making a release
 
-Bump `version` in `package.json`, commit, then tag and push:
+Add a `## <version> — <date>` section to `CHANGELOG.md`, bump `version` in `package.json`, commit,
+then tag and push:
 
 ```sh
 git tag v0.7.0 && git push origin v0.7.0
@@ -205,7 +211,8 @@ git tag v0.7.0 && git push origin v0.7.0
 
 The **Release** workflow (`.github/workflows/release.yml`) checks the tag matches
 `package.json`, typechecks, runs the unit tests, builds, and publishes `mingtab-<version>.zip` on a
-GitHub Release with install notes. `npm run package` makes the same zip locally in `release/`.
+GitHub Release whose notes are that version's CHANGELOG section plus install steps (packaging fails if
+the section is missing). `npm run package` makes the same zip locally in `release/`.
 
 ### Everyday commands
 

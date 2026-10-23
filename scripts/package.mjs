@@ -1,5 +1,6 @@
 // Builds dist/ and zips it for a release: release/mingtab-<version>.zip, plus
-// release/NOTES.md (install steps) for the GitHub Release page.
+// release/NOTES.md (this version's CHANGELOG.md section, then install steps)
+// for the GitHub Release page.
 // Cross-platform: uses the system zip on macOS/Linux, PowerShell on Windows.
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -23,9 +24,17 @@ if (process.platform === 'win32') {
   execFileSync('zip', ['-qr', zip, '.'], { cwd: path.join(root, 'dist'), stdio: 'inherit' });
 }
 
+// "## 0.7.0 — date" up to the next "## " heading.
+const changelog = readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
+const section = changelog.split(/^## /m).find((s) => s.startsWith(`${version} `));
+if (!section) throw new Error(`CHANGELOG.md has no "## ${version}" section`);
+const changes = section.slice(section.indexOf('\n') + 1).trim().replace(/^### /gm, '## ');
+
 writeFileSync(
   path.join(out, 'NOTES.md'),
-  `## Install or update MingTab ${version}
+  `${changes}
+
+## Install or update MingTab ${version}
 
 1. Download **mingtab-${version}.zip** below and unzip it into a folder you'll keep, for example \`~/Applications/MingTab\` or \`C:\\Users\\<you>\\MingTab\`. To **update**, unzip over the same folder (replace everything).
 2. Open \`chrome://extensions\`, turn on **Developer mode**, click **Load unpacked** and choose that folder. (Updating: click ↻ on MingTab instead.)

@@ -1,0 +1,41 @@
+# Changelog
+
+What's new in each MingTab release. Downloads and install steps are on the
+[Releases](https://github.com/kratner/mingtab/releases) page.
+
+## 0.7.0 — 2026-10-23
+
+### New
+
+- **Save all windows in one click.** **Save all** in the Open tabs pane saves every window into one
+  collection named "All windows <date, time>". The collection remembers which window and tab group each
+  tab was in, the groups' names, colors and collapsed state, and each window's size, position and
+  maximized state.
+- **Reopen a whole session.** **Open all** on a collection saved this way opens one window per saved
+  window, where it was on screen, with its tab groups rebuilt. The window you saved from comes to the
+  front. Cards you add to the collection later open in the first window.
+- With **Close tabs after saving** on, **Save all** closes the other windows outright and leaves the
+  current window open with a new tab, instead of leaving an empty window behind for each one.
+
+### Notes
+
+- Pinned tabs and incognito windows aren't saved, the same as **Save window**.
+- Full-screen windows reopen maximized.
+- Collections saved before 0.7.0 open as before.
+
+## 0.6.0 — 2026-10-23
+
+First release. A local-first replacement for Toby, as a Chrome extension:
+
+- **Board:** spaces, collections and cards, with notes, custom titles, tags, stars, sorting, list and
+  compact views, and a dark and light theme. Opens in the side panel and, optionally, on new tabs.
+- **Open tabs:** save a window, a tab group (it reopens as a group in the same color) or a single tab;
+  open a whole collection; group, rename, recolor and ungroup tabs; merge windows.
+- **Drag and drop:** tabs into collections, cards between collections, collections between spaces, and
+  one collection onto another to merge them.
+- **Search** across spaces, collections, cards and open tabs, plus browsing history if you turn it on.
+  **Duplicates** finds repeated cards and asks before removing any.
+- **Next:** a queue of pages to get through. **Notes** with checklists and links.
+- **Address-bar shortcuts:** type `to/` then a card's shortcut to open it (Toby's keyword).
+- **Import** from Toby, plus JSON backup and restore.
+- **Sync** across Chrome profiles and computers through a small Cloudflare Worker, with Google sign-in.
