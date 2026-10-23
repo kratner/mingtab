@@ -26,4 +26,6 @@ export default defineManifest({
     newtab: 'src/newtab/index.html',
   },
   permissions: ['sidePanel', 'storage', 'unlimitedStorage', 'tabs', 'tabGroups', 'favicon'],
+  // Requested only when history search is turned on in Settings.
+  optional_permissions: ['history'],
 });

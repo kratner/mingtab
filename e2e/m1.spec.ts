@@ -15,7 +15,7 @@ const board = (page: Page, extensionId: string) =>
 
 /** Rendered cards, summed over every space. Waits for each space's count to settle. */
 async function totalCardsAcrossSpaces(page: Page) {
-  const links = page.getByRole('navigation', { name: 'Spaces' }).locator('.space-link');
+  const links = page.getByRole('navigation', { name: 'Spaces' }).locator('ul .space-link');
   let total = 0;
   for (let i = 0; i < (await links.count()); i++) {
     await links.nth(i).click();
@@ -143,6 +143,12 @@ test.describe(() => {
     expect(await liveCardsInDb(page)).toBe(inCards);
     expect(await totalCardsAcrossSpaces(page)).toBe(inCards);
 
+    // Duplicates on the real data: 87 extra copies once URLs are normalized (80 exact).
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByRole('button', { name: 'Find duplicates' }).click();
+    await expect(page.getByRole('status', { name: 'Duplicates found' })).toContainText('87 cards selected');
+    await page.getByRole('button', { name: 'Back to board' }).click();
+
     // Backup → delete a space → restore → everything is back.
     await page.getByRole('button', { name: 'Settings' }).click();
     const [download] = await Promise.all([
@@ -153,8 +159,8 @@ test.describe(() => {
     await download.saveAs(backupPath);
     await page.getByRole('button', { name: 'Back to board' }).click();
 
-    await nav.locator('.space-link').first().click();
-    const firstSpace = (await nav.locator('.space-link').first().textContent())!;
+    await nav.locator('ul .space-link').first().click();
+    const firstSpace = (await nav.locator('ul .space-link').first().textContent())!;
     await page.getByRole('button', { name: `Delete ${firstSpace}` }).click();
     await expect(nav.locator('.space-link', { hasText: new RegExp(`^${firstSpace}$`) })).toHaveCount(0);
     expect(await totalCardsAcrossSpaces(page)).toBeLessThan(inCards);

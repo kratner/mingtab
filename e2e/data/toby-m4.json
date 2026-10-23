@@ -1,0 +1,72 @@
+{
+  "version": 3,
+  "lists": [
+    {
+      "title": "Lisbon trip",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Flights to Portugal",
+          "url": "https://flights.example/lisbon",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "Lisbon - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Lisbon",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "Hotel list",
+          "url": "https://docs.example/sheet",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": "near Alfama, book by Friday"
+        }
+      ]
+    },
+    {
+      "title": "Release",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Release plan",
+          "url": "https://docs.example/plan",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "Lisbon again",
+          "url": "https://en.wikipedia.org/wiki/Lisbon/",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        }
+      ]
+    },
+    {
+      "title": "Zebra notes",
+      "labels": [],
+      "cards": [
+        {
+          "title": "Alpha",
+          "url": "https://alpha.example/",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        },
+        {
+          "title": "Flights copy",
+          "url": "https://flights.example/lisbon?utm_source=newsletter",
+          "favIconUrl": "",
+          "customTitle": "",
+          "customDescription": ""
+        }
+      ]
+    }
+  ]
+}

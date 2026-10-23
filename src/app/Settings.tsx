@@ -10,6 +10,9 @@ import {
   type TobyExport,
   type TobySpaceMap,
 } from '../import/toby';
+import { deleteCards, listAllCardsInOrder, listAllCollectionsInOrder, listSpaces } from '../db/repo';
+import { displayTitle } from '../db/schema';
+import { findDuplicates, type DuplicateGroup } from '../dedupe/dedupe';
 import { downloadJson, readJsonFile, timestamp } from './files';
 import type { Scheme, Theme } from './prefs';
 
@@ -20,6 +23,8 @@ interface Props {
   onScheme: (s: Scheme) => void;
   closeOnSave: boolean;
   onCloseOnSave: (v: boolean) => void;
+  historySearch: boolean;
+  onHistorySearch: (v: boolean) => void;
   hasData: boolean;
   onDone: () => void;
 }
@@ -29,7 +34,18 @@ const SCHEMES: { id: Scheme; label: string }[] = [
   { id: 'terracotta', label: 'Terracotta' },
 ];
 
-export function Settings({ theme, onTheme, scheme, onScheme, closeOnSave, onCloseOnSave, hasData, onDone }: Props) {
+export function Settings({
+  theme,
+  onTheme,
+  scheme,
+  onScheme,
+  closeOnSave,
+  onCloseOnSave,
+  historySearch,
+  onHistorySearch,
+  hasData,
+  onDone,
+}: Props) {
   return (
     <div className="settings">
       <div className="space-toolbar">
@@ -67,6 +83,26 @@ export function Settings({ theme, onTheme, scheme, onScheme, closeOnSave, onClos
         </label>
         <p className="muted">Pinned tabs are never saved with a window or closed.</p>
       </section>
+
+      <section className="settings-section">
+        <h3>Search</h3>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={historySearch}
+            onChange={async (e) => {
+              if (!e.target.checked) return onHistorySearch(false);
+              // Chrome shows its own prompt; only turn on if it's granted.
+              const granted = await chrome.permissions.request({ permissions: ['history'] }).catch(() => false);
+              onHistorySearch(granted);
+            }}
+          />
+          Include browsing history in search results
+        </label>
+        <p className="muted">Chrome asks for permission the first time. History stays in Chrome; MingTab only reads it while you search.</p>
+      </section>
+
+      <Duplicates />
 
       <TobyImport hasData={hasData} onImported={onDone} />
       <Backup />
@@ -190,6 +226,96 @@ function TobyImport({ hasData, onImported }: { hasData: boolean; onImported: () 
           <button type="button" className="primary" onClick={run}>
             Import
           </button>
+        </div>
+      )}
+      {status && <p role="status">{status}</p>}
+    </section>
+  );
+}
+
+function Duplicates() {
+  const [groups, setGroups] = useState<(DuplicateGroup & { where: string[] })[] | null>(null);
+  const [remove, setRemove] = useState<Set<string>>(new Set());
+  const [status, setStatus] = useState('');
+
+  const find = async () => {
+    setStatus('');
+    const [cards, cols, spaces] = await Promise.all([listAllCardsInOrder(db), listAllCollectionsInOrder(db), listSpaces(db)]);
+    const colById = new Map(cols.map((c) => [c.id, c]));
+    const spaceById = new Map(spaces.map((s) => [s.id, s.name]));
+    const found = findDuplicates(cards).map((g) => ({
+      ...g,
+      where: g.cards.map((c) => {
+        const col = colById.get(c.collectionId);
+        return col ? `${spaceById.get(col.spaceId)} › ${col.title}` : '';
+      }),
+    }));
+    setGroups(found);
+    // Default: keep the first copy (earliest on the board), remove the rest.
+    setRemove(new Set(found.flatMap((g) => g.cards.slice(1).map((c) => c.id))));
+  };
+
+  const run = async () => {
+    if (remove.size === 0) return;
+    if (!confirm(`Remove ${remove.size} duplicate card${remove.size === 1 ? '' : 's'}? Download a backup first if you might want them back.`)) return;
+    await deleteCards(db, [...remove]);
+    setStatus(`Removed ${remove.size} duplicate card${remove.size === 1 ? '' : 's'}.`);
+    setGroups(null);
+    setRemove(new Set());
+  };
+
+  const toggle = (id: string, on: boolean) => {
+    const next = new Set(remove);
+    if (on) next.add(id);
+    else next.delete(id);
+    setRemove(next);
+  };
+
+  return (
+    <section className="settings-section" aria-labelledby="dupes">
+      <h3 id="dupes">Duplicates</h3>
+      <p className="muted">
+        Finds cards that point at the same page, ignoring "www.", #anchors, trailing slashes and tracking parameters.
+        Nothing is removed until you confirm.
+      </p>
+      <button type="button" onClick={find}>
+        Find duplicates
+      </button>
+      {groups && (
+        <div className="dupes">
+          <p role="status" aria-label="Duplicates found">
+            {groups.length === 0
+              ? 'No duplicates.'
+              : `${groups.length} page${groups.length === 1 ? '' : 's'} saved more than once; ${remove.size} card${remove.size === 1 ? '' : 's'} selected for removal.`}
+          </p>
+          {groups.length > 0 && (
+            <>
+              <ul className="dupe-groups">
+                {groups.map((g) => (
+                  <li key={g.key}>
+                    <div className="dupe-title" title={g.key}>
+                      {displayTitle(g.cards[0]!)}
+                    </div>
+                    {g.cards.map((c, i) => (
+                      <label key={c.id} className="check">
+                        <input
+                          type="checkbox"
+                          aria-label={`Remove copy ${i + 1} of ${displayTitle(c)} in ${g.where[i]}`}
+                          checked={remove.has(c.id)}
+                          onChange={(e) => toggle(c.id, e.target.checked)}
+                        />
+                        <span className="muted">{g.where[i]}</span>
+                        {i === 0 && !remove.has(c.id) && <span className="badge">kept</span>}
+                      </label>
+                    ))}
+                  </li>
+                ))}
+              </ul>
+              <button type="button" className="primary" disabled={remove.size === 0} onClick={run}>
+                Remove {remove.size} selected
+              </button>
+            </>
+          )}
         </div>
       )}
       {status && <p role="status">{status}</p>}

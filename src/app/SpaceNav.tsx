@@ -23,6 +23,9 @@ function SpaceLink({ space, selected, onSelect }: { space: Space; selected: bool
   );
 }
 
+/** Pseudo-space id for the "Starred" view (starred collections from every space). */
+export const STARRED = '__starred__';
+
 interface Props {
   surface: Surface;
   spaces: Space[];
@@ -33,7 +36,7 @@ interface Props {
 export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState('');
-  const selected = spaces.find((s) => s.id === selectedId);
+  const selected = spaces.find((s) => s.id === selectedId); // undefined for Starred
 
   const create = async () => {
     const n = name.trim();
@@ -87,6 +90,7 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
     return (
       <div className="space-select">
         <select aria-label="Space" value={selectedId ?? ''} onChange={(e) => onSelect(e.target.value)}>
+          <option value={STARRED}>★ Starred</option>
           {spaces.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -110,6 +114,14 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
           +
         </button>
       </div>
+      <button
+        type="button"
+        className={`space-link starred-link ${selectedId === STARRED ? 'active' : ''}`}
+        aria-current={selectedId === STARRED ? 'page' : undefined}
+        onClick={() => onSelect(STARRED)}
+      >
+        ★ Starred
+      </button>
       <ul>
         {spaces.map((s) => (
           <li key={s.id}>

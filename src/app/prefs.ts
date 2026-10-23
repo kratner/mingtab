@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 
 export type Theme = 'system' | 'light' | 'dark';
 export type Scheme = 'kr' | 'terracotta';
+export type SortMode = 'custom' | 'az' | 'za' | 'newest' | 'oldest';
+export type Density = 'comfortable' | 'compact';
 
 function read<T extends string>(key: string, fallback: T): T {
   try {

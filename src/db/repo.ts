@@ -1,6 +1,6 @@
 import type { MingTabDB } from './db';
 import { initialPositions, positionAfterLast, positionBeforeFirst, positionBetween } from './position';
-import type { Card, Collection, Space } from './schema';
+import type { Card, Collection, Space, Tag } from './schema';
 
 const now = () => Date.now();
 const uuid = () => crypto.randomUUID();
@@ -176,4 +176,54 @@ export async function mergeCollections(db: MingTabDB, sourceId: string, targetId
     }
     await db.collections.update(sourceId, { deletedAt: t, updatedAt: t });
   });
+}
+
+// ---- tags ----------------------------------------------------------------
+
+export const TAG_COLORS = ['#e8590c', '#1971c2', '#2f9e44', '#c2255c', '#7048e8', '#0c8599', '#e67700', '#5f6368'];
+
+export const listTags = (db: MingTabDB) => db.tags.orderBy('name').filter(live).toArray();
+
+/** Adds a tag (by name, case-insensitive; created if new) to a collection. */
+export async function addTagToCollection(db: MingTabDB, collectionId: string, name: string): Promise<Tag> {
+  const clean = name.trim();
+  return db.transaction('rw', db.tags, db.collections, async () => {
+    const tags = await listTags(db);
+    let tag = tags.find((t) => t.name.toLowerCase() === clean.toLowerCase());
+    if (!tag) {
+      tag = { ...base(), name: clean, color: TAG_COLORS[tags.length % TAG_COLORS.length]! };
+      await db.tags.add(tag);
+    }
+    const col = (await db.collections.get(collectionId))!;
+    if (!col.tagIds.includes(tag.id)) {
+      await db.collections.update(collectionId, { tagIds: [...col.tagIds, tag.id], updatedAt: now() });
+    }
+    return tag;
+  });
+}
+
+export async function removeTagFromCollection(db: MingTabDB, collectionId: string, tagId: string) {
+  const col = (await db.collections.get(collectionId))!;
+  await db.collections.update(collectionId, { tagIds: col.tagIds.filter((t) => t !== tagId), updatedAt: now() });
+}
+
+/** Every live collection across spaces, in board order (space, then collection). */
+export async function listAllCollectionsInOrder(db: MingTabDB): Promise<Collection[]> {
+  const spaces = await listSpaces(db);
+  const out: Collection[] = [];
+  for (const s of spaces) out.push(...(await listCollections(db, s.id)));
+  return out;
+}
+
+/** Every live card in board order (space, collection, card). */
+export async function listAllCardsInOrder(db: MingTabDB): Promise<Card[]> {
+  const out: Card[] = [];
+  for (const c of await listAllCollectionsInOrder(db)) out.push(...(await listCards(db, c.id)));
+  return out;
+}
+
+/** Soft-deletes many cards at once (dedupe). */
+export async function deleteCards(db: MingTabDB, ids: string[]) {
+  const t = now();
+  await db.cards.bulkUpdate(ids.map((id) => ({ key: id, changes: { deletedAt: t, updatedAt: t } })));
 }

@@ -51,7 +51,7 @@ labels (tags) { title, color, position }
 | Drag and drop everything (cards, collections, merge collections) | Free | **M3** ✅ 2026-10-23. *Passed: 11 drop-logic unit tests + 9 e2e with real mouse drags (collection reorder + persist, keyboard reorder, card within/between collections, open tab → collection, collection → other space, click still opens link, merge, group/rename/recolor/ungroup, merge windows); plus layout e2e (no overflow at 320/400/768/1280). Awaiting Keith's check.* |
 | Tab-group controls (group, rename, recolor, ungroup), merge windows | Free | **M3** |
 | Side panel (Toby 2.0 default), new-tab override, toolbar popup | Free | **M1** side panel + new tab; popup later |
-| Search across spaces, collections, cards and open tabs | Free | **M4** |
+| Search across spaces, collections, cards and open tabs | Free | **M4** ✅ 2026-10-23. *Passed: search 0.33 ms/query over 5,000 cards (budget 50); duplicates on the real export: 80 exact, 87 normalized (the plan's 83 counted the 4 note cards' shared URL); 8 new e2e (search by title/URL/note, '/', jump-to-collection, open tabs, side panel, tags, starred, sort/expand/compact, dedupe with confirm). History search is opt-in and verified by hand only: Chrome's permission prompt can't be accepted in automated tests.* |
 | Search browsing history | Paid | **M4** (`history` permission, opt-in) |
 | Remove duplicates | Paid | **M4** (83 waiting) |
 | Tags + tag filter, star, sort, views (list/grid), expand/collapse | Free | **M4** |

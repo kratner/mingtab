@@ -1,13 +1,14 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { db } from '../db/db';
 import { createSpace, listSpaces } from '../db/repo';
-import { applyTheme, usePref, type Scheme, type Theme } from './prefs';
-import { Settings } from './Settings';
-import { SpaceNav } from './SpaceNav';
-import { SpaceView } from './SpaceView';
-import { OpenTabs } from '../tabs/OpenTabs';
 import { DndProvider } from '../dnd/DndProvider';
+import { SearchResults } from '../search/SearchResults';
+import { OpenTabs } from '../tabs/OpenTabs';
+import { applyTheme, usePref, type Density, type Scheme, type SortMode, type Theme } from './prefs';
+import { Settings } from './Settings';
+import { SpaceNav, STARRED } from './SpaceNav';
+import { SpaceView, StarredView } from './SpaceView';
 import type { Surface } from './surface';
 
 export function App({ surface }: { surface: Surface }) {
@@ -16,30 +17,77 @@ export function App({ surface }: { surface: Surface }) {
   const [theme, setTheme] = usePref<Theme>('mingtab.theme', 'system');
   const [scheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'kr');
   const [closeOnSave, setCloseOnSave] = usePref<'true' | 'false'>('mingtab.closeOnSave', 'true');
+  const [sort, setSort] = usePref<SortMode>('mingtab.sort', 'custom');
+  const [density, setDensity] = usePref<Density>('mingtab.density', 'comfortable');
+  const [historySearch, setHistorySearch] = usePref<'on' | 'off'>('mingtab.historySearch', 'off');
   const [view, setView] = useState<'board' | 'settings'>('board');
   // Board below 1100px: open-tabs pane is a drawer.
   const [paneOpen, setPaneOpen] = useState(false);
   // The side panel is narrow, so it shows saved collections or open tabs, not both.
   const [pane, setPane] = usePref<'saved' | 'open'>('mingtab.sidepanelPane', 'saved');
+  const [query, setQuery] = useState('');
+  const [highlightId, setHighlightId] = useState<string | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => applyTheme(theme, scheme), [theme, scheme]);
 
-  // Keep a valid selection when spaces are added or deleted.
-  const selected = spaces?.find((s) => s.id === selectedId) ?? spaces?.[0];
+  // "/" jumps to search from anywhere that isn't a text field.
   useEffect(() => {
-    if (selected && selected.id !== selectedId) setSelectedId(selected.id);
-  }, [selected, selectedId, setSelectedId]);
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (t.closest('input, textarea, select, [contenteditable="true"]')) return;
+      e.preventDefault();
+      setView('board');
+      searchRef.current?.focus();
+    };
+    addEventListener('keydown', onKey);
+    return () => removeEventListener('keydown', onKey);
+  }, []);
+
+  // Keep a valid selection when spaces are added or deleted.
+  const starred = selectedId === STARRED;
+  const selected = starred ? undefined : (spaces?.find((s) => s.id === selectedId) ?? spaces?.[0]);
+  useEffect(() => {
+    if (!starred && selected && selected.id !== selectedId) setSelectedId(selected.id);
+  }, [starred, selected, selectedId, setSelectedId]);
 
   if (!spaces) return null;
-  const showSaved = surface === 'newtab' || pane === 'saved';
-  const showOpen = surface === 'newtab' || pane === 'open';
+  const searching = query.trim().length > 0 && view === 'board';
+  const showSaved = surface === 'newtab' || pane === 'saved' || searching;
+  const showOpen = surface === 'newtab' || (pane === 'open' && !searching);
+
+  const goTo = (spaceId: string, collectionId?: string) => {
+    setSelectedId(spaceId);
+    setQuery('');
+    setPane('saved');
+    setHighlightId(collectionId ?? null);
+  };
 
   return (
-    <div className="app" data-surface={surface} data-pane-open={paneOpen}>
+    <div className="app" data-surface={surface} data-pane-open={paneOpen} data-density={density}>
       <header className="app-header">
         <img className="brand-mark" src="/icons/icon-32.png" alt="" />
         <h1>MingTab</h1>
         <span className="surface-tag">{surface === 'newtab' ? 'Board' : 'Side panel'}</span>
+        <input
+          ref={searchRef}
+          className="search-box"
+          type="search"
+          aria-label="Search"
+          placeholder="Search everything  /"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setView('board');
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setQuery('');
+              e.currentTarget.blur();
+            }
+          }}
+        />
         {surface === 'newtab' && view === 'board' && (
           <button
             type="button"
@@ -70,13 +118,15 @@ export function App({ surface }: { surface: Surface }) {
             onScheme={setScheme}
             closeOnSave={closeOnSave === 'true'}
             onCloseOnSave={(v) => setCloseOnSave(v ? 'true' : 'false')}
+            historySearch={historySearch === 'on'}
+            onHistorySearch={(v) => setHistorySearch(v ? 'on' : 'off')}
             hasData={spaces.length > 0}
             onDone={() => setView('board')}
           />
         </main>
       ) : (
         <>
-          {surface === 'sidepanel' && (
+          {surface === 'sidepanel' && !searching && (
             <div className="pane-switch" role="tablist" aria-label="Side panel view">
               {(['saved', 'open'] as const).map((p) => (
                 <button
@@ -93,37 +143,59 @@ export function App({ surface }: { surface: Surface }) {
             </div>
           )}
           <DndProvider>
-          <div className="layout">
-            {showSaved && spaces.length > 0 && (
-              <SpaceNav surface={surface} spaces={spaces} selectedId={selected?.id ?? null} onSelect={setSelectedId} />
-            )}
-            {showSaved && (
-              <main className="app-main">
-                {selected ? (
-                  <SpaceView key={selected.id} space={selected} />
-                ) : (
-                  <div className="welcome">
-                    <p className="empty">Your bright hall is clear. Saved collections will appear here.</p>
-                    <div className="row">
-                      <button
-                        type="button"
-                        className="primary"
-                        onClick={async () => setSelectedId((await createSpace(db, 'My Collections')).id)}
-                      >
-                        Create a space
-                      </button>
-                      <button type="button" onClick={() => setView('settings')}>
-                        Import from Toby
-                      </button>
+            <div className="layout">
+              {showSaved && !searching && spaces.length > 0 && (
+                <SpaceNav
+                  surface={surface}
+                  spaces={spaces}
+                  selectedId={starred ? STARRED : (selected?.id ?? null)}
+                  onSelect={setSelectedId}
+                />
+              )}
+              {showSaved && (
+                <main className="app-main">
+                  {searching ? (
+                    <SearchResults query={query} historyEnabled={historySearch === 'on'} onGoTo={goTo} />
+                  ) : starred ? (
+                    <StarredView onGoTo={goTo} />
+                  ) : selected ? (
+                    <SpaceView
+                      key={selected.id}
+                      space={selected}
+                      sort={sort}
+                      onSort={setSort}
+                      density={density}
+                      onDensity={setDensity}
+                      highlightId={highlightId}
+                      onHighlightDone={() => setHighlightId(null)}
+                    />
+                  ) : (
+                    <div className="welcome">
+                      <p className="empty">Your bright hall is clear. Saved collections will appear here.</p>
+                      <div className="row">
+                        <button
+                          type="button"
+                          className="primary"
+                          onClick={async () => setSelectedId((await createSpace(db, 'My Collections')).id)}
+                        >
+                          Create a space
+                        </button>
+                        <button type="button" onClick={() => setView('settings')}>
+                          Import from Toby
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </main>
-            )}
-            {showOpen && (
-              <OpenTabs spaceId={selected?.id ?? null} onSpaceCreated={setSelectedId} closeOnSave={closeOnSave === 'true'} />
-            )}
-          </div>
+                  )}
+                </main>
+              )}
+              {showOpen && (
+                <OpenTabs
+                  spaceId={selected?.id ?? spaces[0]?.id ?? null}
+                  onSpaceCreated={setSelectedId}
+                  closeOnSave={closeOnSave === 'true'}
+                />
+              )}
+            </div>
           </DndProvider>
         </>
       )}
