@@ -129,6 +129,7 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
           type="button"
           className="icon-btn"
           aria-label={collection.collapsed ? `Expand ${collection.title}` : `Collapse ${collection.title}`}
+          title={collection.collapsed ? 'Expand' : 'Collapse'}
           aria-expanded={!collection.collapsed}
           onClick={() => updateCollection(db, collection.id, { collapsed: !collection.collapsed })}
         >
@@ -186,12 +187,13 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
             type="button"
             className={`icon-btn ${collection.starred ? 'starred' : ''}`}
             aria-label={collection.starred ? `Unstar ${collection.title}` : `Star ${collection.title}`}
+            title={collection.starred ? 'Unstar' : 'Star'}
             aria-pressed={collection.starred}
             onClick={() => updateCollection(db, collection.id, { starred: !collection.starred })}
           >
             {collection.starred ? '★' : '☆'}
           </button>
-          <button type="button" className="icon-btn" aria-label={`Add card to ${collection.title}`} onClick={() => setAdding(true)}>
+          <button type="button" className="icon-btn" aria-label={`Add card to ${collection.title}`} title="Add a link" onClick={() => setAdding(true)}>
             +
           </button>
           <button type="button" className="icon-btn" aria-label={`Add note to ${collection.title}`} title="Add a note" onClick={addNote}>
@@ -207,7 +209,7 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
           >
             ⇲
           </button>
-          <button type="button" className="icon-btn danger" aria-label={`Delete ${collection.title}`} onClick={remove}>
+          <button type="button" className="icon-btn danger" aria-label={`Delete ${collection.title}`} title="Delete collection" onClick={remove}>
             ✕
           </button>
         </div>
@@ -223,6 +225,7 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
                   type="button"
                   className="tag-remove"
                   aria-label={`Remove tag ${t.name} from ${collection.title}`}
+                  title="Remove tag"
                   onClick={() => removeTagFromCollection(db, collection.id, t.id)}
                 >
                   ×

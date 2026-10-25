@@ -82,10 +82,10 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
 
   const spaceActions = selected && (
     <>
-      <button type="button" className="icon-btn" aria-label={`Rename ${selected.name}`} onClick={rename}>
+      <button type="button" className="icon-btn" aria-label={`Rename ${selected.name}`} title="Rename space" onClick={rename}>
         ✎
       </button>
-      <button type="button" className="icon-btn danger" aria-label={`Delete ${selected.name}`} onClick={remove}>
+      <button type="button" className="icon-btn danger" aria-label={`Delete ${selected.name}`} title="Delete space" onClick={remove}>
         ✕
       </button>
     </>
@@ -104,7 +104,7 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
           ))}
         </select>
         {spaceActions}
-        <button type="button" className="icon-btn" aria-label="New space" onClick={() => setCreating(true)}>
+        <button type="button" className="icon-btn" aria-label="New space" title="New space" onClick={() => setCreating(true)}>
           +
         </button>
         {newSpaceForm}
@@ -116,7 +116,7 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
     <nav className="sidebar" aria-label="Spaces">
       <div className="sidebar-head">
         <span>Spaces</span>
-        <button type="button" className="icon-btn" aria-label="New space" onClick={() => setCreating(true)}>
+        <button type="button" className="icon-btn" aria-label="New space" title="New space" onClick={() => setCreating(true)}>
           +
         </button>
       </div>

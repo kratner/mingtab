@@ -142,6 +142,7 @@ export function App({ surface }: { surface: Surface }) {
           type="button"
           className="icon-btn header-settings"
           aria-label={view === 'settings' ? 'Close settings' : 'Settings'}
+          title={view === 'settings' ? 'Close settings' : 'Settings'}
           aria-pressed={view === 'settings'}
           onClick={() => setView(view === 'settings' ? 'board' : 'settings')}
         >

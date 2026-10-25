@@ -667,6 +667,18 @@ button:disabled {
   font-weight: 600;
 }
 
+.save-name {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.save-name input {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+
 .window-header button,
 .tab-group-header button {
   margin-left: auto;

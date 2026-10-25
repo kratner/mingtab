@@ -26,6 +26,10 @@ test('save a window: tabs close, collection has them in order; Open all restores
   const winId = await openWindow(sw, five);
 
   await windowWith(page, 'Page 1').getByRole('button', { name: 'Save window' }).click();
+  // The name field opens with a dated default, selected; Enter keeps it.
+  const name = page.getByRole('textbox', { name: 'Collection name' });
+  await expect(name).toHaveValue(/^Session /);
+  await name.press('Enter');
   await expect(page.getByRole('complementary', { name: 'Open tabs' }).getByRole('status')).toContainText('Saved 5 tabs');
 
   await expect.poll(() => openSiteTabs(sw, site)).toHaveLength(0);
@@ -82,11 +86,15 @@ test('with "close after saving" off, tabs stay open; pinned tabs are never saved
   const list = urls(site, ['pinned', 'k1', 'k2']);
   await openWindow(sw, list, { pinFirst: true });
   await windowWith(page, 'Page k1').getByRole('button', { name: 'Save window' }).click();
+  // Typing replaces the selected default name.
+  await page.getByRole('textbox', { name: 'Collection name' }).pressSequentially('Research');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByRole('complementary', { name: 'Open tabs' }).getByRole('status')).toContainText('Saved 2 tabs');
 
   const open = await openSiteTabs(sw, site);
   expect(open.map((t) => t.url).sort()).toEqual([...list].sort());
   const collection = page.locator('section.collection').first();
+  await expect(collection.getByRole('button', { name: /^Collection title: Research\. / })).toBeVisible();
   await expect(collection.locator('.card')).toHaveCount(2);
   await expect(collection).not.toContainText('Page pinned');
 });
@@ -106,6 +114,20 @@ test('save a single tab into a collection (or a new one)', async ({ page, extens
   await expect(collection).toContainText('Page solo');
   // Single-tab saves never close the tab.
   expect(await openSiteTabs(sw, site)).toHaveLength(1);
+});
+
+test('close an open tab from the pane', async ({ page, extensionId, serviceWorker: sw, site }) => {
+  await board(page, extensionId);
+  await openWindow(sw, urls(site, ['keep', 'shut']));
+
+  const pane = page.getByRole('complementary', { name: 'Open tabs' });
+  const row = pane.locator('.open-tab').filter({ hasText: 'Page shut' });
+  await row.hover();
+  await row.getByRole('button', { name: 'Close Page shut' }).click();
+
+  await expect(row).toHaveCount(0);
+  const open = await openSiteTabs(sw, site);
+  expect(open.map((t) => t.url)).toEqual(urls(site, ['keep']));
 });
 
 test('side panel switches between saved collections and open tabs', async ({ page, extensionId }) => {

@@ -132,13 +132,14 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
               ▶
             </button>
           )}
-          <button type="button" className="icon-btn" aria-label={`Edit ${title}`} onClick={() => (editing ? setEditing(false) : startEdit())}>
+          <button type="button" className="icon-btn" aria-label={`Edit ${title}`} title="Edit" onClick={() => (editing ? setEditing(false) : startEdit())}>
             ✎
           </button>
           <button
             type="button"
             className="icon-btn danger"
             aria-label={`Delete ${title}`}
+            title="Delete"
             onClick={() => deleteCard(db, card.id)}
           >
             ✕

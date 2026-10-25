@@ -44,7 +44,7 @@ function Row({ item }: { item: NextItem }) {
           <span className="card-host">{hostOf(item.url)}</span>
         </div>
         <div className="card-actions">
-          <button type="button" className="icon-btn danger" aria-label={`Remove ${item.title} from Next`} onClick={() => removeNext(db, item.id)}>
+          <button type="button" className="icon-btn danger" aria-label={`Remove ${item.title} from Next`} title="Remove from Next" onClick={() => removeNext(db, item.id)}>
             ✕
           </button>
         </div>

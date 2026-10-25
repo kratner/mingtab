@@ -7,6 +7,7 @@ import { chromeFaviconUrl } from '../app/favicon';
 import { InlineEdit } from '../app/InlineEdit';
 import {
   GROUP_COLORS,
+  closeTab,
   extensionOrigin,
   focusTab,
   groupLooseTabs,
@@ -17,6 +18,7 @@ import {
   saveAllWindows,
   saveGroup,
   saveWindow,
+  sessionTitle,
   tabToCard,
   type SaveResult,
 } from './tabs';
@@ -34,6 +36,8 @@ interface Props {
 export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
   const state = useOpenWindows();
   const [status, setStatus] = useState('');
+  /** The window whose "Save window" name field is open, and the name typed so far. */
+  const [naming, setNaming] = useState<{ windowId: number; title: string } | null>(null);
 
   const ensureSpace = async () => {
     if (spaceId) return spaceId;
@@ -115,11 +119,40 @@ export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
                 type="button"
                 className="primary small"
                 disabled={savable === 0}
-                onClick={async () => report(await saveWindow(db, w.id, { spaceId: await ensureSpace(), close: closeOnSave }), 'window')}
+                aria-expanded={naming?.windowId === w.id}
+                title="Save this window's tabs as a new collection"
+                onClick={() => setNaming(naming?.windowId === w.id ? null : { windowId: w.id, title: sessionTitle() })}
               >
                 Save window
               </button>
             </header>
+            {naming?.windowId === w.id && (
+              <form
+                className="save-name"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const title = naming.title;
+                  setNaming(null);
+                  report(await saveWindow(db, w.id, { spaceId: await ensureSpace(), close: closeOnSave, title }), 'window');
+                }}
+              >
+                <input
+                  autoFocus
+                  aria-label="Collection name"
+                  placeholder="Collection name"
+                  value={naming.title}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => setNaming({ windowId: w.id, title: e.target.value })}
+                  onKeyDown={(e) => e.key === 'Escape' && setNaming(null)}
+                />
+                <button type="submit" className="primary small">
+                  Save
+                </button>
+                <button type="button" className="small" onClick={() => setNaming(null)}>
+                  Cancel
+                </button>
+              </form>
+            )}
             {runsOf(w.tabs).map((run) => {
               const group = run.groupId >= 0 ? state.groups.get(run.groupId) : undefined;
               const rows = run.tabs.map((t) => (
@@ -270,6 +303,7 @@ function OpenTabRow({
             type="button"
             className="icon-btn"
             aria-label={`Save ${title}`}
+            title="Save to a collection"
             onClick={async () => {
               await ensureSpace();
               setPicking(true);
@@ -278,6 +312,15 @@ function OpenTabRow({
             ⤓
           </button>
         ))}
+      <button
+        type="button"
+        className="icon-btn danger"
+        aria-label={`Close ${title}`}
+        title="Close tab"
+        onClick={() => void closeTab(tab)}
+      >
+        ✕
+      </button>
     </li>
   );
 }

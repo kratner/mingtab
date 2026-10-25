@@ -191,9 +191,10 @@ export async function saveTabs(
   return { collection, saved: toSave.length };
 }
 
-export async function saveWindow(db: MingTabDB, windowId: number, opts: { spaceId: string; close: boolean }) {
+/** Saves the window's tabs; a blank `title` falls back to a dated "Session" name. */
+export async function saveWindow(db: MingTabDB, windowId: number, opts: { spaceId: string; close: boolean; title?: string }) {
   const tabs = await chrome.tabs.query({ windowId });
-  return saveTabs(db, tabs, { ...opts, title: sessionTitle() });
+  return saveTabs(db, tabs, { ...opts, title: opts.title?.trim() || sessionTitle() });
 }
 
 export async function saveGroup(db: MingTabDB, groupId: number, opts: { spaceId: string; close: boolean }) {
@@ -276,6 +277,10 @@ export async function openCards(cards: Card[], group?: { title: string; color: s
 export async function focusTab(tab: chrome.tabs.Tab) {
   await chrome.tabs.update(tab.id!, { active: true });
   await chrome.windows.update(tab.windowId, { focused: true });
+}
+
+export async function closeTab(tab: chrome.tabs.Tab) {
+  await chrome.tabs.remove(tab.id!);
 }
 
 // ---- tab-group and window controls (M3) --------------------------------------
