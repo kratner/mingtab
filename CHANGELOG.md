@@ -3,6 +3,21 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## 0.8.0 — 2026-10-25
+
+### New
+
+- **Four Ounces look.** MingTab now uses the Four Ounces studio brand: Old Gold on warm ink in dark mode
+  and on warm paper in light mode, with Inter for text, Archivo Black for the MingTab name and JetBrains
+  Mono for code. The fonts are bundled, so nothing loads from the web. It replaces the black-and-yellow
+  KR scheme; if you had KR chosen, you get Four Ounces. Terracotta is still in **Settings**.
+- **New icon.** 明 in Old Gold on the ink tile, drawn pixel by pixel at 16 px so it stays sharp in the
+  toolbar. About now says "A Four Ounces tool".
+- **Name a window as you save it.** **Save window** opens a name field with the dated name filled in and
+  selected: press Enter to keep it, or type a new name.
+- **Close a tab from the Open tabs pane.** Hover a tab and click ✕.
+- **Every icon button has a tooltip**, including collapse, star, add a link and delete.
+
 ## 0.7.0 — 2026-10-23
 
 ### New

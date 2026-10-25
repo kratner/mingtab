@@ -1,68 +1,53 @@
 /* Tokens. Two axes:
-   - scheme (html[data-scheme]): KR (default; Keith's black + #FFF200 yellow) or terracotta.
+   - scheme (html[data-scheme]): Four Ounces (default; Old Gold on warm ink and paper,
+     from four-ounces-tokens.css) or terracotta.
    - mode: light by default, dark via system preference or explicit choice
      (html[data-theme]); an explicit choice wins over the system.
    --accent is a fill (buttons, highlights) and always pairs with --accent-text.
    --accent-ink is the accent for text and outlines on the page background;
-   in KR light it is near-black, because yellow text on white is unreadable. */
+   in Four Ounces light it is dark gold, because Old Gold text on paper is too faint. */
 
-/* KR, light */
+@import './four-ounces-tokens.css';
+
+/* Bundled OFL fonts (licences in /fonts/licenses), so nothing loads from Google. */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter.latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Archivo Black';
+  src: url('/fonts/ArchivoBlack-Regular.latin.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono.latin.woff2') format('woff2');
+  font-weight: 100 800;
+  font-display: swap;
+}
+
+/* Four Ounces: the scheme's names mapped onto the kit's tokens, which switch
+   between light and dark themselves. */
 :root {
-  color-scheme: light;
-  --bg: #f5f5f0;
-  --surface: #ffffff;
-  --surface-2: #ececE4;
-  --text: #111111;
-  --muted: #5c5c55;
-  --accent: #fff200;
-  --accent-text: #000000;
-  --accent-border: #111111;
-  --accent-ink: #111111;
-  --accent-soft: #fff9a8;
-  --border: #dcdcd2;
-  --danger: #b3261e;
-  --warn: #7a5600;
-  --star: #9c7c00;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bg: var(--fo-bg);
+  --surface: var(--fo-surface);
+  --surface-2: var(--fo-surface-2);
+  --text: var(--fo-text);
+  --muted: var(--fo-muted);
+  --accent: var(--fo-gold);
+  --accent-text: var(--fo-on-gold);
+  --accent-border: var(--fo-gold);
+  --accent-ink: var(--fo-gold-ink);
+  --accent-soft: var(--fo-gold-soft);
+  --border: var(--fo-line);
+  --danger: var(--fo-danger);
+  --warn: var(--fo-warning);
+  --star: var(--fo-gold-ink);
+  font-family: var(--fo-font-text);
   font-size: 14px;
-}
-
-/* KR, dark */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --bg: #0a0a0a;
-    --surface: #151515;
-    --surface-2: #202020;
-    --text: #f2f2ec;
-    --muted: #9a9a90;
-    --accent: #fff200;
-    --accent-text: #000000;
-    --accent-border: #fff200;
-    --accent-ink: #fff200;
-    --accent-soft: #2a2800;
-    --border: #2a2a2a;
-    --danger: #f28b82;
-    --warn: #e6b450;
-    --star: #fff200;
-  }
-}
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #0a0a0a;
-  --surface: #151515;
-  --surface-2: #202020;
-  --text: #f2f2ec;
-  --muted: #9a9a90;
-  --accent: #fff200;
-  --accent-text: #000000;
-  --accent-border: #fff200;
-  --accent-ink: #fff200;
-  --accent-soft: #2a2800;
-  --border: #2a2a2a;
-  --danger: #f28b82;
-  --warn: #e6b450;
-  --star: #fff200;
 }
 
 /* Terracotta, light */
@@ -123,10 +108,12 @@
   box-sizing: border-box;
 }
 
-/* Chrome's default stylesheet for extension pages sets body { font-size: 75% },
-   which shrinks all inherited text to 10.5px. Restate the size here. */
+/* Chrome's default stylesheet for extension pages sets body { font-size: 75% }
+   and a system font, which shrinks all inherited text to 10.5px and hides Inter.
+   Restate both here. */
 body {
   margin: 0;
+  font-family: var(--fo-font-text);
   font-size: 14px;
   background: var(--bg);
   color: var(--text);
@@ -235,9 +222,11 @@ a {
 
 .app-header h1 {
   margin: 0;
+  font-family: var(--fo-font-display);
+  font-weight: 400;
   font-size: 18px;
   color: var(--accent-ink);
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
 }
 
 .brand-mark {
@@ -1189,6 +1178,15 @@ button:disabled {
   line-height: 1.5;
 }
 
+.about .by-fo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .welcome-logo {
   width: 96px;
   height: 96px;
@@ -1270,14 +1268,14 @@ button:disabled {
 }
 
 .shortcut-tag {
-  font-family: ui-monospace, monospace;
+  font-family: var(--fo-font-mono);
 }
 
 .shortcut-input {
   display: flex;
   align-items: center;
   gap: 2px;
-  font-family: ui-monospace, monospace;
+  font-family: var(--fo-font-mono);
   color: var(--text);
 }
 

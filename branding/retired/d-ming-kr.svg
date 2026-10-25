@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Concept D "明": the character drawn from geometric strokes (original artwork, no font),
+       日 sun on the left, 月 moon on the right. KR palette, square-ended strokes like the KR mark. -->
+  <rect x="2" y="2" width="124" height="124" rx="10" fill="#000000"/>
+  <g fill="none" stroke="#FFF200" stroke-width="10" stroke-linejoin="miter" stroke-linecap="square">
+    <!-- 日 -->
+    <path d="M19 35 H49 V89 H19 Z"/>
+    <path d="M19 62 H49"/>
+    <!-- 月 -->
+    <path d="M66 21 H103 V99 Q103 107 95 107 H89"/>
+    <path d="M66 21 V76 Q66 96 55 107"/>
+    <path d="M66 46 H103"/>
+    <path d="M66 70 H103"/>
+  </g>
+</svg>

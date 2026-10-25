@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- Concept E "明 in the bright hall": the doorway (concept A) with 明 cut out of the light. -->
-  <rect x="2" y="2" width="124" height="124" rx="10" fill="#000000"/>
-  <path fill="#FFF200" d="M30 108 V52 A34 34 0 0 1 98 52 V108 Z"/>
-  <g transform="translate(64 74) scale(0.42) translate(-64 -64)" fill="none" stroke="#000000" stroke-width="11" stroke-linejoin="miter" stroke-linecap="square">
+  <!-- Concept E "明 in the bright hall": the doorway (concept A) with 明 cut out of the light.
+       Four Ounces: an Old Gold doorway on the ink tile. The KR version is in branding/retired/. -->
+  <rect width="128" height="128" rx="28" fill="#0E0D0B"/>
+  <path fill="#C9A24A" d="M30 108 V52 A34 34 0 0 1 98 52 V108 Z"/>
+  <g transform="translate(64 74) scale(0.42) translate(-64 -64)" fill="none" stroke="#0E0D0B" stroke-width="11" stroke-linejoin="round" stroke-linecap="round">
     <path d="M19 35 H49 V89 H19 Z"/>
     <path d="M19 62 H49"/>
     <path d="M66 21 H103 V99 Q103 107 95 107 H89"/>

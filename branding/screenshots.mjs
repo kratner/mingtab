@@ -47,7 +47,7 @@ await page.getByRole('button', { name: 'Import', exact: true }).click();
 await page.locator('.card').first().waitFor();
 await page.locator('.collection').first().getByRole('button', { name: /^Star / }).click();
 
-for (const scheme of ['kr', 'terracotta']) {
+for (const scheme of ['four-ounces', 'terracotta']) {
   for (const mode of ['dark', 'light']) {
     await page.evaluate(([s, m]) => {
       localStorage.setItem('mingtab.scheme', s);

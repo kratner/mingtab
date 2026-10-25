@@ -22,7 +22,8 @@ export function App({ surface }: { surface: Surface }) {
   const spaces = allSpaces?.filter((s) => !hiddenSpaces.includes(s.id));
   const [selectedId, setSelectedId] = usePref<string>('mingtab.space', '');
   const [theme, setTheme] = usePref<Theme>('mingtab.theme', 'system');
-  const [scheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'kr');
+  const [savedScheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'four-ounces');
+  const scheme: Scheme = savedScheme === 'terracotta' ? 'terracotta' : 'four-ounces';
   const [closeOnSave, setCloseOnSave] = usePref<'true' | 'false'>('mingtab.closeOnSave', 'true');
   const [sort, setSort] = usePref<SortMode>('mingtab.sort', 'custom');
   const [density, setDensity] = usePref<Density>('mingtab.density', 'comfortable');
@@ -107,7 +108,7 @@ export function App({ surface }: { surface: Surface }) {
       data-density={density}
     >
       <header className="app-header">
-        <img className="brand-mark" src="/icons/icon-32.png" alt="" title="MingTab: from 明堂 míngtáng, the bright hall" />
+        <img className="brand-mark" src="/brand/ming-glyph.svg" alt="" title="MingTab: from 明堂 míngtáng, the bright hall" />
         <h1>MingTab</h1>
         <span className="surface-tag">{surface === 'newtab' ? 'Board' : 'Side panel'}</span>
         <input

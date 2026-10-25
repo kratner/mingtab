@@ -6,7 +6,7 @@
 // The sheet shows every concept at 128, 32 and 16 px on dark and light
 // backgrounds: small sizes are where toolbar icons fail.
 import { chromium } from '@playwright/test';
-import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
 const here = import.meta.dirname;
@@ -22,8 +22,13 @@ const names = readdirSync(iconsDir)
   .sort();
 if (ship && !names.includes(ship)) throw new Error(`--ship ${ship}: no branding/icons/${ship}.svg`);
 
-const dataUrl = (name) =>
-  'data:image/svg+xml;base64,' + Buffer.from(readFileSync(path.join(iconsDir, `${name}.svg`))).toString('base64');
+// A concept can have hand-tuned small sizes in icons/small/<name>-<size>.svg:
+// strokes that read at 128 px blur together at 16 and 32.
+const svgFor = (name, size) => {
+  const small = path.join(iconsDir, 'small', `${name}-${size}.svg`);
+  return existsSync(small) ? small : path.join(iconsDir, `${name}.svg`);
+};
+const dataUrl = (name, size) => 'data:image/svg+xml;base64,' + Buffer.from(readFileSync(svgFor(name, size))).toString('base64');
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ deviceScaleFactor: 1 });
@@ -31,7 +36,7 @@ const page = await browser.newPage({ deviceScaleFactor: 1 });
 async function renderPng(name, size, out) {
   await page.setViewportSize({ width: size, height: size });
   await page.setContent(
-    `<style>html,body{margin:0;background:transparent}</style><img src="${dataUrl(name)}" width="${size}" height="${size}">`,
+    `<style>html,body{margin:0;background:transparent}</style><img src="${dataUrl(name, size)}" width="${size}" height="${size}">`,
   );
   await page.locator('img').screenshot({ path: out, omitBackground: true });
 }

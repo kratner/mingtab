@@ -1,0 +1,63 @@
+/* Copied from kratner/four-ounces-brand tokens/tokens.css (kit v1, afded8f). Products copy, never redefine:
+   change the kit and copy again. */
+
+
+:root {
+  color-scheme: light;
+  --fo-font-display: 'Archivo Black', 'Arial Black', sans-serif;
+  --fo-font-text: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fo-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --fo-radius-sm: 6px; --fo-radius-md: 10px; --fo-radius-lg: 14px; --fo-radius-pill: 999px;
+  --fo-bg: #F4F1EA;
+  --fo-surface: #FFFFFF;
+  --fo-surface-2: #EAE5DA;
+  --fo-line: #D8D1C3;
+  --fo-text: #1A1916;
+  --fo-text-2: #3D3A34;
+  --fo-muted: #5F5A51;
+  --fo-gold: #C9A24A;
+  --fo-on-gold: #1A1916;
+  --fo-gold-ink: #7A5C14;
+  --fo-gold-soft: #F3E9CF;
+  --fo-success: #12805C;
+  --fo-danger: #B3261E;
+  --fo-warning: #7A5C14;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --fo-bg: #0E0D0B;
+    --fo-surface: #151412;
+    --fo-surface-2: #1C1A17;
+    --fo-line: #2C2A26;
+    --fo-text: #EDE8DE;
+    --fo-text-2: #C9C3B8;
+    --fo-muted: #9A948A;
+    --fo-gold: #C9A24A;
+    --fo-on-gold: #0E0D0B;
+    --fo-gold-ink: #C9A24A;
+    --fo-gold-soft: #2B2518;
+    --fo-success: #4CC79A;
+    --fo-danger: #F28B82;
+    --fo-warning: #C9A24A;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --fo-bg: #0E0D0B;
+  --fo-surface: #151412;
+  --fo-surface-2: #1C1A17;
+  --fo-line: #2C2A26;
+  --fo-text: #EDE8DE;
+  --fo-text-2: #C9C3B8;
+  --fo-muted: #9A948A;
+  --fo-gold: #C9A24A;
+  --fo-on-gold: #0E0D0B;
+  --fo-gold-ink: #C9A24A;
+  --fo-gold-soft: #2B2518;
+  --fo-success: #4CC79A;
+  --fo-danger: #F28B82;
+  --fo-warning: #C9A24A;
+}

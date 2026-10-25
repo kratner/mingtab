@@ -33,7 +33,7 @@ is in the extension under **Settings → About MingTab**.
   shortcuts in the address bar (`to/ docs`).
 - **Sync** across Chrome profiles and computers, through a small sync service on your own
   Cloudflare account, signed in with Google.
-- **Light and dark themes**, in a black-and-yellow KR scheme or a terracotta one.
+- **Light and dark themes**, in the Four Ounces gold scheme or a terracotta one.
 
 | Board in light mode | Side panel | Search |
 |---|---|---|
@@ -259,9 +259,14 @@ sync can be added without migrating data.
 **Screenshots** in this README come from demo data, never personal collections:
 `npm run build && node scripts/readme-screenshots.mjs`.
 
-**Branding**: KR palette (`#FFF200` on black, from the KR mark). Icon concepts are in
-`branding/icons/`; `node branding/render.mjs` renders a comparison sheet, and
-`node branding/render.mjs --ship <name>` installs one as the extension icon (currently `d-ming`, 明; the 明-in-doorway logo `e-ming-doorway` is used for About and this README).
+**Branding**: MingTab is a Four Ounces tool. Colours and fonts come from the
+[Four Ounces kit](https://github.com/kratner/four-ounces-brand): `src/app/four-ounces-tokens.css` is a copy of its
+tokens (Old Gold `#C9A24A` fills, gold-ink for gold text, warm ink and paper), and `public/fonts/` bundles Inter,
+Archivo Black and JetBrains Mono with their OFL licences. Icon concepts are in `branding/icons/`, with hand-tuned
+16 and 32 px versions in `branding/icons/small/`; `node branding/render.mjs` renders a comparison sheet, and
+`node branding/render.mjs --ship <name>` installs one as the extension icon (currently `d-ming`, 明 as an Old Gold
+line on the ink tile; the 明-in-doorway logo `e-ming-doorway` is used for About and this README). The old KR
+versions are in `branding/retired/`.
 
 ## Roadmap
 

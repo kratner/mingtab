@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 // new-tab page (same extension origin) and survives restarts.
 
 export type Theme = 'system' | 'light' | 'dark';
-export type Scheme = 'kr' | 'terracotta';
+export type Scheme = 'four-ounces' | 'terracotta';
 export type SortMode = 'custom' | 'az' | 'za' | 'newest' | 'oldest';
 export type Density = 'comfortable' | 'compact';
 
@@ -39,6 +39,8 @@ export function applyTheme(theme: Theme, scheme: Scheme) {
   const root = document.documentElement.dataset;
   if (theme === 'system') delete root.theme;
   else root.theme = theme;
-  if (scheme === 'kr') delete root.scheme;
-  else root.scheme = scheme;
+  // Four Ounces is the default and has no attribute. Anything else saved
+  // before 0.8.0 (the retired 'kr' scheme) falls back to it too.
+  if (scheme === 'terracotta') root.scheme = scheme;
+  else delete root.scheme;
 }

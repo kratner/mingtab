@@ -16,6 +16,7 @@ import { displayTitle } from '../db/schema';
 import { findDuplicates, type DuplicateGroup } from '../dedupe/dedupe';
 import { downloadJson, readJsonFile, timestamp } from './files';
 import { SyncSettings } from '../sync/SyncSettings';
+import { FourOuncesMark } from './FourOuncesMark';
 import type { Scheme, Theme } from './prefs';
 
 interface Props {
@@ -34,7 +35,7 @@ interface Props {
 }
 
 const SCHEMES: { id: Scheme; label: string }[] = [
-  { id: 'kr', label: 'KR (black and yellow)' },
+  { id: 'four-ounces', label: 'Four Ounces (gold)' },
   { id: 'terracotta', label: 'Terracotta' },
 ];
 
@@ -398,6 +399,9 @@ export function About() {
           again when you need it.
         </p>
         {version && <p className="muted">Version {version}</p>}
+        <p className="by-fo">
+          <FourOuncesMark /> A Four Ounces tool
+        </p>
       </div>
     </section>
   );
