@@ -17,6 +17,7 @@ import { findDuplicates, type DuplicateGroup } from '../dedupe/dedupe';
 import { downloadJson, readJsonFile, timestamp } from './files';
 import { SyncSettings } from '../sync/SyncSettings';
 import { FourOuncesMark } from './FourOuncesMark';
+import { AUTO_KEY, checkForUpdate, readUpdateState, runningVersion, isNewer, type UpdateState } from '../update/update';
 import type { Scheme, Theme } from './prefs';
 
 interface Props {
@@ -118,6 +119,7 @@ export function Settings({
 
       <TobyImport hasData={hasData} onImported={onDone} />
       <Backup />
+      <Updates />
       <About />
     </div>
   );
@@ -373,6 +375,66 @@ function Backup() {
         </p>
       )}
       {status && <p role="status">{status}</p>}
+    </section>
+  );
+}
+
+/** Update checks: GitHub Releases, about once a day (see src/update/update.ts). */
+function Updates() {
+  const [state, setState] = useState<UpdateState | null>(null);
+  const [auto, setAuto] = useState(true);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    if (typeof chrome === 'undefined' || !chrome.storage) return;
+    void readUpdateState().then((v) => {
+      setState(v.state);
+      setAuto(v.auto);
+    });
+  }, []);
+  const running = typeof chrome !== 'undefined' && chrome.runtime ? runningVersion() : '';
+  const latest = state?.latest;
+  return (
+    <section className="settings-section" aria-labelledby="updates-heading">
+      <h3 id="updates-heading">Updates</h3>
+      <p>
+        You have MingTab {running}.{' '}
+        {state &&
+          (state.error && !latest
+            ? `Couldn't check for updates: ${state.error}.`
+            : latest && isNewer(latest.version, running)
+              ? `MingTab ${latest.version} is available.`
+              : 'This is the latest version.')}
+        {state && <span className="muted"> Last checked {new Date(state.checkedAt).toLocaleString()}.</span>}
+      </p>
+      <p>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            setState(await checkForUpdate());
+            setBusy(false);
+          }}
+        >
+          {busy ? 'Checking…' : 'Check now'}
+        </button>
+      </p>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={auto}
+          onChange={(e) => {
+            setAuto(e.target.checked);
+            void chrome.storage.local.set({ [AUTO_KEY]: e.target.checked });
+          }}
+        />
+        Check for updates once a day
+      </label>
+      <p className="muted">
+        To update: download the new zip, unzip it over your MingTab folder (replace the files), then click{' '}
+        <b>Restart MingTab</b> when it appears. Your collections stay put. If MingTab doesn't come back, click its reload
+        button in <code>chrome://extensions</code>.
+      </p>
     </section>
   );
 }

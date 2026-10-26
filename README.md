@@ -88,8 +88,19 @@ the Worker in `worker/` to your Cloudflare account and point `sync.config.json` 
 
 ### Updating
 
-Download the new zip and unzip it **over the same folder** (replace everything), then click the
-reload icon (↻) on MingTab in `chrome://extensions`. Your data stays.
+MingTab checks this repository's Releases about once a day. When a newer version is out, the toolbar
+button shows **↑** and the board and side panel show a notice:
+
+1. Click **Download** and unzip the zip **over the same folder** (replace everything).
+2. Within a minute MingTab notices the new files and the notice changes to **Restart MingTab**. Click
+   it. Open MingTab pages close and the new version starts. Your data stays.
+
+**Skip this version** quiets the notice until the next release. **Settings → Updates** has **Check now**
+and a switch for the daily check. If MingTab doesn't come back after the restart, click its reload icon
+(↻) in `chrome://extensions`.
+
+Chrome only updates extensions on its own when they come from the Chrome Web Store, so the unzip step
+stays manual.
 
 ### Bring over your Toby data (optional)
 
@@ -177,8 +188,9 @@ The phone version (a web app, since Chrome on phones doesn't run extensions) is 
 | `favicon` | Show site icons from Chrome's own cache (no third-party icon service) |
 | `history` (optional) | Only if you turn on history search; Chrome asks first |
 | `identity` | Google sign-in for sync |
-| `alarms` | Sync every minute |
+| `alarms` | Sync every minute, and check for updates about once a day |
 | Access to `mingtab-sync.mingtab-sync.workers.dev` | The sync service, and no other site |
+| Reading `api.github.com` (needs no permission) | The daily update check reads this repository's latest release; nothing is sent |
 | Address-bar keyword `to/` | `to/ docs` opens your shortcut (Toby's keyword too: only one can have it) |
 | New-tab page override | Show the board on new tabs |
 
@@ -199,6 +211,9 @@ cd mingtab
 npm ci
 npm run build      # writes dist/; Load unpacked that folder
 ```
+
+After `git pull && npm run build`, a MingTab loaded from `dist/` offers **Restart MingTab** within a
+minute, the same as after unzipping a release.
 
 ### Making a release
 

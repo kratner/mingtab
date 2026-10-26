@@ -7,6 +7,7 @@ import { DndProvider } from '../dnd/DndProvider';
 import { SearchResults } from '../search/SearchResults';
 import { requestSync } from '../sync/state';
 import { OpenTabs } from '../tabs/OpenTabs';
+import { UpdateBanner } from '../update/UpdateBanner';
 import { applyTheme, usePref, type Density, type Scheme, type SortMode, type Theme } from './prefs';
 import { Settings } from './Settings';
 import { NextView } from './NextView';
@@ -150,6 +151,7 @@ export function App({ surface }: { surface: Surface }) {
           ⚙
         </button>
       </header>
+      <UpdateBanner />
 
       {view === 'settings' ? (
         <main className="app-main">

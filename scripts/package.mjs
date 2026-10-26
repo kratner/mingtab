@@ -37,7 +37,7 @@ writeFileSync(
 ## Install or update MingTab ${version}
 
 1. Download **mingtab-${version}.zip** below and unzip it into a folder you'll keep, for example \`~/Applications/MingTab\` or \`C:\\Users\\<you>\\MingTab\`. To **update**, unzip over the same folder (replace everything).
-2. Open \`chrome://extensions\`, turn on **Developer mode**, click **Load unpacked** and choose that folder. (Updating: click ↻ on MingTab instead.)
+2. Open \`chrome://extensions\`, turn on **Developer mode**, click **Load unpacked** and choose that folder. (Updating: MingTab shows **Restart MingTab** within a minute; click it, or ↻ on MingTab in \`chrome://extensions\`.)
 3. Pin MingTab, then **Settings → Sign in with Google** to sync.
 
 Every copy has the same extension ID (\`${'jclkedgbnlmbonoihhobgnmdoehmddpo'}\`), so where you unzip it doesn't matter. Full guide: README.md.

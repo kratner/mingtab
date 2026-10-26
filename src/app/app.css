@@ -145,6 +145,41 @@ button.primary {
   color: var(--accent-text);
 }
 
+/* Links that act as buttons (Download, What's new). */
+a.button {
+  display: inline-block;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 6px;
+  padding: 5px 10px;
+  text-decoration: none;
+}
+
+a.button:hover {
+  background: var(--surface-2);
+}
+
+a.button.primary {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--accent-text);
+}
+
+.update-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.update-banner > span {
+  flex: 1 1 260px;
+}
+
 input,
 select,
 textarea {
@@ -597,7 +632,8 @@ a.card-title:hover {
 
 /* ---- open tabs (M2) ---- */
 
-button.small {
+button.small,
+a.button.small {
   padding: 2px 8px;
   font-size: 12px;
 }

@@ -13,6 +13,8 @@ import path from 'node:path';
 // The private half of that key is handed to tests via process.env.
 
 export const SYNC_PORT = 8789;
+/** e2e/update.spec.ts serves a fake GitHub "latest release" here. */
+export const UPDATE_PORT = 8790;
 const root = path.resolve(import.meta.dirname, '..');
 const workerDir = path.join(root, 'worker');
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
@@ -37,7 +39,12 @@ export default async function globalSetup() {
   const syncUrl = `http://127.0.0.1:${SYNC_PORT}`;
   execFileSync(npx, ['vite', 'build', '--outDir', 'dist-test', '--emptyOutDir'], {
     cwd: root,
-    env: { ...process.env, VITE_SYNC_URL: syncUrl, VITE_CONFIG_NATIVE_IGNORE_WARNING: 'true' },
+    env: {
+      ...process.env,
+      VITE_SYNC_URL: syncUrl,
+      VITE_UPDATE_URL: `http://127.0.0.1:${UPDATE_PORT}/releases/latest`,
+      VITE_CONFIG_NATIVE_IGNORE_WARNING: 'true',
+    },
     stdio: 'ignore',
   });
 
