@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- d-ming at 32 px: the 128 drawing with heavier strokes so they stay solid when scaled down. -->
-  <rect width="128" height="128" rx="28" fill="#0E0D0B"/>
+  <!-- MingTab icon at 32 px: the 128 drawing with heavier strokes so they stay solid when scaled down. -->
+  <rect width="128" height="128" rx="28" fill="#4A1C16"/>
   <g fill="none" stroke="#C9A24A" stroke-width="14" stroke-linejoin="round" stroke-linecap="round">
     <!-- 日 -->
     <path d="M20 36 H49 V89 H20 Z"/>

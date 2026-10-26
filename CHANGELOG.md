@@ -3,6 +3,14 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Changed
+
+- **Icon on its own ground.** 明 stays in Old Gold, now on a lacquer-red tile instead of black, so MingTab is easy to
+  pick out next to the other Four Ounces tools (Agent Workspace is indigo, Social Hub jade). The pixel-grid 16 px and
+  32 px drawings are unchanged apart from the colour.
+
 ## 0.8.0 — 2026-10-25
 
 ### New
