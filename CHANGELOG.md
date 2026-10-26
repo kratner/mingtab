@@ -5,6 +5,14 @@ What's new in each MingTab release. Downloads and install steps are on the
 
 ## Unreleased
 
+### New
+
+- **Update notices.** MingTab checks for a new release about once a day. When one is out, the toolbar
+  button shows ↑ and the board shows **Download**, **What's new** and **Skip this version**. After you
+  unzip the new version over your MingTab folder, the notice changes to **Restart MingTab**: one click
+  and the new version is running. **Settings → Updates** has **Check now** and a switch for the daily
+  check. Install this release by hand once; after that, MingTab tells you about each new one.
+
 ### Changed
 
 - **Icon on its own ground.** 明 stays in Old Gold, now on a lacquer-red tile instead of black, so MingTab is easy to
@@ -25,11 +33,6 @@ What's new in each MingTab release. Downloads and install steps are on the
   selected: press Enter to keep it, or type a new name.
 - **Close a tab from the Open tabs pane.** Hover a tab and click ✕.
 - **Every icon button has a tooltip**, including collapse, star, add a link and delete.
-- **Update notices.** MingTab checks for a new release about once a day. When one is out, the toolbar
-  button shows ↑ and the board shows **Download**, **What's new** and **Skip this version**. After you
-  unzip the new version over your MingTab folder, the notice changes to **Restart MingTab**: one click
-  and the new version is running. **Settings → Updates** has **Check now** and a switch for the daily
-  check. From this release on, you'll hear about updates in MingTab itself.
 
 ## 0.7.0 — 2026-10-23
 
