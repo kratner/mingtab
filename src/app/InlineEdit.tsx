@@ -41,6 +41,8 @@ export function InlineEdit({
         type="button"
         className={`inline-edit ${className ?? ''}`}
         aria-label={`${label}: ${value || placeholder || ''}. Click to edit`}
+        // The full text on hover, for titles cut short by their column.
+        title={value || undefined}
         onClick={() => {
           setDraft(value);
           setEditing(true);

@@ -331,9 +331,10 @@ a {
   align-items: center;
   padding: 0 8px 8px;
   color: var(--muted);
+  font-family: var(--fo-font-display);
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .sidebar ul {
@@ -397,9 +398,14 @@ a {
   margin-bottom: 12px;
 }
 
+/* Headlines are Archivo Black in capitals, as on fourounces.live; text stays Inter. */
 .space-toolbar h2 {
   margin: 0;
-  font-size: 17px;
+  font-family: var(--fo-font-display);
+  font-weight: 400;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .space-toolbar button {
@@ -442,6 +448,15 @@ a {
 .collection-title {
   font-weight: 600;
   flex: 0 1 auto;
+}
+
+/* The shown title only: the rename box keeps ordinary type, so what you type looks as typed. */
+.inline-edit.collection-title {
+  font-family: var(--fo-font-display);
+  font-weight: 400;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .collection-actions {
@@ -661,11 +676,12 @@ button:disabled {
 
 .pane-title {
   margin: 0 0 8px;
+  font-family: var(--fo-font-display);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .pane-status {

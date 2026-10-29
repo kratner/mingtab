@@ -3,6 +3,14 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Changed
+
+- **Brand headlines.** The space name, collection titles and the Spaces and Open tabs labels are set in
+  Archivo Black capitals, as on fourounces.live. Everything else stays in Inter. Hover a collection title
+  to see it in full when it's cut short; renaming one still shows your text as you type it.
+
 ## 0.9.0 — 2026-10-25
 
 ### New
