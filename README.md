@@ -279,9 +279,9 @@ sync can be added without migrating data.
 tokens (Old Gold `#C9A24A` fills, gold-ink for gold text, warm ink and paper), and `public/fonts/` bundles Inter,
 Archivo Black and JetBrains Mono with their OFL licences. Icon concepts are in `branding/icons/`, with hand-tuned
 16 and 32 px versions in `branding/icons/small/`; `node branding/render.mjs` renders a comparison sheet, and
-`node branding/render.mjs --ship <name>` installs one as the extension icon (currently `d-ming`, 明 as an Old Gold
-line on the ink tile; the 明-in-doorway logo `e-ming-doorway` is used for About and this README). The old KR
-versions are in `branding/retired/`.
+`node branding/render.mjs --ship <name>` installs one as the extension icon (currently `h-ming-seal`, a red seal:
+cream 明 on vermilion `#8A2A1E`; the 明-in-doorway logo `e-ming-doorway`, in the same seal colours, is used for About
+and this README). Earlier versions, KR and gold-on-ink, are in `branding/retired/`.
 
 ## Roadmap
 
