@@ -10,6 +10,8 @@ What's new in each MingTab release. Downloads and install steps are on the
 - **Brand headlines.** The space name, collection titles and the Spaces and Open tabs labels are set in
   Archivo Black capitals, as on fourounces.live. Everything else stays in Inter. Hover a collection title
   to see it in full when it's cut short; renaming one still shows your text as you type it.
+- **Red seal icon.** 明 in cream on vermilion, like a seal stamp, replacing the lacquer tile. It reads as
+  red at 16 px and stands out in a dark tab strip, where the dark lacquer tile all but disappeared.
 
 ## 0.9.0 — 2026-10-25
 
