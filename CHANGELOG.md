@@ -3,7 +3,7 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
-## Unreleased
+## 0.10.0 — 2026-10-30
 
 ### Changed
 
