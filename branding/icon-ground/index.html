@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MingTab icon grounds</title>
+<!-- Local comparison page for MingTab's icon background. Each option is the shipping 明 drawing
+     (branding/icons/g-ming-lacquer.svg and its small/ 32 px cut) recoloured, shown at real size in
+     Chrome-like tab strips and toolbars. Nothing here ships. -->
+<style>
+@font-face { font-family: 'Inter'; src: url('../../public/fonts/Inter.latin.woff2') format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'Archivo Black'; src: url('../../public/fonts/ArchivoBlack-Regular.latin.woff2') format('woff2'); }
+:root { color-scheme: dark; --bg: #0E0D0B; --surface: #151412; --line: #2C2A26; --text: #EDE8DE; --text-2: #C9C3B8; --muted: #9A948A; --gold: #C9A24A; --gold-soft: #2B2518; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 Inter, system-ui, sans-serif; }
+main { max-width: 1280px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font: 400 28px 'Archivo Black', sans-serif; letter-spacing: .02em; text-transform: uppercase; margin: 0 0 6px; }
+.lede { color: var(--text-2); max-width: 78ch; margin: 0 0 8px; }
+.option { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; padding: 26px 0; border-top: 1px solid var(--line); }
+@media (max-width: 900px) { .option { grid-template-columns: 1fr; } }
+.option h2 { margin: 0 0 4px; font: 600 19px Inter, sans-serif; display: flex; align-items: center; gap: 10px; }
+.option h2 b { font: 400 13px 'Archivo Black', sans-serif; color: var(--gold); letter-spacing: .04em; }
+.swatch { width: 16px; height: 16px; border-radius: 4px; border: 1px solid #ffffff33; }
+.fit { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin: 2px 0 8px; }
+.fit.in { background: var(--gold-soft); color: var(--gold); }
+.fit.off { background: #2a1f1d; color: #E6A99B; }
+.option p { margin: 0 0 6px; color: var(--text-2); font-size: 14px; }
+.nums { font-size: 12px; color: var(--muted); }
+.scenes { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; align-content: start; align-items: start; }
+.scene { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.scene small { display: block; font-size: 11px; padding: 4px 8px; }
+/* Chrome-like tab strips: dark (frame #202124, active tab #35363A) and light (#DEE1E6 / #FFFFFF). */
+.strip { display: flex; align-items: flex-end; gap: 2px; padding: 8px 8px 0; height: 44px; }
+.tab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 8px 8px 0 0; font: 12px system-ui, sans-serif; width: 120px; white-space: nowrap; overflow: hidden; }
+.tab img { width: 16px; height: 16px; flex: none; }
+.dark .strip { background: #202124; } .dark .tab { color: #9AA0A6; } .dark .tab.on { background: #35363A; color: #E8EAED; } .dark small { background: #35363A; color: #9AA0A6; }
+.light .strip { background: #DEE1E6; } .light .tab { color: #5F6368; } .light .tab.on { background: #FFFFFF; color: #202124; } .light small { background: #FFFFFF; color: #5F6368; }
+.toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 14px; height: 40px; padding: 0 12px; }
+.toolbar img { width: 16px; height: 16px; }
+.toolbar i { width: 16px; height: 16px; border-radius: 50%; display: inline-block; opacity: .55; }
+.dark .toolbar { background: #35363A; } .dark .toolbar i { background: #9AA0A6; }
+.light .toolbar { background: #FFFFFF; } .light .toolbar i { background: #5F6368; }
+.family { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px; }
+.family img { width: 32px; height: 32px; }
+.family img.big { width: 96px; height: 96px; }
+.dark .family { background: #202124; } .light .family { background: #F1F3F4; }
+</style>
+</head>
+<body>
+<main>
+  <h1>MingTab icon grounds</h1>
+  <p class="lede">Eight backgrounds for the 明 icon, at real size. The first two panels in each row are browser tab
+    strips, dark then light: that's where your screenshot came from. Then the pinned toolbar button, and the icon next
+    to its Four Ounces siblings, Agent Workspace (indigo) and Social Hub (jade).</p>
+  <p class="lede">Every dark background nearly vanishes in Chrome's dark tab strip: its contrast with the tab is only
+    1.1 to 1.6, so you see a gold glyph on a smudge rather than a tile. Options F, G and H change that: a lighter
+    tile, a seal-red tile, or a gold edge.</p>
+  <div id="options"></div>
+</main>
+<script>
+// 明 from the shipping icon: 128 drawing for large sizes, the heavier 32 px cut for toolbar and tab sizes.
+const GLYPH = '<path d="M20 36 H49 V89 H20 Z"/><path d="M20 62 H49"/><path d="M66 23 H102 V98 Q102 106 94 106 H89"/><path d="M66 23 V76 Q66 95 56 105"/><path d="M66 47 H102"/><path d="M66 70 H102"/>';
+const icon = (ground, ink, { stroke = 10, rim = null } = {}) =>
+  'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">` +
+    `<rect width="128" height="128" rx="28" fill="${ground}"/>` +
+    (rim ? `<rect x="4" y="4" width="120" height="120" rx="24" fill="none" stroke="${rim}" stroke-width="8"/>` : '') +
+    `<g transform="translate(3 0)" fill="none" stroke="${ink}" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round">${GLYPH}</g></svg>`);
+const SIBLINGS = {
+  aw: 'data:image/svg+xml,' + encodeURIComponent('<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><rect width="128" height="128" rx="28" fill="#1A2236"/><g fill="none" stroke="#C9A24A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="30" width="80" height="68" rx="14"/><path d="M50.7 30V98M77.3 30V98"/></g><rect x="32" y="40" width="11" height="18" rx="4" fill="#C9A24A"/></svg>'),
+  sh: 'data:image/svg+xml,' + encodeURIComponent('<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><rect width="128" height="128" rx="28" fill="#123029"/><g fill="none" stroke="#C9A24A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><circle cx="100.0" cy="64.0" r="7"/><path d="M81.0 64.0L91.0 64.0"/><circle cx="82.0" cy="95.2" r="7"/><path d="M72.5 78.7L77.5 87.4"/><circle cx="46.0" cy="95.2" r="7"/><path d="M55.5 78.7L50.5 87.4"/><circle cx="28.0" cy="64.0" r="7"/><path d="M47.0 64.0L37.0 64.0"/><circle cx="46.0" cy="32.8" r="7"/><path d="M55.5 49.3L50.5 40.6"/><circle cx="82.0" cy="32.8" r="7"/><path d="M72.5 49.3L77.5 40.6"/><circle cx="64" cy="64" r="9"/></g></svg>'),
+};
+const GOLD = '#C9A24A', INK = '#0E0D0B';
+const OPTIONS = [
+  { l: 'A', name: 'Lacquer (current)', ground: '#4A1C16', ink: GOLD, fit: 'in', nums: 'Gold on ground 6.0:1 · against dark tab 1.18', note: 'The current icon. A deep red-brown that reads as brown at small sizes and blends into dark tab strips.' },
+  { l: 'B', name: 'Cinnabar', ground: '#6E1F18', ink: GOLD, fit: 'in', nums: 'Gold on ground 4.7:1 · against dark tab 1.08', note: 'A clearer red, so it looks red rather than brown. Still just passes the brand\'s 4.5:1 gold rule, and still blends into a dark tab strip.' },
+  { l: 'C', name: 'Oxblood', ground: '#3B1218', ink: GOLD, fit: 'in', nums: 'Gold on ground 6.8:1 · against dark tab 1.35', note: 'Deeper and cooler than lacquer, a wine red. Richer next to indigo and jade, but darker still in a dark tab strip.' },
+  { l: 'D', name: 'Aubergine', ground: '#2E1A33', ink: GOLD, fit: 'in', nums: 'Gold on ground 6.7:1 · against dark tab 1.33', note: 'Moves MingTab off red entirely to a deep purple, distinct from indigo and jade. Gold on purple is a classic pairing.' },
+  { l: 'E', name: 'Ink (the original)', ground: '#0E0D0B', ink: GOLD, fit: 'in', nums: 'Gold on ground 8.1:1 · against dark tab 1.61', note: 'The 0.8.0 icon: the studio\'s own ink. Highest gold contrast, but MingTab no longer has its own colour in the family.' },
+  { l: 'F', name: 'Gold tile, ink 明', ground: GOLD, ink: INK, fit: 'off', nums: 'Ink on gold 8.1:1 · against dark tab 5.0', note: 'Inverted: a solid Old Gold tile with a dark glyph. By far the most visible in a dark tab strip and toolbar. Breaks the family rule (gold glyph on a dark ground), so it would stand apart from Agent Workspace and Social Hub.' },
+  { l: 'G', name: 'Red seal', ground: '#8A2A1E', ink: '#F4EAD5', fit: 'off', nums: 'Cream on red 8.5:1 · against dark tab 1.40', note: 'Like a Chinese seal stamp: cream 明 on vermilion. Very fitting for the character, bright enough to read as red at 16 px. Off the family rule (cream, not gold).' },
+  { l: 'H', name: 'Ink with a gold rim', ground: '#0E0D0B', ink: GOLD, rim: GOLD, fit: 'off', nums: 'Gold on ground 8.1:1 · the rim outlines the tile', note: 'The original ink tile with a thin gold edge, so the tile\'s shape shows in a dark tab strip. A small change to the family rule (adds a rim).' },
+];
+document.getElementById('options').innerHTML = OPTIONS.map((o) => {
+  const small = icon(o.ground, o.ink, { stroke: 14, rim: o.rim }), big = icon(o.ground, o.ink, { rim: o.rim });
+  const strip = (cls) => `<div class="scene ${cls}"><div class="strip"><div class="tab on"><img src="${small}" alt="">MingTab</div><div class="tab"><img src="${SIBLINGS.aw}" alt="">Inbox (151,403)</div></div><small>Tab strip, ${cls}</small></div>`;
+  const bar = (cls) => `<div class="scene ${cls}"><div class="toolbar"><i></i><i></i><img src="${small}" alt=""><i></i></div><small>Toolbar, ${cls}</small></div>`;
+  return `<section class="option" aria-labelledby="h-${o.l}">
+    <div><h2 id="h-${o.l}"><b>${o.l}</b><span class="swatch" style="background:${o.ground}"></span>${o.name}</h2>
+      <span class="fit ${o.fit}">${o.fit === 'in' ? 'Keeps the family rule: gold glyph, dark ground' : 'Changes the family rule'}</span>
+      <p>${o.note}</p><p class="nums">${o.nums}</p></div>
+    <div class="scenes">${strip('dark')}${strip('light')}${bar('dark')}${bar('light')}
+      <div class="scene dark"><div class="family"><img src="${SIBLINGS.aw}" alt=""><img src="${small}" alt=""><img src="${SIBLINGS.sh}" alt=""><img class="big" src="${big}" alt=""></div><small>With the family, dark</small></div>
+      <div class="scene light"><div class="family"><img src="${SIBLINGS.aw}" alt=""><img src="${small}" alt=""><img src="${SIBLINGS.sh}" alt=""><img class="big" src="${big}" alt=""></div><small>With the family, light</small></div>
+    </div></section>`;
+}).join('');
+</script>
+</body>
+</html>

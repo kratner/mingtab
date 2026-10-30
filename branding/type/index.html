@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MingTab type options</title>
+<!-- Local comparison page for choosing MingTab's font styling. Screenshots come from
+     prototypes.mjs (the real extension on demo data). Nothing here ships. -->
+<style>
+@font-face { font-family: 'Inter'; src: url('../../public/fonts/Inter.latin.woff2') format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'Archivo Black'; src: url('../../public/fonts/ArchivoBlack-Regular.latin.woff2') format('woff2'); }
+:root { color-scheme: dark; --bg: #0E0D0B; --surface: #151412; --surface-2: #1C1A17; --line: #2C2A26; --text: #EDE8DE; --text-2: #C9C3B8; --muted: #9A948A; --gold: #C9A24A; --gold-soft: #2B2518; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 Inter, system-ui, sans-serif; }
+main { max-width: 1440px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font: 400 28px 'Archivo Black', sans-serif; letter-spacing: .02em; text-transform: uppercase; margin: 0 0 6px; }
+.lede { color: var(--text-2); max-width: 75ch; margin: 0 0 20px; }
+.controls { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 0; background: var(--bg); border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.controls span { color: var(--muted); font-size: 13px; margin-right: 4px; }
+.controls button { font: 500 13px Inter, sans-serif; color: var(--text); background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.controls button[aria-pressed='true'] { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+.option { display: grid; grid-template-columns: minmax(0, 330px) minmax(0, 1fr); gap: 24px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+@media (max-width: 900px) { .option { grid-template-columns: 1fr; } }
+.option h2 { margin: 0 0 4px; font: 600 20px Inter, sans-serif; }
+.option h2 b { font: 400 13px 'Archivo Black', sans-serif; color: var(--gold); margin-right: 8px; letter-spacing: .04em; }
+.fit { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin: 2px 0 10px; }
+.fit.in { background: var(--gold-soft); color: var(--gold); }
+.fit.off { background: #2a1f1d; color: #E6A99B; }
+.option p { margin: 0 0 8px; color: var(--text-2); }
+.option dl { margin: 10px 0 0; font-size: 14px; }
+.option dt { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-top: 10px; }
+.option dd { margin: 2px 0 0; color: var(--text-2); }
+.shot { margin: 0; }
+.shot img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; }
+.shot a { display: block; }
+.shot figcaption { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+</style>
+</head>
+<body>
+<main>
+  <h1>MingTab type options</h1>
+  <p class="lede">Six ways to set MingTab's type, shown on the real extension with the README demo data. Only the
+    fonts and type sizes change; colours, layout and spacing are the same in every option. Use the buttons to switch
+    between a close-up, the whole board, and the side panel, in dark or light. Click any picture to open it full size.</p>
+
+  <div class="controls" role="group" aria-label="View">
+    <span>View</span>
+    <button type="button" data-view="detail" aria-pressed="true">Close-up</button>
+    <button type="button" data-view="board" aria-pressed="false">Whole board</button>
+    <button type="button" data-view="panel" aria-pressed="false">Side panel</button>
+    <span style="margin-left:12px">Mode</span>
+    <button type="button" data-mode="dark" aria-pressed="true">Dark</button>
+    <button type="button" data-mode="light" aria-pressed="false">Light</button>
+  </div>
+
+  <div id="options"></div>
+</main>
+<script>
+const OPTIONS = [
+  { id: 'a-current', letter: 'A', name: 'Current: Inter throughout', fit: 'in', fitText: 'Four Ounces kit, as specified',
+    what: 'Inter for everything people read or click. Archivo Black only for the MingTab name.',
+    good: 'Plain and very legible at small sizes. Nothing competes with your own collection and tab names.',
+    cost: 'Headings barely stand apart from the cards: the space name and collection titles are just bolder Inter.' },
+  { id: 'b-brand-headlines', letter: 'B', name: 'Brand headlines: Archivo Black titles', fit: 'in', fitText: 'Kit fonts, used more boldly',
+    what: 'Archivo Black in capitals for the space name, collection titles and the Spaces and Open tabs labels. Inter for everything else.',
+    good: 'The strongest Four Ounces look, matching the fourounces.live headings. Collections are easy to spot when scrolling.',
+    cost: 'Capitals take more room, so long titles get cut short sooner ("OCTOBER RELE…"). Twenty bold capital headings on one screen can feel loud.' },
+  { id: 'c-archivo', letter: 'C', name: 'Archivo text', fit: 'off', fitText: 'Off kit: the kit chose Inter over Archivo',
+    what: 'Archivo, the regular-weight family of Archivo Black, for all text. Archivo Black for the space name.',
+    good: 'One type family from the wordmark down to the smallest label, a little narrower and more characterful than Inter.',
+    cost: 'Hard to tell apart from A at a glance. Social Hub already moved from Archivo to Inter in the rebrand, so this would make MingTab the odd one out.' },
+  { id: 'd-fraunces', letter: 'D', name: 'Fraunces titles: a warm serif', fit: 'off', fitText: 'Off kit: was a candidate in the kit\'s type specimen',
+    what: 'Fraunces, a soft serif, for the space name, collection titles and the space list. Inter for cards and controls.',
+    good: 'Calm and bookish, in keeping with the "bright hall" idea: collections read like shelves with labels. Clear difference between titles and content.',
+    cost: 'Adds a third typeface to the brand. The space list in the sidebar becomes serif too, which is a matter of taste.' },
+  { id: 'e-instrument-serif', letter: 'E', name: 'Instrument Serif titles: editorial', fit: 'off', fitText: 'Off kit: was a candidate in the kit\'s type specimen',
+    what: 'Instrument Serif, a tall, light display serif, for the space name, collection titles, window names and the Open tabs label, set larger.',
+    good: 'The most distinctive option, like a magazine contents page.',
+    cost: 'Its thin strokes get faint in dark mode and at side-panel sizes. The bigger titles push content down, so fewer cards fit on screen.' },
+  { id: 'f-mono-details', letter: 'F', name: 'Mono details: JetBrains Mono for metadata', fit: 'in', fitText: 'Kit fonts (mono is the kit\'s code font)',
+    what: 'Inter for titles and card names. JetBrains Mono for web addresses, counts, tags and section labels. Slightly tighter, bolder headings.',
+    good: 'Addresses are easier to scan and clearly separate from titles. Feels precise, like a well-made tool.',
+    cost: 'A little busier, and it leans "developer tool", which may or may not be the feel you want.' },
+];
+const VIEWS = { detail: 'Close-up of the header and first collection', board: 'Whole board', panel: 'Side panel (light mode)' };
+let view = 'detail', mode = 'dark';
+const src = (id) => view === 'panel' ? `shots/${id}-panel-light.png` : `shots/${id}-${view}-${mode}.png`;
+function render() {
+  document.getElementById('options').innerHTML = OPTIONS.map((o) => `
+    <section class="option ${view === 'panel' ? 'panel' : ''}" aria-labelledby="h-${o.id}">
+      <div>
+        <h2 id="h-${o.id}"><b>${o.letter}</b>${o.name}</h2>
+        <span class="fit ${o.fit}">${o.fitText}</span>
+        <p>${o.what}</p>
+        <dl><dt>Good</dt><dd>${o.good}</dd><dt>Cost</dt><dd>${o.cost}</dd></dl>
+      </div>
+      <figure class="shot"><a href="${src(o.id)}" target="_blank"><img src="${src(o.id)}" style="width:${{ detail: 700, board: 1360, panel: 400 }[view]}px" alt="Option ${o.letter}: ${VIEWS[view]}" loading="lazy"></a>
+        <figcaption>${VIEWS[view]}${view === 'panel' ? '' : `, ${mode}`}</figcaption></figure>
+    </section>`).join('');
+}
+document.querySelectorAll('.controls button').forEach((b) => b.addEventListener('click', () => {
+  if (b.dataset.view) view = b.dataset.view; else mode = b.dataset.mode;
+  document.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-pressed', x.dataset.view === view));
+  document.querySelectorAll('[data-mode]').forEach((x) => x.setAttribute('aria-pressed', x.dataset.mode === mode));
+  render();
+}));
+render();
+</script>
+</body>
+</html>

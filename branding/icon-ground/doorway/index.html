@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>MingTab doorway as a red seal</title>
+<!-- Local preview: the 明-in-doorway logo (About page, README) redrawn as a red seal. Nothing here ships. -->
+<style>
+@font-face { font-family: 'Inter'; src: url('../../../public/fonts/Inter.latin.woff2') format('woff2'); font-weight: 100 900; }
+body { margin: 0; background: #0E0D0B; color: #EDE8DE; font: 14px/1.5 Inter, sans-serif; padding: 24px; }
+table { border-collapse: separate; border-spacing: 10px; }
+th { text-align: left; font-weight: 600; vertical-align: middle; padding-right: 12px; max-width: 230px; }
+th small { display: block; font-weight: 400; color: #9A948A; }
+td { border-radius: 10px; padding: 16px; text-align: center; vertical-align: middle; }
+td.d { background: #151412; } td.l { background: #FFFFFF; } td.gd { background: #0d1117; } td.gl { background: #F6F8FA; }
+thead td { padding: 0 0 4px; background: none !important; color: #9A948A; font-size: 12px; }
+td img { display: block; margin: auto; }
+.icon { margin-top: 8px !important; }
+</style></head><body>
+<table>
+<thead><tr><th></th><td>About page, dark (72 px)</td><td>About page, light</td><td>GitHub README, dark (96 px)</td><td>GitHub, light</td><td>Large</td></tr></thead>
+<tbody id="rows"></tbody></table>
+<script>
+const rows = [
+  ['../../../public/brand/ming-doorway.svg', 'Current', 'Gold doorway on ink, 明 cut out'],
+  ['a-seal-cut.svg', 'A · Red seal, 明 cut out', 'Red tile, cream doorway, 明 in red: the current logo in seal colours'],
+  ['b-seal-cream.svg', 'B · Cream seal', 'Cream tile, red doorway, cream 明: the other traditional seal style'],
+  ['c-seal-outline.svg', 'C · Red seal, outlined door', 'Red tile, cream doorway outline, cream 明 inside: same marks as the app icon'],
+];
+document.getElementById('rows').innerHTML = rows.map(([src, name, note]) => `<tr><th>${name}<small>${note}</small></th>
+  <td class="d"><img src="${src}" width="72" height="72"><img class="icon" src="../../../public/icons/icon-32.png" width="16" height="16" title="app icon"></td>
+  <td class="l"><img src="${src}" width="72" height="72"><img class="icon" src="../../../public/icons/icon-32.png" width="16" height="16"></td>
+  <td class="gd"><img src="${src}" width="96" height="96"></td><td class="gl"><img src="${src}" width="96" height="96"></td>
+  <td class="d"><img src="${src}" width="160" height="160"></td></tr>`).join('');
+</script></body></html>
