@@ -1231,12 +1231,21 @@ button:disabled {
 }
 
 .about .by-fo {
-  display: flex;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.about .by-fo a {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 12px;
   color: var(--muted);
-  font-size: 12px;
+  text-decoration: none;
+}
+
+.about .by-fo a:hover {
+  color: var(--text);
+  text-decoration: underline;
 }
 
 .welcome-logo {

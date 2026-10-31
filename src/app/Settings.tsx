@@ -462,7 +462,9 @@ export function About() {
         </p>
         {version && <p className="muted">Version {version}</p>}
         <p className="by-fo">
-          <FourOuncesMark /> A Four Ounces tool
+          <a href="https://fourounces.live/" target="_blank" rel="noreferrer">
+            <FourOuncesMark /> A Four Ounces tool
+          </a>
         </p>
       </div>
     </section>

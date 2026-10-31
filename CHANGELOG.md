@@ -3,6 +3,13 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Changed
+
+- **"A Four Ounces tool" links to fourounces.live.** The credit line at the bottom of About opens the Four Ounces
+  site in a new tab.
+
 ## 0.10.0 — 2026-10-30
 
 ### Changed
