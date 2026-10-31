@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MingTab organise prototype</title>
+<!-- Clickable prototype of three ideas: totals and stats, select mode with actions, more ways to
+     sort and group, and Chrome bookmarks in the sidebar and in search. Runs on made-up data in
+     this page; nothing here ships or touches the extension. Open the file directly in Chrome. -->
+<link rel="stylesheet" href="../../src/app/four-ounces-tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url('../../public/fonts/Inter.latin.woff2') format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'Archivo Black'; src: url('../../public/fonts/ArchivoBlack-Regular.latin.woff2') format('woff2'); }
+:root { --bg: var(--fo-bg); --surface: var(--fo-surface); --surface-2: var(--fo-surface-2); --text: var(--fo-text);
+  --muted: var(--fo-muted); --accent: var(--fo-gold); --accent-text: var(--fo-on-gold); --accent-ink: var(--fo-gold-ink);
+  --accent-soft: var(--fo-gold-soft); --border: var(--fo-line); --danger: var(--fo-danger); --bm: #2B4C9B; }
+:root[data-theme='dark'] { --bm: #8FA9E6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --bm: #8FA9E6; } }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.4 Inter, system-ui, sans-serif; }
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 500; }
+button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+button.link { border: 0; background: none; padding: 0; color: var(--accent-ink); text-decoration: underline; }
+button:disabled { opacity: .45; cursor: default; }
+select { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; }
+.disp { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; letter-spacing: .03em; font-weight: 400; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+
+.proto { background: var(--accent); color: var(--accent-text); font-size: 12px; padding: 4px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.proto b { font-family: 'Archivo Black', sans-serif; letter-spacing: .05em; font-weight: 400; }
+.proto button { background: transparent; border-color: rgba(0,0,0,.35); color: inherit; font-size: 12px; padding: 1px 8px; }
+
+header { display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+header .brand { display: flex; align-items: center; gap: 8px; }
+header .brand img { width: 24px; height: 24px; }
+header .brand span.disp { font-size: 18px; text-transform: none; color: var(--accent-ink); }
+header input { flex: 0 1 460px; padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+header input:focus { outline: 2px solid var(--accent); }
+.layout { display: grid; grid-template-columns: 230px 1fr; height: calc(100% - 82px); }
+nav { border-right: 1px solid var(--border); padding: 14px 8px; overflow: auto; display: flex; flex-direction: column; }
+nav h3 { font-size: 11px; color: var(--muted); margin: 6px 8px 6px; }
+nav .item { display: flex; align-items: center; gap: 6px; width: 100%; text-align: left; border: 0; background: none; padding: 5px 8px; border-radius: 6px; }
+nav .item:hover { background: var(--surface-2); }
+nav .item.cur { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; box-shadow: inset 3px 0 0 var(--accent); }
+nav .item .n { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 400; }
+nav .item.sub { padding-left: 24px; }
+nav .item.sub2 { padding-left: 40px; }
+.bm-ico { color: var(--bm); }
+.totals { margin-top: auto; padding: 12px 8px 4px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); line-height: 1.6; }
+.totals b { color: var(--text); font-weight: 600; }
+
+main { overflow: auto; padding: 18px 20px 120px; }
+.toolbar { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.toolbar h2 { margin: 0; font-size: 22px; }
+.toolbar .grow { flex: 1; }
+.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 10px 0 14px; }
+.controls label { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.note { font-size: 12px; color: var(--muted); background: var(--surface-2); border-left: 3px solid var(--accent); padding: 6px 10px; border-radius: 4px; margin: 0 0 14px; max-width: 80ch; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px; align-items: start; }
+.group-h { margin: 18px 0 8px; font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
+.group-h:first-child { margin-top: 0; }
+.coll { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px 10px; }
+.coll.bmf { border-style: dashed; }
+.coll-h { display: flex; align-items: center; gap: 8px; min-height: 26px; }
+.coll-h .t { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; font-size: 12px; letter-spacing: .03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.coll-h .tw { overflow: hidden; display: flex; gap: 6px; align-items: baseline; min-width: 0; }
+.coll-h .c { color: var(--muted); font-size: 12px; }
+.coll-h .tools { margin-left: auto; display: flex; gap: 2px; color: var(--muted); }
+.coll-h .tools span { padding: 0 4px; }
+.coll-meta { font-size: 11px; color: var(--muted); margin: 0 0 4px 0; }
+.coll-meta.stale { color: var(--danger); }
+.card { display: flex; gap: 8px; align-items: flex-start; padding: 5px 4px; border-radius: 6px; }
+.card:hover { background: var(--surface-2); }
+.card.sel { background: var(--accent-soft); }
+.card .fav { width: 16px; height: 16px; border-radius: 4px; flex: none; margin-top: 2px; font-size: 10px; font-weight: 700; display: grid; place-items: center; color: #fff; }
+.card .bd { min-width: 0; }
+.card .ti { overflow-wrap: anywhere; }
+.card .sub { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.card .nt { font-size: 12px; }
+.tag-bm { font-size: 10px; color: var(--bm); border: 1px solid var(--bm); border-radius: 99px; padding: 0 6px; margin-left: 4px; white-space: nowrap; }
+input[type=checkbox] { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--fo-gold); flex: none; cursor: pointer; }
+
+.results h4 { font-size: 11px; color: var(--muted); margin: 18px 0 6px; display: flex; gap: 10px; align-items: center; }
+.results h4 input { margin: 0; }
+.results h4 .disp { color: var(--text); }
+.results .card { max-width: 760px; }
+
+.bar { position: fixed; left: 0; right: 0; margin: 0 auto; width: max-content; bottom: 18px; background: var(--fo-text); color: var(--fo-bg); border-radius: 12px; padding: 8px 10px 8px 16px; display: flex; gap: 8px; align-items: center; box-shadow: 0 8px 30px rgba(0,0,0,.35); z-index: 5; flex-wrap: wrap; max-width: calc(100% - 32px); }
+.bar .count { font-weight: 600; margin-right: 6px; }
+.bar .mix { font-size: 12px; opacity: .75; margin-right: 6px; }
+.bar button { background: transparent; color: inherit; border-color: rgba(127,127,127,.5); }
+.bar button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.toast { position: fixed; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: calc(100% - 32px); bottom: 80px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; box-shadow: 0 6px 20px rgba(0,0,0,.25); z-index: 6; display: flex; gap: 12px; align-items: center; }
+
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 10; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; width: min(460px, calc(100% - 32px)); }
+.modal h3 { margin: 0 0 12px; font-size: 15px; }
+.modal label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
+.modal input[type=text], .modal select { width: 100%; padding: 6px 10px; }
+.modal .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.modal .radios label { display: flex; gap: 8px; align-items: flex-start; color: var(--text); font-size: 13px; }
+.modal .radios input { margin-top: 2px; }
+
+.stats .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 12px 0 20px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.tile .v { font-family: 'Archivo Black', sans-serif; font-size: 26px; }
+.tile .l { font-size: 12px; color: var(--muted); }
+.tile.bm .v { color: var(--bm); }
+.panels { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.panel h4 { margin: 0 0 10px; font-size: 11px; color: var(--muted); }
+.yr { display: grid; grid-template-columns: 40px 1fr 36px; gap: 8px; align-items: center; margin: 4px 0; font-size: 12px; }
+.yr .b { height: 14px; background: var(--accent); border-radius: 3px; }
+.yr .b.bm { background: var(--bm); }
+.panel ol { margin: 0; padding-left: 20px; }
+.panel li { margin: 3px 0; }
+</style>
+</head>
+<body>
+<div class="proto"><b>PROTOTYPE</b><span>Made-up data; nothing is saved. Try: <strong>Select</strong>, the <strong>Sort</strong> and <strong>Group</strong> menus, searching
+  <strong>lisbon</strong> or <strong>mdn</strong>, the <strong>Chrome bookmarks</strong> folders, and <strong>Stats</strong>.</span>
+  <span style="flex:1"></span><button type="button" data-act="theme">Light / dark</button><button type="button" data-act="reset">Reset</button></div>
+<header>
+  <div class="brand"><img src="../../public/brand/ming-glyph.svg" alt=""><span class="disp">MingTab</span><span class="muted small">Board</span></div>
+  <input id="q" type="search" placeholder="Search tabs, collections and bookmarks   /" aria-label="Search">
+</header>
+<div class="layout">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+<div id="overlay"></div>
+<script>
+'use strict';
+const NOW = new Date('2026-10-31');
+const COLORS = ['#c2255c', '#1971c2', '#2f9e44', '#e8590c', '#7048e8', '#0c8599', '#5f6368', '#b5452f'];
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
+const favColor = (u) => COLORS[[...host(u)].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length];
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const ago = (d) => {
+  if (!d) return 'never opened';
+  const m = Math.round((NOW - d) / (30.4 * 86400000));
+  return m < 1 ? 'opened this month' : m < 12 ? `opened ${plural(m, 'month')} ago` : `opened ${m < 24 ? 'over a year' : `over ${Math.floor(m / 12)} years`} ago`;
+};
+const fmtMonth = (d) => d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+// ---------- made-up data ----------
+const SEED = () => {
+  const spaces = [{ id: 'work', name: 'Work' }, { id: 'personal', name: 'Personal' }, { id: 'archive', name: 'Archive' }];
+  const C = (space, title, created, opened, cards, star) => ({ space, title, created: new Date(created), opened: opened ? new Date(opened) : null, star: !!star, cards });
+  const colls = [
+    C('work', 'October release', '2026-10-02', '2026-10-30', [
+      ['October release plan - Google Docs', 'https://docs.google.com/document/d/oct', 'Needs a final read'],
+      ['Checkout redirect fix · Pull Request #482 · GitHub', 'https://github.com/acme/shop/pull/482', 'Ship before the freeze'],
+      ['Landing page v3 – Figma', 'https://figma.com/file/landing-v3'],
+      ['Release checklist - Notion', 'https://notion.so/release-checklist']], true),
+    C('work', 'Reading', '2025-03-14', '2026-09-02', [
+      ['Array.prototype.flat() - JavaScript | MDN', 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat'],
+      ['Chrome Extensions: side panel', 'https://developer.chrome.com/docs/extensions/reference/api/sidePanel'],
+      ['chrome.bookmarks API', 'https://developer.chrome.com/docs/extensions/reference/api/bookmarks'],
+      ['CSS container queries - MDN', 'https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries'],
+      ['Fractional indexing - Figma blog', 'https://figma.com/blog/realtime-editing-of-ordered-sequences']]),
+    C('work', 'Team docs', '2024-06-20', '2025-08-11', [
+      ['Customer survey results - Google Sheets', 'https://docs.google.com/spreadsheets/d/survey', 'Not cleaned up yet'],
+      ['Competitor teardown - Google Slides', 'https://docs.google.com/presentation/d/teardown'],
+      ['Onboarding guide - Notion', 'https://notion.so/onboarding']]),
+    C('work', 'Q3 planning', '2024-07-01', '2024-09-18', [
+      ['Q3 roadmap - Google Docs', 'https://docs.google.com/document/d/q3'],
+      ['Hiring plan - Google Sheets', 'https://docs.google.com/spreadsheets/d/hiring'],
+      ['Budget 2024 - Google Sheets', 'https://docs.google.com/spreadsheets/d/budget'],
+      ['Offsite venues - Airbnb', 'https://airbnb.com/s/offsite'],
+      ['Quarterly planning template - Notion', 'https://notion.so/qp-template'],
+      ['OKR examples - What Matters', 'https://whatmatters.com/resources/okr-examples']]),
+    C('work', 'Window 2023-11-08', '2023-11-08', null, [
+      ['Vite config reference', 'https://vite.dev/config/'],
+      ['GitHub Actions: workflow syntax', 'https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions'],
+      ['Stack Overflow – IndexedDB versioning', 'https://stackoverflow.com/questions/indexeddb-version'],
+      ['Dexie.js – liveQuery', 'https://dexie.org/docs/liveQuery()'],
+      ['YouTube – Building Chrome extensions', 'https://youtube.com/watch?v=ext101'],
+      ['MDN – IndexedDB API', 'https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API'],
+      ['Array.prototype.flat() - JavaScript | MDN', 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat']]),
+    C('personal', 'Lisbon trip', '2026-08-12', '2026-10-21', [
+      ['Lisbon - Wikipedia', 'https://en.wikipedia.org/wiki/Lisbon'],
+      ['Lisbon Travel 2026 - Lonely Planet', 'https://lonelyplanet.com/portugal/lisbon', 'Book Alfama walking tour'],
+      ['Flights to Portugal', 'https://google.com/travel/flights/lisbon'],
+      ['Hotel shortlist - Booking.com', 'https://booking.com/lisbon-shortlist']], true),
+    C('personal', 'Recipes to try', '2023-02-05', '2026-10-12', [
+      ['Pastéis de nata - Serious Eats', 'https://seriouseats.com/pasteis-de-nata'],
+      ['Cacio e pepe - NYT Cooking', 'https://cooking.nytimes.com/recipes/cacio-e-pepe'],
+      ['Sourdough starter guide - King Arthur', 'https://kingarthurbaking.com/sourdough-starter'],
+      ['Shakshuka - Bon Appétit', 'https://bonappetit.com/recipe/shakshuka']]),
+    C('personal', 'Home office', '2025-01-19', '2025-02-02', [
+      ['Standing desks compared - Wirecutter', 'https://nytimes.com/wirecutter/standing-desks'],
+      ['Monitor arms - Wirecutter', 'https://nytimes.com/wirecutter/monitor-arms'],
+      ['Desk lamp - Amazon', 'https://amazon.com/dp/lamp']]),
+    C('personal', 'Guitar', '2022-05-30', '2023-01-15', [
+      ['Justin Guitar – beginner course', 'https://justinguitar.com/classes/beginner'],
+      ['YouTube – Fingerstyle basics', 'https://youtube.com/watch?v=fingerstyle'],
+      ['Ultimate Guitar – Blackbird', 'https://ultimate-guitar.com/tab/blackbird']]),
+    C('archive', 'Window 2022-03-11', '2022-03-11', null, [
+      ['Hacker News', 'https://news.ycombinator.com'],
+      ['React docs – Hooks', 'https://react.dev/reference/react/hooks'],
+      ['YouTube – Lo-fi beats', 'https://youtube.com/watch?v=lofi'],
+      ['Stack Overflow – flexbox centering', 'https://stackoverflow.com/questions/flex-centre'],
+      ['GitHub – trending', 'https://github.com/trending'],
+      ['Twitter – home', 'https://twitter.com/home']]),
+    C('archive', 'Apartment hunt 2022', '2022-08-04', '2022-10-01', [
+      ['Zillow – saved homes', 'https://zillow.com/saved'],
+      ['Streeteasy – listing 4B', 'https://streeteasy.com/rental/4b'],
+      ['Moving checklist - Google Docs', 'https://docs.google.com/document/d/moving']]),
+    C('archive', 'Conference 2023', '2023-04-17', '2023-05-20', [
+      ['JSConf schedule', 'https://jsconf.com/schedule'],
+      ['Hotel booking - Booking.com', 'https://booking.com/jsconf-hotel'],
+      ['Talk slides - Google Slides', 'https://docs.google.com/presentation/d/talk'],
+      ['YouTube – conference recordings', 'https://youtube.com/playlist?list=jsconf']]),
+  ];
+  let n = 0;
+  colls.forEach((c, i) => { c.id = 'c' + i; c.cards = c.cards.map(([t, u, note]) => ({ id: 't' + n++, cid: c.id, t, u, note: note || '' })); });
+
+  // Chrome's bookmark tree, as chrome.bookmarks.getTree() returns it (simplified).
+  const F = (title, children) => ({ title, children });
+  const B = (title, url) => ({ title, url });
+  const root = [
+    F('Bookmarks bar', [
+      B('Gmail', 'https://mail.google.com'), B('Calendar', 'https://calendar.google.com'),
+      F('Dev', [B('MDN Web Docs', 'https://developer.mozilla.org'), B('Array.prototype.flat() - JavaScript | MDN', 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat'),
+        B('Can I use', 'https://caniuse.com'), B('GitHub', 'https://github.com'), B('Regex101', 'https://regex101.com')]),
+      F('Travel', [B('Time Out Lisbon', 'https://timeout.com/lisbon'), B('Lisbon tram 28 guide', 'https://visitlisboa.com/tram-28'),
+        B('Seat61 – trains in Portugal', 'https://seat61.com/portugal'), B('Google Flights', 'https://google.com/travel/flights')]),
+      F('News', [B('Hacker News', 'https://news.ycombinator.com'), B('The Verge', 'https://theverge.com'), B('Ars Technica', 'https://arstechnica.com')])]),
+    F('Other bookmarks', [
+      F('Recipes', [B('Pastéis de nata - Serious Eats', 'https://seriouseats.com/pasteis-de-nata'), B('Bread baking basics', 'https://kingarthurbaking.com/basics'),
+        B('Bacalhau à Brás', 'https://leitesculinaria.com/bacalhau-a-bras')]),
+      F('Old stuff 2021', [B('Old portfolio', 'https://example.com/portfolio'), B('Angular tutorial', 'https://angular.io/tutorial'), B('Delicious bookmarks export', 'https://example.com/delicious')]),
+      B('Lisbon neighbourhoods map', 'https://lisbonlux.com/neighbourhoods'),
+      B('Chrome extension samples', 'https://github.com/GoogleChrome/chrome-extensions-samples')]),
+  ];
+  const bm = {}; let k = 0;
+  const walk = (node, parent) => {
+    const id = 'b' + k++; bm[id] = { id, parent, title: node.title, url: node.url || null, children: [] };
+    if (parent) bm[parent].children.push(id);
+    (node.children || []).forEach((ch) => walk(ch, id));
+    return id;
+  };
+  const roots = root.map((r) => walk(r, null));
+  return { spaces, colls, bm, bmRoots: roots };
+};
+
+let D = SEED();
+const S = { view: { kind: 'space', id: 'work' }, q: '', select: false, sel: new Set(), last: null, sort: 'custom', group: 'none', order: [], toast: null, bmOpen: new Set(['b0']) };
+
+const allCards = () => D.colls.flatMap((c) => c.cards);
+const coll = (id) => D.colls.find((c) => c.id === id);
+const bmCount = () => Object.values(D.bm).filter((b) => b.url).length;
+const bmLinksUnder = (id) => { const b = D.bm[id]; return b.url ? [id] : b.children.flatMap(bmLinksUnder); };
+const bmPath = (id) => { const p = []; let b = D.bm[D.bm[id].parent]; while (b) { p.unshift(b.title); b = D.bm[b.parent]; } return p.join(' › '); };
+const savedUrls = () => new Set(allCards().map((c) => c.u));
+const item = (key) => key[0] === 't' ? allCards().find((c) => c.id === key.slice(2)) : D.bm[key.slice(2)];
+
+// ---------- sidebar ----------
+function renderNav() {
+  const cur = S.view;
+  const sp = D.spaces.map((s) => {
+    const cs = D.colls.filter((c) => c.space === s.id);
+    return `<button type="button" class="item ${cur.kind === 'space' && cur.id === s.id ? 'cur' : ''}" data-act="space" data-id="${s.id}">${esc(s.name)}<span class="n">${cs.length}</span></button>`;
+  }).join('');
+  const bmNode = (id, depth) => {
+    const b = D.bm[id];
+    if (b.url) return '';
+    const folders = b.children.filter((c) => !D.bm[c].url);
+    const open = S.bmOpen.has(id);
+    const row = `<button type="button" class="item ${depth ? 'sub' + (depth > 1 ? '2' : '') : ''} ${cur.kind === 'bm' && cur.id === id ? 'cur' : ''}" data-act="bm" data-id="${id}">
+      <span class="bm-ico">${folders.length ? (open ? '▾' : '▸') : '▫'}</span>${esc(b.title)}<span class="n">${bmLinksUnder(id).length}</span></button>`;
+    return row + (open ? folders.map((f) => bmNode(f, depth + 1)).join('') : '');
+  };
+  const nCards = allCards().length;
+  document.getElementById('nav').innerHTML = `
+    <h3 class="disp">Spaces</h3>
+    <button type="button" class="item">▶ Next<span class="n">0</span></button>
+    <button type="button" class="item">★ Starred<span class="n">${D.colls.filter((c) => c.star).length}</span></button>
+    ${sp}
+    <h3 class="disp" style="margin-top:18px">Chrome bookmarks</h3>
+    ${D.bmRoots.map((r) => bmNode(r, 0)).join('')}
+    <div class="totals">
+      <b>${D.colls.length}</b> collections · <b>${nCards}</b> tabs<br>
+      <b>${bmCount()}</b> bookmarks in Chrome<br>
+      <button type="button" class="link" data-act="stats">Stats</button>
+    </div>`;
+}
+
+// ---------- shared card + checkbox ----------
+function cardHtml(key, x, sub, extra = '') {
+  S.order.push(key);
+  const on = S.sel.has(key);
+  const isBm = key[0] === 'b';
+  return `<div class="card ${on ? 'sel' : ''}" data-key="${key}">
+    ${S.select ? `<input type="checkbox" data-act="pick" data-key="${key}" ${on ? 'checked' : ''} aria-label="Select ${esc(x.t || x.title)}">` : ''}
+    <span class="fav" style="background:${favColor(x.u || x.url)}">${esc(host(x.u || x.url)[0].toUpperCase())}</span>
+    <div class="bd"><div class="ti">${esc(x.t || x.title)}${isBm ? '<span class="tag-bm">bookmark</span>' : ''}${extra}</div>
+      ${x.note ? `<div class="nt">${esc(x.note)}</div>` : ''}<div class="sub">${esc(sub)}</div></div></div>`;
+}
+function headCheck(keys) {
+  if (!S.select || !keys.length) return '';
+  const n = keys.filter((k) => S.sel.has(k)).length;
+  return `<input type="checkbox" data-act="pickall" data-keys="${keys.join(',')}" ${n === keys.length ? 'checked' : ''} ${n && n < keys.length ? 'data-mixed="1"' : ''} aria-label="Select all">`;
+}
+
+// ---------- space view ----------
+const SORTS = [['custom', 'Custom order'], ['az', 'A–Z'], ['newest', 'Newest'], ['oldest', 'Oldest'], ['most', 'Most tabs'], ['fewest', 'Fewest tabs'],
+  ['recent', 'Recently opened'], ['stale', 'Not opened lately']];
+function sorted(cs) {
+  const a = [...cs];
+  const by = { az: (x, y) => x.title.localeCompare(y.title), newest: (x, y) => y.created - x.created, oldest: (x, y) => x.created - y.created,
+    most: (x, y) => y.cards.length - x.cards.length, fewest: (x, y) => x.cards.length - y.cards.length,
+    recent: (x, y) => (y.opened || 0) - (x.opened || 0), stale: (x, y) => (x.opened || 0) - (y.opened || 0) }[S.sort];
+  return by ? a.sort(by) : a;
+}
+function collHtml(c, meta) {
+  const keys = c.cards.map((t) => 't:' + t.id);
+  const stale = !c.opened || NOW - c.opened > 365 * 86400000;
+  return `<section class="coll">
+    <div class="coll-h">${headCheck(keys)}<div class="tw"><span class="t">${esc(c.title)}</span><span class="c">${c.cards.length}</span></div>
+      <div class="tools">${c.star ? '<span>★</span>' : '<span>☆</span>'}<span>＋</span><span>✎</span><span>✕</span></div></div>
+    ${meta ? `<div class="coll-meta ${stale ? 'stale' : ''}">Saved ${fmtMonth(c.created)} · ${ago(c.opened)}</div>` : ''}
+    ${c.cards.map((t) => cardHtml('t:' + t.id, t, host(t.u))).join('')}
+  </section>`;
+}
+function spaceView(space) {
+  const cs = sorted(D.colls.filter((c) => c.space === space.id));
+  const nTabs = cs.reduce((a, c) => a + c.cards.length, 0);
+  const meta = S.sort === 'recent' || S.sort === 'stale' || S.group === 'year';
+  let body;
+  if (S.group === 'year') {
+    const years = [...new Set(cs.map((c) => c.created.getFullYear()))].sort((a, b) => b - a);
+    body = years.map((y) => {
+      const ys = cs.filter((c) => c.created.getFullYear() === y);
+      return `<h3 class="group-h"><span class="disp">${y}</span><span class="muted small">${plural(ys.length, 'collection')} · ${plural(ys.reduce((a, c) => a + c.cards.length, 0), 'tab')}</span></h3>
+        <div class="grid">${ys.map((c) => collHtml(c, meta)).join('')}</div>`;
+    }).join('');
+  } else if (S.group === 'site') {
+    const bySite = new Map();
+    cs.forEach((c) => c.cards.forEach((t) => { const h = host(t.u); if (!bySite.has(h)) bySite.set(h, []); bySite.get(h).push(t); }));
+    const sites = [...bySite.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
+    body = `<p class="note">By site: every saved tab in this space, gathered by website. Each tab still lives in its own collection (shown under it); this view
+      only regroups them, which makes it quick to select, say, all the YouTube tabs and move them together.</p>
+      <div class="grid">${sites.map(([h, ts]) => `<section class="coll">
+        <div class="coll-h">${headCheck(ts.map((t) => 't:' + t.id))}<div class="tw"><span class="t" style="text-transform:none">${esc(h)}</span><span class="c">${ts.length}</span></div></div>
+        ${ts.map((t) => cardHtml('t:' + t.id, t, 'in ' + coll(t.cid).title)).join('')}</section>`).join('')}</div>`;
+  } else {
+    body = `<div class="grid">${cs.map((c) => collHtml(c, meta)).join('')}</div>`;
+  }
+  return `<div class="toolbar"><h2 class="disp">${esc(space.name)}</h2>
+      <span class="muted">${plural(cs.length, 'collection')} · ${plural(nTabs, 'tab')}</span><span class="grow"></span>
+      <button type="button" class="${S.select ? 'on' : ''}" data-act="select">${S.select ? 'Done selecting' : 'Select'}</button>
+      <button type="button" class="primary">+ Collection</button></div>
+    <div class="controls">
+      <label>Sort <select data-act="sort">${SORTS.map(([v, l]) => `<option value="${v}" ${S.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label>Group <select data-act="group">${[['none', 'No grouping'], ['year', 'By year saved'], ['site', 'By site']].map(([v, l]) => `<option value="${v}" ${S.group === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <button type="button">Expand all</button><button type="button">Collapse all</button>
+    </div>
+    ${S.sort === 'recent' || S.sort === 'stale' ? `<p class="note">"Last opened" is new: MingTab would start recording it when this ships, so older collections
+      show "never opened" until you next open them. Red = not opened for over a year.</p>` : ''}
+    ${body}`;
+}
+
+// ---------- bookmark folder view ----------
+function bmView(id) {
+  const f = D.bm[id];
+  const links = f.children.filter((c) => D.bm[c].url);
+  const folders = f.children.filter((c) => !D.bm[c].url);
+  const saved = savedUrls();
+  const section = (title, ids, path) => `<section class="coll bmf">
+    <div class="coll-h">${headCheck(ids.map((i) => 'b:' + i))}<div class="tw"><span class="t">${esc(title)}</span><span class="c">${ids.length}</span></div>
+      <div class="tools"><button type="button" class="small" title="Copy this folder into MingTab as a new collection">Copy to MingTab</button></div></div>
+    ${ids.map((i) => cardHtml('b:' + i, D.bm[i], host(D.bm[i].url), saved.has(D.bm[i].url) ? ' <span class="muted small">· also saved in MingTab</span>' : '')).join('')}
+    ${!ids.length ? '<p class="muted small">No links directly in this folder.</p>' : ''}</section>`;
+  return `<div class="toolbar"><h2 class="disp" style="color:var(--bm)">${esc(f.title)}</h2>
+      <span class="muted">${plural(bmLinksUnder(id).length, 'bookmark')} · read live from Chrome</span><span class="grow"></span>
+      <button type="button" class="${S.select ? 'on' : ''}" data-act="select">${S.select ? 'Done selecting' : 'Select'}</button></div>
+    <p class="note" style="margin-top:12px">Chrome's own bookmarks, shown in MingTab. They aren't copied: Chrome keeps them and syncs them between your machines;
+      MingTab only reads them. Each folder shows as a collection. Select any of them, alone or mixed with saved tabs, to make a MingTab collection.</p>
+    <div class="grid">${links.length || !folders.length ? section(f.title + ' (loose)', links) : ''}${folders.map((c) => section(D.bm[c].title, bmLinksUnder(c))).join('')}</div>`;
+}
+
+// ---------- search ----------
+function searchView(q) {
+  const t = q.toLowerCase();
+  const hit = (s) => s && s.toLowerCase().includes(t);
+  const cs = D.colls.filter((c) => hit(c.title));
+  const tabs = allCards().filter((c) => hit(c.t) || hit(c.u) || hit(c.note));
+  const bms = Object.values(D.bm).filter((b) => b.url && (hit(b.title) || hit(b.url)));
+  const all = [...tabs.map((x) => 't:' + x.id), ...bms.map((b) => 'b:' + b.id)];
+  const space = (id) => D.spaces.find((s) => s.id === id).name;
+  return `<div class="results">
+    <div class="toolbar"><span class="muted">${plural(cs.length + tabs.length + bms.length, 'result')} for "${esc(q)}"</span><span class="grow"></span>
+      ${all.length ? `<button type="button" data-act="selres" data-keys="${all.join(',')}">Select all ${all.length}</button>` : ''}
+      <button type="button" class="${S.select ? 'on' : ''}" data-act="select">${S.select ? 'Done selecting' : 'Select'}</button></div>
+    ${cs.length ? `<h4><span class="disp">Collections</span></h4>${cs.map((c) => `<div class="card"><div class="bd"><div class="ti">${esc(c.title)} <span class="muted small">${esc(space(c.space))}</span></div></div></div>`).join('')}` : ''}
+    ${tabs.length ? `<h4>${headCheck(tabs.map((x) => 't:' + x.id))}<span class="disp">Saved tabs</span>${tabs.length}</h4>
+      ${tabs.map((x) => cardHtml('t:' + x.id, x, `${space(coll(x.cid).space)} › ${coll(x.cid).title} · ${host(x.u)}`)).join('')}` : ''}
+    ${bms.length ? `<h4>${headCheck(bms.map((b) => 'b:' + b.id))}<span class="disp" style="color:var(--bm)">Chrome bookmarks</span>${bms.length}</h4>
+      ${bms.map((b) => cardHtml('b:' + b.id, b, `${bmPath(b.id)} · ${host(b.url)}`)).join('')}` : ''}
+    ${!all.length && !cs.length ? '<p class="muted">Nothing found.</p>' : ''}</div>`;
+}
+
+// ---------- stats ----------
+function statsView() {
+  const cards = allCards();
+  const years = {}; cards.forEach((t) => { const y = coll(t.cid).created.getFullYear(); years[y] = (years[y] || 0) + 1; });
+  const ys = Object.keys(years).sort();
+  const max = Math.max(...Object.values(years));
+  const seen = new Map(); cards.forEach((t) => seen.set(t.u, (seen.get(t.u) || 0) + 1));
+  const dups = [...seen.values()].reduce((a, n) => a + n - 1, 0);
+  const sites = new Map(); cards.forEach((t) => sites.set(host(t.u), (sites.get(host(t.u)) || 0) + 1));
+  const bmUrls = new Set(Object.values(D.bm).filter((b) => b.url).map((b) => b.url));
+  const both = [...seen.keys()].filter((u) => bmUrls.has(u)).length;
+  const stale = D.colls.filter((c) => !c.opened || NOW - c.opened > 365 * 86400000).sort((a, b) => (a.opened || 0) - (b.opened || 0));
+  const tile = (v, l, bm) => `<div class="tile ${bm ? 'bm' : ''}"><div class="v">${v}</div><div class="l">${l}</div></div>`;
+  return `<div class="stats"><div class="toolbar"><h2 class="disp">Stats</h2><span class="muted">All spaces</span></div>
+    <div class="tiles">${tile(D.spaces.length, 'spaces')}${tile(D.colls.length, 'collections')}${tile(cards.length, 'saved tabs')}
+      ${tile(cards.filter((t) => t.note).length, 'tabs with notes')}${tile(dups, 'duplicate tabs')}${tile(stale.length, 'collections not opened in a year')}
+      ${tile(bmCount(), 'Chrome bookmarks', 1)}${tile(both, 'pages both saved and bookmarked', 1)}</div>
+    <div class="panels">
+      <div class="panel"><h4 class="disp">Tabs saved per year</h4>${ys.map((y) => `<div class="yr"><span>${y}</span><div class="b" style="width:${years[y] / max * 100}%"></div><span>${years[y]}</span></div>`).join('')}</div>
+      <div class="panel"><h4 class="disp">Biggest collections</h4><ol>${[...D.colls].sort((a, b) => b.cards.length - a.cards.length).slice(0, 5).map((c) => `<li>${esc(c.title)} <span class="muted">${c.cards.length}</span></li>`).join('')}</ol></div>
+      <div class="panel"><h4 class="disp">Most-saved sites</h4><ol>${[...sites.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([h, n]) => `<li>${esc(h)} <span class="muted">${n}</span></li>`).join('')}</ol></div>
+      <div class="panel"><h4 class="disp">Not opened in a year</h4><ol>${stale.map((c) => `<li>${esc(c.title)} <span class="muted">${ago(c.opened)} · saved ${fmtMonth(c.created)}</span></li>`).join('')}</ol>
+        <p class="small muted" style="margin:8px 0 0">Each would link to its collection. "Duplicate tabs" would open the existing Find duplicates tool.</p></div>
+    </div></div>`;
+}
+
+// ---------- selection bar, dialogs, toasts ----------
+function barHtml() {
+  if (!S.select) return '';
+  const keys = [...S.sel];
+  const nT = keys.filter((k) => k[0] === 't').length, nB = keys.length - nT;
+  const dis = keys.length ? '' : 'disabled';
+  // Selection carries across spaces, folders and searches; say when some of it is off screen.
+  const hidden = keys.filter((k) => !S.order.includes(k)).length;
+  return `<div class="bar" role="toolbar" aria-label="Selected">
+    <span class="count">${keys.length} selected</span>${nB || hidden ? `<span class="mix">${nB ? `${plural(nT, 'saved tab')} · ${plural(nB, 'bookmark')}` : ''}${nB && hidden ? ' · ' : ''}${hidden ? `${hidden} not in this view` : ''}</span>` : ''}
+    <button type="button" class="primary" data-act="newcoll" ${dis}>New collection…</button>
+    <button type="button" data-act="moveto" ${dis}>${nB ? 'Add to…' : 'Move to…'}</button>
+    <button type="button" data-act="copyto" ${dis}>Copy to…</button>
+    <button type="button" data-act="open" ${dis}>Open</button>
+    <button type="button" data-act="next" ${dis}>Add to Next</button>
+    <button type="button" data-act="del" ${nT ? '' : 'disabled'} title="${nB ? 'Bookmarks are left alone; only saved tabs are deleted' : ''}">Delete</button>
+    <button type="button" data-act="clear" ${dis}>Clear</button>
+    <button type="button" data-act="select">Done</button></div>`;
+}
+function dialog(kind) {
+  const keys = [...S.sel];
+  const nB = keys.filter((k) => k[0] === 'b').length, nT = keys.length - nB;
+  const spaceOpts = D.spaces.map((s) => `<option value="${s.id}" ${S.view.kind === 'space' && S.view.id === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
+  const collOpts = D.spaces.map((s) => `<optgroup label="${esc(s.name)}">${D.colls.filter((c) => c.space === s.id).map((c) => `<option value="${c.id}">${esc(c.title)}</option>`).join('')}</optgroup>`).join('');
+  const how = nT ? `<label>Saved tabs</label><div class="radios">
+      <label><input type="radio" name="how" value="move" ${kind === 'copyto' ? '' : 'checked'}> Move them (they leave their old collections)</label>
+      <label><input type="radio" name="how" value="copy" ${kind === 'copyto' ? 'checked' : ''}> Copy them (they stay where they are too)</label></div>` : '';
+  const bmNote = nB ? `<p class="small muted" style="margin:10px 0 0">${plural(nB, 'bookmark')} will be copied in. Chrome's bookmarks stay exactly as they are.</p>` : '';
+  const body = kind === 'newcoll'
+    ? `<h3>New collection from ${plural(keys.length, 'item')}</h3>
+       <label for="nc-name">Name</label><input id="nc-name" type="text" value="" placeholder="Collection name">
+       <label for="nc-space">Space</label><select id="nc-space">${spaceOpts}</select>${how}${bmNote}`
+    : `<h3>${kind === 'copyto' ? 'Copy' : nB ? 'Add' : 'Move'} ${plural(keys.length, 'item')} to…</h3>
+       <label for="nc-coll">Collection</label><select id="nc-coll">${collOpts}</select>${kind === 'copyto' ? '' : how}${bmNote}`;
+  document.getElementById('overlay').innerHTML = `<div class="modal-bg" data-act="cancel"><div class="modal" role="dialog" aria-modal="true">${body}
+    <div class="row"><button type="button" data-act="cancel">Cancel</button><button type="button" class="primary" data-act="do-${kind}">${kind === 'newcoll' ? 'Create' : 'Done'}</button></div></div></div>`;
+  const f = document.getElementById('nc-name') || document.getElementById('nc-coll'); f && f.focus();
+}
+function toast(msg, undo) {
+  S.toast = { msg, undo }; renderToast();
+  clearTimeout(toast.t); toast.t = setTimeout(() => { S.toast = null; renderToast(); }, 6000);
+}
+function renderToast() {
+  const el = document.getElementById('toast') || Object.assign(document.body.appendChild(document.createElement('div')), { id: 'toast' });
+  el.innerHTML = S.toast ? `<div class="toast" role="status">${esc(S.toast.msg)}${S.toast.undo ? '<button type="button" data-act="undo">Undo</button>' : ''}</div>` : '';
+}
+const snapshot = () => JSON.stringify(D.colls.map((c) => ({ ...c, created: +c.created, opened: c.opened && +c.opened })));
+const restore = (s) => { D.colls = JSON.parse(s).map((c) => ({ ...c, created: new Date(c.created), opened: c.opened && new Date(c.opened) })); };
+let uid = 1000;
+function place(targetId, how) {
+  const target = coll(targetId);
+  for (const k of S.sel) {
+    const x = item(k);
+    if (k[0] === 'b') target.cards.push({ id: 't' + uid++, cid: target.id, t: x.title, u: x.url, note: '' });
+    else if (how === 'copy') target.cards.push({ ...x, id: 't' + uid++, cid: target.id });
+    else { const from = coll(x.cid); if (from === target) continue; from.cards = from.cards.filter((c) => c.id !== x.id); x.cid = target.id; target.cards.push(x); }
+  }
+}
+
+// ---------- render + events ----------
+function render() {
+  S.order = [];
+  renderNav();
+  const v = S.view;
+  let html = S.q ? searchView(S.q) : v.kind === 'stats' ? statsView() : v.kind === 'bm' ? bmView(v.id) : spaceView(D.spaces.find((s) => s.id === v.id));
+  document.getElementById('main').innerHTML = html + barHtml();
+  document.querySelectorAll('[data-mixed]').forEach((e) => { e.indeterminate = true; });
+}
+function toggle(key, on, shift) {
+  if (shift && S.last) {
+    const a = S.order.indexOf(S.last), b = S.order.indexOf(key);
+    if (a >= 0 && b >= 0) { S.order.slice(Math.min(a, b), Math.max(a, b) + 1).forEach((k) => on ? S.sel.add(k) : S.sel.delete(k)); S.last = key; return; }
+  }
+  on ? S.sel.add(key) : S.sel.delete(key); S.last = key;
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (!t) {
+    // Clicking a card's row (not just its box) toggles it in select mode.
+    const card = e.target.closest('.card[data-key]');
+    if (card && S.select) { toggle(card.dataset.key, !S.sel.has(card.dataset.key), e.shiftKey); render(); }
+    return;
+  }
+  const a = t.dataset.act;
+  if (t.tagName === 'SELECT') return;
+  if (a === 'cancel' && e.target !== t) return;
+  switch (a) {
+    case 'space': S.view = { kind: 'space', id: t.dataset.id }; S.q = ''; document.getElementById('q').value = ''; break;
+    case 'bm': {
+      const id = t.dataset.id;
+      if (S.view.kind === 'bm' && S.view.id === id) S.bmOpen.has(id) ? S.bmOpen.delete(id) : S.bmOpen.add(id); else S.bmOpen.add(id);
+      S.view = { kind: 'bm', id }; S.q = ''; document.getElementById('q').value = ''; break;
+    }
+    case 'stats': S.view = { kind: 'stats' }; S.q = ''; document.getElementById('q').value = ''; break;
+    case 'select': S.select = !S.select; if (!S.select) S.sel.clear(); break;
+    case 'pick': toggle(t.dataset.key, t.checked, e.shiftKey); break;
+    case 'pickall': { const ks = t.dataset.keys.split(','); const all = ks.every((k) => S.sel.has(k)); ks.forEach((k) => all ? S.sel.delete(k) : S.sel.add(k)); break; }
+    case 'selres': S.select = true; t.dataset.keys.split(',').forEach((k) => S.sel.add(k)); break;
+    case 'clear': S.sel.clear(); break;
+    case 'newcoll': case 'moveto': case 'copyto': dialog(a); return;
+    case 'cancel': document.getElementById('overlay').innerHTML = ''; return;
+    case 'do-newcoll': {
+      const before = snapshot();
+      const name = document.getElementById('nc-name').value.trim() || 'New collection';
+      const space = document.getElementById('nc-space').value;
+      const how = (document.querySelector('input[name=how]:checked') || {}).value || 'copy';
+      const c = { id: 'c' + uid++, space, title: name, created: new Date(NOW), opened: new Date(NOW), star: false, cards: [] };
+      D.colls.unshift(c); place(c.id, how);
+      const n = S.sel.size; S.sel.clear(); S.select = false;
+      document.getElementById('overlay').innerHTML = '';
+      S.view = { kind: 'space', id: space }; S.q = ''; document.getElementById('q').value = ''; S.sort = 'custom'; S.group = 'none';
+      toast(`Made "${name}" with ${plural(n, 'item')}.`, before); break;
+    }
+    case 'do-moveto': case 'do-copyto': {
+      const before = snapshot();
+      const target = document.getElementById('nc-coll').value;
+      const how = a === 'do-copyto' ? 'copy' : (document.querySelector('input[name=how]:checked') || {}).value || 'move';
+      place(target, how); const n = S.sel.size; S.sel.clear();
+      document.getElementById('overlay').innerHTML = '';
+      toast(`${how === 'copy' ? 'Copied' : 'Moved'} ${plural(n, 'item')} to "${coll(target).title}".`, before); break;
+    }
+    case 'open': toast(`Would open ${plural(S.sel.size, 'tab')} in a new window.`); return;
+    case 'next': toast(`Would add ${plural(S.sel.size, 'page')} to Next.`); return;
+    case 'del': {
+      const before = snapshot();
+      const ids = new Set([...S.sel].filter((k) => k[0] === 't').map((k) => k.slice(2)));
+      D.colls.forEach((c) => { c.cards = c.cards.filter((x) => !ids.has(x.id)); });
+      [...S.sel].forEach((k) => k[0] === 't' && S.sel.delete(k));
+      toast(`Deleted ${plural(ids.size, 'saved tab')}.`, before); break;
+    }
+    case 'undo': restore(S.toast.undo); S.toast = null; renderToast(); break;
+    case 'theme': {
+      const r = document.documentElement; const dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      r.dataset.theme = dark ? 'light' : 'dark'; return;
+    }
+    case 'reset': D = SEED(); Object.assign(S, { view: { kind: 'space', id: 'work' }, q: '', select: false, sel: new Set(), sort: 'custom', group: 'none' }); document.getElementById('q').value = ''; break;
+    default: return;
+  }
+  render();
+});
+document.addEventListener('change', (e) => {
+  const a = e.target.dataset.act;
+  if (a === 'sort') S.sort = e.target.value; else if (a === 'group') S.group = e.target.value; else return;
+  render();
+});
+document.getElementById('q').addEventListener('input', (e) => { S.q = e.target.value.trim(); render(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); document.getElementById('q').focus(); }
+  if (e.key === 'Escape') {
+    if (document.getElementById('overlay').innerHTML) document.getElementById('overlay').innerHTML = '';
+    else if (S.select) { S.select = false; S.sel.clear(); render(); }
+  }
+  if (e.key === 'Enter' && e.target.id === 'nc-name') document.querySelector('[data-act=do-newcoll]').click();
+});
+render();
+</script>
+</body>
+</html>
