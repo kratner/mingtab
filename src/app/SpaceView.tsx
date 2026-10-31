@@ -5,6 +5,7 @@ import { db } from '../db/db';
 import { createCollection, listAllCollectionsInOrder, listCollections, listSpaces, listTags, updateCollection } from '../db/repo';
 import type { Collection, Space } from '../db/schema';
 import { dragId } from '../dnd/drop';
+import { countTabs } from '../stats/stats';
 import { CollectionPanel } from './CollectionPanel';
 import type { Density, SortMode } from './prefs';
 
@@ -47,6 +48,15 @@ export function SpaceView({ space, sort, onSort, density, onDensity, highlightId
   const tags = useLiveQuery(() => listTags(db)) ?? [];
   const [tagFilter, setTagFilter] = useState('');
   const [newId, setNewId] = useState<string | null>(null);
+  // Saved pages in the collections on show (all of them, or those with the chosen tag).
+  const tabCount = useLiveQuery(
+    async () =>
+      countTabs(
+        db,
+        (await listCollections(db, space.id)).filter((c) => !tagFilter || c.tagIds.includes(tagFilter)).map((c) => c.id),
+      ),
+    [space.id, tagFilter],
+  );
 
   const add = async () => {
     const c = await createCollection(db, space.id, 'New collection');
@@ -73,6 +83,7 @@ export function SpaceView({ space, sort, onSort, density, onDensity, highlightId
           {shown.length === collections.length
             ? `${collections.length} collection${collections.length === 1 ? '' : 's'}`
             : `${shown.length} of ${collections.length} collections`}
+          {tabCount !== undefined && ` · ${tabCount.toLocaleString()} tab${tabCount === 1 ? '' : 's'}`}
         </span>
         <button type="button" className="primary" onClick={add}>
           + Collection

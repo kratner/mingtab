@@ -369,6 +369,89 @@ a {
   padding: 8px;
 }
 
+/* Totals across the spaces shown here, and the way into Stats. */
+.sidebar-totals {
+  margin-top: 16px;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.sidebar-totals > span {
+  display: block;
+  padding: 0 8px 4px;
+}
+
+/* ---- stats ---- */
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 100%;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.stat-value {
+  font-family: var(--fo-font-display);
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stat-tile .link-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.stat-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.stat-panel {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.stat-panel h3 {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-family: var(--fo-font-display);
+  font-weight: 400;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stat-panel ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.stat-panel li {
+  margin: 3px 0;
+  overflow-wrap: anywhere;
+}
+
 .new-space input {
   width: 100%;
   margin-top: 6px;
@@ -906,6 +989,15 @@ button:disabled {
   .app[data-surface='newtab'] .sidebar-head,
   .app[data-surface='newtab'] .sidebar-actions {
     padding: 0;
+  }
+
+  /* Narrow: Stats is one more chip; the totals line waits for a wider window. */
+  .app[data-surface='newtab'] .sidebar-totals {
+    display: contents;
+  }
+
+  .app[data-surface='newtab'] .sidebar-totals > span {
+    display: none;
   }
 }
 

@@ -3,6 +3,16 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Added
+
+- **Tab counts.** A space's header shows its tabs as well as its collections ("61 collections · 812 tabs"),
+  and the bottom of the space list shows the totals across every space.
+- **Stats.** A new view, under the totals, for spaces, collections, saved tabs, notes, empty collections and
+  duplicate tabs (with a link to the duplicate finder), plus your biggest collections and most-saved sites.
+  Spaces hidden on this device aren't counted. In the side panel, pick Stats from the space menu.
+
 ## 0.10.1 — 2026-10-31
 
 ### Changed

@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "lists": [
+    { "title": "A", "labels": [], "cards": [
+      { "title": "a1", "url": "https://a1.example/" },
+      { "title": "a2", "url": "https://a2.example/" },
+      { "title": "a3", "url": "https://a3.example/" } ] },
+    { "title": "B", "labels": [], "cards": [
+      { "title": "b1", "url": "https://b1.example/" },
+      { "title": "Plan", "url": "/note.html?id=1", "customDescription": "Just a note" } ] },
+    { "title": "C", "labels": [], "cards": [
+      { "title": "c1", "url": "https://c1.example/" },
+      { "title": "a1 again", "url": "https://www.a1.example/#x", "customDescription": "second copy" } ] }
+  ]
+}

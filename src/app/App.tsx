@@ -5,13 +5,14 @@ import { db } from '../db/db';
 import { createSpace, listSpaces } from '../db/repo';
 import { DndProvider } from '../dnd/DndProvider';
 import { SearchResults } from '../search/SearchResults';
+import { StatsView } from '../stats/StatsView';
 import { requestSync } from '../sync/state';
 import { OpenTabs } from '../tabs/OpenTabs';
 import { UpdateBanner } from '../update/UpdateBanner';
 import { applyTheme, usePref, type Density, type Scheme, type SortMode, type Theme } from './prefs';
 import { Settings } from './Settings';
 import { NextView } from './NextView';
-import { NEXT, SpaceNav, STARRED } from './SpaceNav';
+import { NEXT, SpaceNav, STARRED, STATS } from './SpaceNav';
 import { SpaceView, StarredView } from './SpaceView';
 import type { Surface } from './surface';
 
@@ -82,7 +83,8 @@ export function App({ surface }: { surface: Surface }) {
   // Keep a valid selection when spaces are added or deleted.
   const starred = selectedId === STARRED;
   const next = selectedId === NEXT;
-  const pseudo = starred || next;
+  const stats = selectedId === STATS;
+  const pseudo = starred || next || stats;
   const selected = pseudo ? undefined : (spaces?.find((s) => s.id === selectedId) ?? spaces?.[0]);
   useEffect(() => {
     if (!pseudo && selected && selected.id !== selectedId) setSelectedId(selected.id);
@@ -204,6 +206,16 @@ export function App({ surface }: { surface: Surface }) {
                     <SearchResults query={query} historyEnabled={historySearch === 'on'} onGoTo={goTo} />
                   ) : next ? (
                     <NextView />
+                  ) : stats ? (
+                    <StatsView
+                      spaces={spaces}
+                      hiddenCount={(allSpaces?.length ?? 0) - spaces.length}
+                      onGoTo={goTo}
+                      onFindDuplicates={() => {
+                        setView('settings');
+                        setTimeout(() => document.getElementById('dupes')?.scrollIntoView({ block: 'start' }), 50);
+                      }}
+                    />
                   ) : starred ? (
                     <StarredView onGoTo={goTo} />
                   ) : selected ? (

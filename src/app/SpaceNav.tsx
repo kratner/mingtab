@@ -6,6 +6,7 @@ import { db } from '../db/db';
 import { createSpace, deleteSpace, renameSpace } from '../db/repo';
 import type { Space } from '../db/schema';
 import { dragId, type DragData } from '../dnd/drop';
+import { loadTotals } from '../stats/stats';
 import type { Surface } from './surface';
 
 function SpaceLink({ space, selected, onSelect }: { space: Space; selected: boolean; onSelect: (id: string) => void }) {
@@ -29,6 +30,8 @@ function SpaceLink({ space, selected, onSelect }: { space: Space; selected: bool
 export const STARRED = '__starred__';
 /** Pseudo-space id for the Next queue. */
 export const NEXT = '__next__';
+/** Pseudo-space id for the Stats view. */
+export const STATS = '__stats__';
 
 interface Props {
   surface: Surface;
@@ -40,6 +43,7 @@ interface Props {
 export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
   const [creating, setCreating] = useState(false);
   const nextCount = useLiveQuery(async () => (await listNext(db)).pending.length) ?? 0;
+  const totals = useLiveQuery(() => loadTotals(db, spaces.map((s) => s.id)), [spaces.map((s) => s.id).join()]);
   const [name, setName] = useState('');
   const selected = spaces.find((s) => s.id === selectedId); // undefined for Starred
 
@@ -97,6 +101,7 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
         <select aria-label="Space" value={selectedId ?? ''} onChange={(e) => onSelect(e.target.value)}>
           <option value={NEXT}>▶ Next ({nextCount})</option>
           <option value={STARRED}>★ Starred</option>
+          <option value={STATS}>Stats</option>
           {spaces.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -145,6 +150,22 @@ export function SpaceNav({ surface, spaces, selectedId, onSelect }: Props) {
       </ul>
       {newSpaceForm}
       {selected && <div className="sidebar-actions">{spaceActions}</div>}
+      <div className="sidebar-totals">
+        {totals && (
+          <span className="muted">
+            {totals.collections.toLocaleString()} collection{totals.collections === 1 ? '' : 's'} · {totals.tabs.toLocaleString()} tab
+            {totals.tabs === 1 ? '' : 's'}
+          </span>
+        )}
+        <button
+          type="button"
+          className={`space-link stats-link ${selectedId === STATS ? 'active' : ''}`}
+          aria-current={selectedId === STATS ? 'page' : undefined}
+          onClick={() => onSelect(STATS)}
+        >
+          Stats
+        </button>
+      </div>
     </nav>
   );
 }
