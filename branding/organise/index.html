@@ -87,6 +87,12 @@ input[type=checkbox] { width: 16px; height: 16px; margin: 2px 0 0; accent-color:
 
 .results h4 { font-size: 11px; color: var(--muted); margin: 18px 0 6px; display: flex; gap: 10px; align-items: center; }
 .results h4 input { margin: 0; }
+/* Select mode: a header's "all" box sits on a band, and the item boxes are indented under it,
+   so the group box and the item boxes read as two levels. */
+.selecting .results h4 { background: var(--surface-2); border-radius: 6px; padding: 6px 8px; max-width: 760px; }
+.selecting .results h4 + .card, .selecting .results .card { margin-left: 22px; }
+.selecting .coll-h { background: var(--surface-2); border-radius: 6px; padding: 2px 6px; margin: 0 -4px 4px; }
+.selecting .coll .card { margin-left: 22px; }
 .results h4 .disp { color: var(--text); }
 .results .card { max-width: 760px; }
 
@@ -499,6 +505,7 @@ function render() {
   renderNav();
   const v = S.view;
   let html = S.q ? searchView(S.q) : v.kind === 'stats' ? statsView() : v.kind === 'bm' ? bmView(v.id) : spaceView(D.spaces.find((s) => s.id === v.id));
+  document.body.classList.toggle('selecting', S.select);
   document.getElementById('main').innerHTML = html + barHtml();
   document.querySelectorAll('[data-mixed]').forEach((e) => { e.indeterminate = true; });
 }
