@@ -5,6 +5,8 @@ import { db } from '../db/db';
 import { createSpace, listSpaces } from '../db/repo';
 import { DndProvider } from '../dnd/DndProvider';
 import { SearchResults } from '../search/SearchResults';
+import { SelectionBar, SelectionNotice } from '../select/SelectionBar';
+import { useSelection } from '../select/selection';
 import { StatsView } from '../stats/StatsView';
 import { requestSync } from '../sync/state';
 import { OpenTabs } from '../tabs/OpenTabs';
@@ -42,6 +44,7 @@ export function App({ surface }: { surface: Surface }) {
   });
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const selecting = useSelection().active;
 
   useEffect(() => applyTheme(theme, scheme), [theme, scheme]);
 
@@ -109,6 +112,7 @@ export function App({ surface }: { surface: Surface }) {
       data-popup={new URLSearchParams(location.search).has('popup') || undefined}
       data-pane-open={paneOpen}
       data-density={density}
+      data-selecting={selecting || undefined}
     >
       <header className="app-header">
         <img className="brand-mark" src="/brand/ming-glyph.svg" alt="" title="MingTab: from 明堂 míngtáng, the bright hall" />
@@ -272,6 +276,8 @@ export function App({ surface }: { surface: Surface }) {
           </DndProvider>
         </>
       )}
+      <SelectionBar spaces={spaces} spaceId={pseudo ? null : (selected?.id ?? null)} onGoTo={goTo} />
+      <SelectionNotice />
     </div>
   );
 }

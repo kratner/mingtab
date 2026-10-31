@@ -17,6 +17,7 @@ import {
 import { dragId, type DragData } from '../dnd/drop';
 import type { Collection } from '../db/schema';
 import { GROUP_COLORS, openCards, openSession } from '../tabs/tabs';
+import { GroupBox, useSelection } from '../select/selection';
 import { CardRow } from './CardRow';
 import { InlineEdit } from './InlineEdit';
 
@@ -42,6 +43,7 @@ interface Props {
 
 export function CollectionPanel({ collection, isNew, reorderable = true, highlight, onHighlightDone }: Props) {
   const cards = useLiveQuery(() => listCards(db, collection.id), [collection.id]) ?? [];
+  const selecting = useSelection().active;
   const [adding, setAdding] = useState(false);
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
@@ -112,7 +114,8 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
       aria-label={collection.title}
     >
       <header className="collection-header">
-        {reorderable && (
+        {selecting && <GroupBox ids={cards.map((c) => c.id)} label={collection.title} />}
+        {reorderable && !selecting && (
           <button
             type="button"
             ref={setActivatorNodeRef}

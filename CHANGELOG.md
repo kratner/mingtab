@@ -12,6 +12,17 @@ What's new in each MingTab release. Downloads and install steps are on the
 - **Stats.** A new view, under the totals, for spaces, collections, saved tabs, notes, empty collections and
   duplicate tabs (with a link to the duplicate finder), plus your biggest collections and most-saved sites.
   Spaces hidden on this device aren't counted. In the side panel, pick Stats from the space menu.
+- **Select mode.** Select, in a space's header, in Starred or above search results, puts a checkbox on every
+  card. A collection's header box ticks all its cards, shift-click ticks a range, and clicking a card's title
+  ticks it instead of opening it. What you've ticked stays ticked as you switch spaces and search, so you can
+  gather cards from anywhere. The bar along the bottom then does one of:
+  - **New collection…**: name it and pick a space; move the cards there or copy them. It goes first in the space.
+  - **Move to…** or **Copy to…** another collection, in any space.
+  - **Open** them, or **Add to Next**.
+  - **Delete** them.
+
+  Moves, copies, new collections and deletes can be undone from the notice that follows. Esc or Done leaves
+  select mode.
 
 ## 0.10.1 — 2026-10-31
 

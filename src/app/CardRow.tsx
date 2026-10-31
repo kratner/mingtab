@@ -8,6 +8,7 @@ import { displayTitle, type Card } from '../db/schema';
 import { setCardShortcut, ShortcutError } from '../db/shortcuts';
 import { dragId } from '../dnd/drop';
 import { NoteBody } from '../notes/NoteBody';
+import { SelectBox, useSelection } from '../select/selection';
 import { taskCounts } from '../notes/markdown';
 import { chromeFaviconUrl, hostOf } from './favicon';
 
@@ -32,11 +33,15 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
   const title = displayTitle(card);
   const isNote = !card.url;
   const tasks = taskCounts(shownNote);
+  const sel = useSelection();
+  const selecting = sel.active;
+  const selected = selecting && sel.ids.has(card.id);
   // The whole row is the drag source; the 6px activation distance keeps clicks working.
   const { setNodeRef, attributes: sortableAttrs, listeners, transform, transition, isDragging } = useSortable({
     id: dragId.card(card.id),
     data: { type: 'card', card },
-    disabled: editing,
+    // No dragging in select mode: a click ticks the card instead.
+    disabled: editing || selecting,
   });
   // dnd-kit marks a disabled source aria-disabled, which would make the edit
   // form's inputs read as disabled too. Only "can't drag right now" is meant.
@@ -71,8 +76,14 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={`card ${isDragging ? 'dragging' : ''} ${isNote ? 'note-card' : ''}`}
+      className={`card ${isDragging ? 'dragging' : ''} ${isNote ? 'note-card' : ''} ${selected ? 'selected' : ''}`}
       data-card-id={card.id}
+      onClick={(e) => {
+        // In select mode a click anywhere on the row ticks it, links included; the box handles its own clicks.
+        if (!selecting || (e.target as HTMLElement).closest('.select-box, .card-edit, .note-body input')) return;
+        e.preventDefault();
+        sel.toggle(card.id, !selected, e.shiftKey);
+      }}
       {...attributes}
       {...listeners}
       role="listitem"
@@ -80,6 +91,7 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
       aria-label={title}
     >
       <div className="card-main">
+        {selecting && <SelectBox id={card.id} label={title} />}
         <Favicon card={card} />
         <div className="card-text">
           {isNote ? (

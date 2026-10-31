@@ -1461,3 +1461,238 @@ button:disabled {
   width: 380px;
   min-height: 520px;
 }
+
+/* ---- select mode ---- */
+
+.space-toolbar .select-toggle ~ button {
+  margin-left: 0;
+}
+
+.select-toggle.on {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.select-box {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--fo-gold);
+  cursor: pointer;
+}
+
+/* A group's box sits on a band and the cards' boxes are indented under it,
+   so "all of these" and "this one" read as two levels. */
+.app[data-selecting] .collection-header {
+  background: var(--surface-2);
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin-bottom: 4px;
+}
+
+.app[data-selecting] .cards,
+.app[data-selecting] .result-group .result-list {
+  margin-left: 22px;
+}
+
+.app[data-selecting] .result-group .pane-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--surface-2);
+  border-radius: 6px;
+}
+
+.app[data-selecting] .card-actions {
+  display: none;
+}
+
+.app[data-selecting] .card,
+.app[data-selecting] .card-title {
+  cursor: pointer;
+}
+
+.card.selected,
+.result-list li.selected {
+  background: var(--accent-soft);
+}
+
+.result-list li:has(> .select-box) {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  padding-left: 8px;
+  border-radius: 6px;
+}
+
+.result-list li > .select-box {
+  margin-top: 8px;
+}
+
+.search-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.search-head .select-toggle {
+  margin-left: auto;
+}
+
+/* Room below the last card for the bar. */
+.app[data-selecting] .app-main {
+  padding-bottom: 96px;
+}
+
+.select-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 8px 16px;
+  border-radius: 12px;
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 35%);
+  z-index: 15;
+}
+
+.select-bar .select-count {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.select-bar .select-count .muted {
+  color: inherit;
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+.select-bar button {
+  background: transparent;
+  color: inherit;
+  border-color: color-mix(in srgb, var(--bg) 40%, transparent);
+}
+
+.select-bar button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.select-bar button:disabled {
+  opacity: 0.4;
+}
+
+/* The undo notice sits above the bar when both show. */
+.app[data-selecting] .select-notice {
+  bottom: 84px;
+}
+
+.select-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.select-notice button {
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
+}
+
+.select-dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.select-dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+.select-dialog h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.select-dialog label {
+  display: block;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.select-dialog label > input:not([type='radio']),
+.select-dialog label > select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.select-dialog .radios {
+  margin: 12px 0 0;
+  padding: 0;
+  border: none;
+}
+
+.select-dialog .radios legend {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.select-dialog .radios label {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.select-dialog .row-end {
+  margin-top: 16px;
+}
+
+/* Side panel: a shorter toggle and a tighter bar, to fit 400px. */
+.app[data-surface='sidepanel'] .select-toggle .long-label {
+  display: none;
+}
+
+.app[data-surface='sidepanel'] .select-bar {
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  width: auto;
+  gap: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.app[data-surface='sidepanel'] .select-bar .select-count {
+  flex-basis: 100%;
+}
+
+.app[data-surface='sidepanel'] .select-bar button {
+  padding: 2px 7px;
+  font-size: 12px;
+}
+
+.app[data-surface='sidepanel'][data-selecting] .app-main {
+  padding-bottom: 110px;
+}

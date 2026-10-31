@@ -5,6 +5,7 @@ import { db } from '../db/db';
 import { createCollection, listAllCollectionsInOrder, listCollections, listSpaces, listTags, updateCollection } from '../db/repo';
 import type { Collection, Space } from '../db/schema';
 import { dragId } from '../dnd/drop';
+import { SelectToggle } from '../select/SelectToggle';
 import { countTabs } from '../stats/stats';
 import { CollectionPanel } from './CollectionPanel';
 import type { Density, SortMode } from './prefs';
@@ -85,6 +86,7 @@ export function SpaceView({ space, sort, onSort, density, onDensity, highlightId
             : `${shown.length} of ${collections.length} collections`}
           {tabCount !== undefined && ` · ${tabCount.toLocaleString()} tab${tabCount === 1 ? '' : 's'}`}
         </span>
+        <SelectToggle />
         <button type="button" className="primary" onClick={add}>
           + Collection
         </button>
@@ -162,6 +164,7 @@ export function StarredView({ onGoTo }: { onGoTo: (spaceId: string, collectionId
         <span className="muted">
           {data.starred.length} collection{data.starred.length === 1 ? '' : 's'}
         </span>
+        {data.starred.length > 0 && <SelectToggle />}
       </div>
       {data.starred.length === 0 ? (
         <p className="empty">Star a collection (☆ in its header) to keep it here, whatever space it's in.</p>

@@ -5,6 +5,8 @@ import { listAllCardsInOrder, listAllCollectionsInOrder, listSpaces } from '../d
 import { displayTitle } from '../db/schema';
 import { chromeFaviconUrl, hostOf } from '../app/favicon';
 import { extensionOrigin, focusTab, isSavableUrl } from '../tabs/tabs';
+import { GroupBox, SelectBox, useSelection } from '../select/selection';
+import { SelectToggle } from '../select/SelectToggle';
 import { buildIndex, matchesTab, search } from './search';
 
 interface Props {
@@ -27,6 +29,7 @@ export function SearchResults({ query, historyEnabled, onGoTo }: Props) {
   const results = useMemo(() => (index ? search(index, query) : null), [index, query]);
   const tabs = useOpenTabMatches(query);
   const history = useHistoryMatches(query, historyEnabled);
+  const sel = useSelection();
 
   if (!index || !results) return null;
   const crumb = (collectionId: string) => {
@@ -38,9 +41,12 @@ export function SearchResults({ query, historyEnabled, onGoTo }: Props) {
 
   return (
     <div className="search-results" aria-label="Search results">
-      <p className="muted" role="status" aria-label="Result count">
-        {total === 0 ? `Nothing matches "${query}".` : `${total} result${total === 1 ? '' : 's'} for "${query}"`}
-      </p>
+      <div className="search-head">
+        <p className="muted" role="status" aria-label="Result count">
+          {total === 0 ? `Nothing matches "${query}".` : `${total} result${total === 1 ? '' : 's'} for "${query}"`}
+        </p>
+        {results.cards.length > 0 && <SelectToggle />}
+      </div>
 
       {results.spaces.length > 0 && (
         <ResultGroup title="Spaces">
@@ -68,10 +74,23 @@ export function SearchResults({ query, historyEnabled, onGoTo }: Props) {
       )}
 
       {results.cards.length > 0 && (
-        <ResultGroup title="Saved tabs">
+        <ResultGroup title="Saved tabs" box={sel.active ? <GroupBox ids={results.cards.map((c) => c.id)} label="Saved tabs" /> : null}>
           {results.cards.map((c) => (
-            <li key={c.id}>
-              <a className="result" href={c.url || undefined} target="_blank" rel="noreferrer" title={c.url}>
+            <li key={c.id} className={sel.active && sel.ids.has(c.id) ? 'selected' : ''}>
+              {sel.active && <SelectBox id={c.id} label={displayTitle(c)} />}
+              <a
+                className="result"
+                href={c.url || undefined}
+                target="_blank"
+                rel="noreferrer"
+                title={c.url}
+                onClick={(e) => {
+                  // In select mode the row ticks the card rather than opening it.
+                  if (!sel.active) return;
+                  e.preventDefault();
+                  sel.toggle(c.id, !sel.ids.has(c.id), e.shiftKey);
+                }}
+              >
                 <Icon url={c.url} fallback={c.favIconUrl} />
                 <span className="result-text">
                   <span className="result-title">{displayTitle(c)}</span>
@@ -125,10 +144,13 @@ export function SearchResults({ query, historyEnabled, onGoTo }: Props) {
   );
 }
 
-function ResultGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function ResultGroup({ title, box, children }: { title: string; box?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="result-group" aria-label={title}>
-      <h3 className="pane-title">{title}</h3>
+      <h3 className="pane-title">
+        {box}
+        {title}
+      </h3>
       <ul className="result-list">{children}</ul>
     </section>
   );
