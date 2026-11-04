@@ -1,43 +1,90 @@
-# MingTab
+<p align="center">
+  <img src="docs/images/logo-ming-doorway.svg" alt="明 in a bright doorway, the MingTab logo" width="112">
+</p>
 
-**A tab manager for Chrome that keeps your tab bar clear.** Save whole windows as collections,
-organize them into spaces, and bring them back when you need them. MingTab is a personal
-replacement for [Toby](https://www.gettoby.com/) that keeps everything on your own machine.
+<h1 align="center">MingTab</h1>
+
+<p align="center">
+  <b>Keep your tab bar clear.</b><br>
+  Save your open tabs as collections, sort them into spaces, and bring them back when you need them.
+</p>
+
+<p align="center">
+  <a href="https://github.com/kratner/mingtab/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/kratner/mingtab?label=release&color=C9A24A"></a>
+  <img alt="Chrome, Edge, Brave" src="https://img.shields.io/badge/Chrome%20%C2%B7%20Edge%20%C2%B7%20Brave-Manifest%20V3-0E0D0B">
+  <a href="https://fourounces.live/"><img alt="A Four Ounces tool" src="https://img.shields.io/badge/a%20Four%20Ounces%20tool-8A2A1E"></a>
+</p>
+
+<p align="center">
+  <a href="#install"><b>Install</b></a> ·
+  <a href="#using-mingtab">How to use it</a> ·
+  <a href="#your-data">Your data</a> ·
+  <a href="CHANGELOG.md">What's new</a> ·
+  <a href="#development">Development</a>
+</p>
 
 ![The MingTab board: spaces on the left, collections in the middle, open tabs on the right](docs/images/board-dark.png)
 
-<img src="docs/images/logo-ming-doorway.svg" alt="明 in a bright doorway, the MingTab logo" width="96" align="right">
-
-**Why "MingTab"?** 明堂 *míngtáng*, "the bright hall", is the open, uncluttered space in front of
-a building in feng shui: the place where qi, the energy of a place, gathers before it flows
-inside. Clutter there blocks it; a clear approach lets it in. 明 *míng*, "bright", joins 日 (sun)
-and 月 (moon). Forty open tabs are a cluttered approach; MingTab keeps yours clear. The same note
-is in the extension under **Settings → About MingTab**.
+MingTab is a tab manager for Chrome and other Chromium browsers, built as a personal replacement
+for [Toby](https://www.gettoby.com/). Your collections live on your own computer. Sync between
+computers is optional.
 
 ## What it does
 
+**Save and restore**
+
 - **Save tabs without losing them.** Save a window, a tab group or a single tab as a collection.
-  Saving closes the tabs by default (you can keep them open instead).
-- **Organize.** Spaces hold collections, and collections hold cards. Drag to reorder, move cards
-  between collections, or drop a collection onto another space. Tag, star, sort and merge
-  collections.
-- **Bring them back.** Open one card, or a whole collection at once. A collection saved from a
-  tab group reopens as a tab group with the same name and color.
-- **Find anything.** One search across everything you've saved, your open tabs and (if you turn
-  it on) your browsing history.
+  Saving closes the tabs by default; you can keep them open instead.
+- **Save everything at once.** **Save all** keeps every window in one collection, and **Open all**
+  puts each window back where it was, tab groups included.
+- **Bring them back.** Open one card or a whole collection. A collection saved from a tab group
+  reopens as a tab group with the same name and color.
+
+**Organise**
+
+- **Spaces, collections and cards.** Drag to reorder, move cards between collections, or drop a
+  collection onto another space. Tag, star, sort and merge collections.
+- **Select mode.** Tick cards anywhere (across collections, spaces and search results), then
+  make a new collection from them, move or copy them, open them, or delete them. Every action can
+  be undone.
+- **Stats.** How many collections and saved tabs you have, the biggest collections, your
+  most-saved sites, empty collections and duplicates.
 - **Tidy up.** Find pages saved more than once and remove the extra copies.
+
+**Find and use**
+
+- **One search for everything:** what you've saved, your open tabs and (if you turn it on) your
+  browsing history. Press **/** from anywhere.
+- **Next, notes and shortcuts.** A to-read queue, notes with checklists, and address-bar
+  shortcuts: type `to/ docs` to open the card you named `docs`.
 - **Manage open tabs.** See every window and tab group, rename and recolor groups, and merge all
   windows into one.
+
+**And**
+
 - **Import from Toby**, including which space each collection was in.
-- **Next, notes and shortcuts.** A to-read queue, notes with checklists, and `to docs`-style
-  shortcuts in the address bar (`to/ docs`).
 - **Sync** across Chrome profiles and computers, through a small sync service on your own
   Cloudflare account, signed in with Google.
+- **Tells you when a new version is out**: it checks for releases once a day.
 - **Light and dark themes**, in the Four Ounces gold scheme or a terracotta one.
+
+| Select mode | Stats |
+|---|---|
+| ![Three cards ticked across two collections, with the select bar along the bottom](docs/images/select.png) | ![The Stats view: totals, biggest collections and most-saved sites](docs/images/stats.png) |
 
 | Board in light mode | Side panel | Search |
 |---|---|---|
 | ![Board, light theme](docs/images/board-light.png) | ![Side panel](docs/images/sidepanel.png) | ![Search results for "lisbon"](docs/images/search.png) |
+
+### Why "MingTab"?
+
+<img src="docs/images/logo-ming-doorway.svg" alt="" width="72" align="right">
+
+明堂 *míngtáng*, "the bright hall", is the open, uncluttered space in front of a building in
+feng shui: the place where qi, the energy of a place, gathers before it flows inside. Clutter
+there blocks it; a clear approach lets it in. 明 *míng*, "bright", joins 日 (sun) and 月 (moon).
+Forty open tabs are a cluttered approach; MingTab keeps yours clear. The same note is in the
+extension under **Settings → About MingTab**.
 
 ---
 
@@ -52,6 +99,9 @@ About two minutes. What changed in each release: [CHANGELOG.md](CHANGELOG.md).
 Download the latest **`mingtab-<version>.zip`** from
 [Releases](https://github.com/kratner/mingtab/releases). Unzip it into a folder you'll keep, for example
 `~/Applications/MingTab` on a Mac or `C:\Users\<you>\MingTab` on Windows.
+
+> **Windows:** "Extract All" suggests a new folder named after the zip. That's fine the first
+> time. When you update, extract into the folder Chrome already loads, not a new one beside it.
 
 Every copy of MingTab has the same extension ID (`jclkedgbnlmbonoihhobgnmdoehmddpo`, fixed by the
 manifest's `key`), so the folder name and location don't matter.
@@ -91,7 +141,8 @@ the Worker in `worker/` to your Cloudflare account and point `sync.config.json` 
 MingTab checks this repository's Releases about once a day. When a newer version is out, the toolbar
 button shows **↑** and the board and side panel show a notice:
 
-1. Click **Download** and unzip the zip **over the same folder** (replace everything).
+1. Click **Download** and unzip the zip **over the same folder** (replace everything). Not sure
+   which folder? `chrome://extensions` shows it on MingTab's card, under **Developer mode**.
 2. Within a minute MingTab notices the new files and the notice changes to **Restart MingTab**. Click
    it. Open MingTab pages close and the new version starts. Your data stays.
 
@@ -136,6 +187,9 @@ Then click **Remove** on MingTab in `chrome://extensions`.
 | Search | Type in the search box, or press **/** from anywhere. **Esc** clears. |
 | Reorder | Drag a collection by **⠿**, or drag a card. Keyboard: focus it, **Space**, arrow keys, **Space**. |
 | Move a collection to another space | Drag its **⠿** onto the space in the sidebar |
+| Pick cards from anywhere | **Select** in a space's header (or above search results), tick cards, then use the bar along the bottom. Shift-click ticks a range; a collection's header box ticks all of it. **Esc** or **Done** to finish. |
+| Make a collection from picked cards | Select mode → **New collection…** (move or copy them in) |
+| See totals | The tab count is beside each space's name; **Stats** under the spaces list has the rest |
 | Tag a collection | **#** in its header |
 | Merge two collections | **⇲** in the header of the one to merge away |
 | See starred collections | **★ Starred** at the top of the spaces list |
@@ -154,10 +208,10 @@ Pinned tabs are never saved with a window or closed.
 ## Your data
 
 Everything is stored **locally, inside the extension, in the Chrome profile you loaded it into**
-(IndexedDB, plus a few display preferences in local storage). MingTab has no server and your
-collections never leave the machine. The only network requests are site icons: Chrome's own
-icon cache comes first, and if it doesn't have one, the icon saved with the card loads from that
-site.
+(IndexedDB, plus a few display preferences in local storage). Your collections leave the machine
+only if you sign in to sync. Otherwise the only network requests are the daily update check and
+site icons: Chrome's own icon cache comes first, and if it doesn't have one, the icon saved with
+the card loads from that site.
 
 | Your data survives | Your data does **not** survive |
 |---|---|
@@ -221,7 +275,7 @@ Add a `## <version> — <date>` section to `CHANGELOG.md`, bump `version` in `pa
 then tag and push:
 
 ```sh
-git tag v0.7.0 && git push origin v0.7.0
+git tag v1.2.3 && git push origin v1.2.3   # the version in package.json
 ```
 
 The **Release** workflow (`.github/workflows/release.yml`) checks the tag matches
@@ -258,14 +312,20 @@ src/
   app/        UI: board, side panel, collections, cards, settings
   db/         records, database, ordering (fractional positions), create/edit/delete
   dnd/        drag-and-drop rules (what can drop where) and the drag context
+  select/     select mode: the selection, the action bar, and undoable bulk actions
+  stats/      totals and the Stats view
   import/     Toby import, MingTab backup/restore
   search/     search index and results
   dedupe/     duplicate detection
+  notes/      notes and checklists
   tabs/       Chrome tabs, windows and tab groups; the open-tabs pane
-  background.ts, sidepanel/, newtab/
+  sync/       sign-in and sync with the Worker
+  update/     the daily release check and the update notice
+  background.ts, omnibox.ts, sidepanel/, newtab/
+worker/       the sync service (Cloudflare Worker + D1)
 e2e/          Playwright tests and fixtures
 scripts/      toby-space-map.js, README screenshots, original icon script
-branding/     icon concepts, render script, UI screenshots
+branding/     icon concepts, render script, prototypes, UI screenshots
 ```
 
 Every record carries a UUID, `updatedAt`, a `deletedAt` tombstone and a fractional position, so
@@ -290,4 +350,13 @@ and this README). Earlier versions, KR and gold-on-ink, are in `branding/retired
 - ✅ M0 scaffold · M1 spaces, collections, Toby import · M2 saving windows and tab groups ·
   M3 drag and drop · M4 search, tags, duplicates · M5 Next, notes, `to/` shortcuts, popup
 - ✅ S1 sync across Chrome profiles and computers ([SYNC.md](SYNC.md))
+- ✅ Organise: tab counts, Stats, select mode
+- ⏳ Organise: more sorting and grouping (most tabs, recently opened, by year saved, by site)
+- ⏳ Chrome bookmarks in the sidebar and in search
 - ⏳ S2 phone web app
+
+---
+
+<p align="center">
+  <a href="https://fourounces.live/">A Four Ounces tool</a> · by Keith Ratner
+</p>

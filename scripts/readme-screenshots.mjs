@@ -64,6 +64,23 @@ await page.getByRole('searchbox', { name: 'Search' }).fill('lisbon');
 await page.waitForTimeout(300);
 await page.screenshot({ path: path.join(out, 'search.png') });
 
+// Select mode: cards picked from two collections, ready to become a new one.
+await page.getByRole('searchbox', { name: 'Search' }).fill('');
+await page.getByRole('button', { name: 'Select', exact: true }).click();
+for (const name of ['Lisbon - Wikipedia', 'Flights to Portugal', 'Customer survey results - Google Sheets']) {
+  await page.getByRole('checkbox', { name: `Select ${name}` }).click();
+}
+await page.waitForTimeout(300);
+await page.screenshot({ path: path.join(out, 'select.png') });
+await page.getByRole('button', { name: 'Done', exact: true }).click();
+
+await page.getByRole('button', { name: 'Stats' }).first().click();
+await page.getByRole('list', { name: 'Totals' }).waitFor();
+await page.waitForTimeout(300);
+await page.screenshot({ path: path.join(out, 'stats.png') });
+// Back to the space, which the side panel opens on too.
+await page.getByRole('navigation', { name: 'Spaces' }).getByRole('button', { name: 'Work', exact: true }).click();
+
 const panel = await context.newPage();
 await panel.setViewportSize({ width: 400, height: 760 });
 await panel.goto(`chrome-extension://${id}/src/sidepanel/index.html`);
