@@ -25,9 +25,8 @@
 
 ![The MingTab board: spaces on the left, collections in the middle, open tabs on the right](docs/images/board-dark.png)
 
-MingTab is a tab manager for Chrome and other Chromium browsers, built as a personal replacement
-for [Toby](https://www.gettoby.com/). Your collections live on your own computer. Sync between
-computers is optional.
+MingTab is a tab manager for Chrome and other Chromium browsers. Your collections live on your
+own computer. Sync between computers is optional.
 
 ## What it does
 
@@ -62,7 +61,6 @@ computers is optional.
 
 **And**
 
-- **Import from Toby**, including which space each collection was in.
 - **Sync** across Chrome profiles and computers, through a small sync service on your own
   Cloudflare account, signed in with Google.
 - **Tells you when a new version is out**: it checks for releases once a day.
@@ -119,7 +117,7 @@ Now:
 - **Click the MingTab icon** (明) to open the side panel.
 - **Open a new tab** to see the full board.
 
-> **If Toby (or another extension) also replaces the new-tab page or uses the `to/` keyword**,
+> **If another extension also replaces the new-tab page or uses the `to/` keyword**,
 > Chrome can only give each to one extension. Turn the other extension off in
 > `chrome://extensions`, then restart Chrome (⌘Q) if it still wins.
 
@@ -153,21 +151,6 @@ and a switch for the daily check. If MingTab doesn't come back after the restart
 Chrome only updates extensions on its own when they come from the Chrome Web Store, so the unzip step
 stays manual.
 
-### Bring over your Toby data (optional)
-
-1. In Toby, open **Settings → Export** and choose **.JSON**. Save the file.
-2. *(Optional, keeps your spaces.)* Toby's export is a flat list of collections with no spaces.
-   To keep them, sign in at [web.gettoby.com](https://web.gettoby.com), open the browser's
-   DevTools console (⌥⌘J on Mac, Ctrl+Shift+J on Windows), paste the contents of
-   [`scripts/toby-space-map.js`](scripts/toby-space-map.js) and press Enter. It downloads
-   `toby-space-map.json`. The script only reads; it sends nothing anywhere and changes nothing
-   in Toby.
-3. In MingTab, open **Settings (⚙) → Import from Toby**, choose the export and, if you made one,
-   the space map. Check the preview's counts, then click **Import**.
-
-Empty collections are skipped by default; untick **Skip empty collections** to keep them.
-Toby's note cards come across as titles only, because Toby doesn't export the note text.
-
 ### Uninstalling
 
 **Download a backup first** (Settings → Backup): removing the extension deletes its data.
@@ -195,7 +178,7 @@ Then click **Remove** on MingTab in `chrome://extensions`.
 | See starred collections | **★ Starred** at the top of the spaces list |
 | Line up what to read next | **▶** on a card or an open tab; then **▶ Next** at the top of the spaces list. Tick items off, drag to reorder. |
 | Write a note | **✎** in a collection's header. `- [ ] task` makes a checklist; `**bold**`, `*italic*` and links work. |
-| Jump to a page from the address bar | Give a card a shortcut (✎ → Shortcut), then type **to/**, press Space, and type the shortcut: `to/ docs`. All shortcuts are listed in Settings. Toby uses the same keyword, so turn Toby off. |
+| Jump to a page from the address bar | Give a card a shortcut (✎ → Shortcut), then type **to/**, press Space, and type the shortcut: `to/ docs`. All shortcuts are listed in Settings. If another extension also uses `to/`, turn it off. |
 | Use a popup instead of the side panel | Settings → **Toolbar button** |
 | Sync another profile or computer | Settings → **Sign in with Google** |
 | Remove duplicates | Settings → **Find duplicates** (nothing is removed until you confirm) |
@@ -245,7 +228,7 @@ The phone version (a web app, since Chrome on phones doesn't run extensions) is 
 | `alarms` | Sync every minute, and check for updates about once a day |
 | Access to `mingtab-sync.mingtab-sync.workers.dev` | The sync service, and no other site |
 | Reading `api.github.com` (needs no permission) | The daily update check reads this repository's latest release; nothing is sent |
-| Address-bar keyword `to/` | `to/ docs` opens your shortcut (Toby's keyword too: only one can have it) |
+| Address-bar keyword `to/` | `to/ docs` opens your shortcut (only one extension can have a keyword) |
 | New-tab page override | Show the board on new tabs |
 
 MingTab never reads the content of the pages you visit, only the title, address and icon of tabs
@@ -301,7 +284,7 @@ before using MingTab day to day, or it stops working when the dev server isn't r
 | `npm run e2e` | Builds `dist-test/` (never `dist/`, which your Chrome loads) against a local copy of the sync service, then Playwright drives it in Chromium: saving windows and tab groups, drag and drop, import, search, notes, Next, shortcuts, layout at phone-to-desktop widths, and two profiles syncing |
 | `npm run check` | All of the above, plus the sync service's tests |
 
-The first browser-test run needs `npx playwright install chromium`. Tests that use a real Toby
+The first browser-test run needs `npx playwright install chromium`. Tests that use a real data
 export run only when one is present in `imports/`, a folder git ignores.
 
 **Stack:** TypeScript, React, Vite with [CRXJS](https://crxjs.dev/) (Manifest V3), Dexie
@@ -314,7 +297,7 @@ src/
   dnd/        drag-and-drop rules (what can drop where) and the drag context
   select/     select mode: the selection, the action bar, and undoable bulk actions
   stats/      totals and the Stats view
-  import/     Toby import, MingTab backup/restore
+  import/     importing, MingTab backup/restore
   search/     search index and results
   dedupe/     duplicate detection
   notes/      notes and checklists
@@ -324,7 +307,7 @@ src/
   background.ts, omnibox.ts, sidepanel/, newtab/
 worker/       the sync service (Cloudflare Worker + D1)
 e2e/          Playwright tests and fixtures
-scripts/      toby-space-map.js, README screenshots, original icon script
+scripts/      README screenshots, original icon script, import helper
 branding/     icon concepts, render script, prototypes, UI screenshots
 ```
 
@@ -345,9 +328,9 @@ and this README). Earlier versions, KR and gold-on-ink, are in `branding/retired
 
 ## Roadmap
 
-[PLAN.md](PLAN.md) has the full feature comparison with Toby and the milestones:
+[PLAN.md](PLAN.md) has the full feature list and the milestones:
 
-- ✅ M0 scaffold · M1 spaces, collections, Toby import · M2 saving windows and tab groups ·
+- ✅ M0 scaffold · M1 spaces, collections, import · M2 saving windows and tab groups ·
   M3 drag and drop · M4 search, tags, duplicates · M5 Next, notes, `to/` shortcuts, popup
 - ✅ S1 sync across Chrome profiles and computers ([SYNC.md](SYNC.md))
 - ✅ Organise: tab counts, Stats, select mode

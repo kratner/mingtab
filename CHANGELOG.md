@@ -96,7 +96,7 @@ What's new in each MingTab release. Downloads and install steps are on the
 
 ## 0.6.0 — 2026-10-23
 
-First release. A local-first replacement for Toby, as a Chrome extension:
+First release. A local-first tab manager, as a Chrome extension:
 
 - **Board:** spaces, collections and cards, with notes, custom titles, tags, stars, sorting, list and
   compact views, and a dark and light theme. Opens in the side panel and, optionally, on new tabs.
@@ -107,6 +107,6 @@ First release. A local-first replacement for Toby, as a Chrome extension:
 - **Search** across spaces, collections, cards and open tabs, plus browsing history if you turn it on.
   **Duplicates** finds repeated cards and asks before removing any.
 - **Next:** a queue of pages to get through. **Notes** with checklists and links.
-- **Address-bar shortcuts:** type `to/` then a card's shortcut to open it (Toby's keyword).
-- **Import** from Toby, plus JSON backup and restore.
+- **Address-bar shortcuts:** type `to/` then a card's shortcut to open it.
+- **Import** of existing collections, plus JSON backup and restore.
 - **Sync** across Chrome profiles and computers through a small Cloudflare Worker, with Google sign-in.

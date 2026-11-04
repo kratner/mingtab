@@ -42,7 +42,7 @@ Then open a new tab to see your board, or click the 明 icon for the side panel.
 Good to know:
 - Chrome may warn about "developer mode extensions". That's normal for extensions
   installed this way. Click away the warning; MingTab keeps working.
-- If you use Toby or another extension that takes over the new-tab page, turn that one
+- If you use another extension that takes over the new-tab page, turn that one
   off in chrome://extensions so MingTab can show its board.
 - When there's a new version, MingTab shows a notice with a Download button. Unzip it over
   the same folder and click Restart MingTab. Your saved tabs stay.
