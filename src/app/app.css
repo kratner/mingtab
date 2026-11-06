@@ -255,7 +255,7 @@ a {
   background: var(--surface);
 }
 
-/* Wordmark: same treatment as Social Hub and Agent Workspace (Archivo Black capitals, 0.03em, text colour). */
+/* Wordmark: same treatment as Social Hub and Agent Sessions (Archivo Black capitals, 0.03em, text colour). */
 .app-header h1 {
   margin: 0;
   font-family: var(--fo-font-display);
