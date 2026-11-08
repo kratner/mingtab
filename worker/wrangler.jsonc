@@ -19,6 +19,6 @@
     "GOOGLE_CLIENT_ID": "453066917507-acsc56hkjjnrl461cvga9fmkqnlnllp0.apps.googleusercontent.com",
     "ALLOWED_EMAILS": "keith.ratner@gmail.com",
     // The extension's fixed ID (manifest "key"); the phone web app's origin gets added here later.
-    "ALLOWED_ORIGINS": "chrome-extension://jclkedgbnlmbonoihhobgnmdoehmddpo"
+    "ALLOWED_ORIGINS": "chrome-extension://jclkedgbnlmbonoihhobgnmdoehmddpo,chrome-extension://ofeenikhemghdanmdfcjjmogniooejjd"
   }
 }
