@@ -3,13 +3,16 @@ import pkg from './package.json' with { type: 'json' };
 import sync from './sync.config.json' with { type: 'json' };
 
 const syncOrigin = new URL(process.env.VITE_SYNC_URL || sync.syncUrl).origin;
+// The Chrome Web Store build leaves out `key`: the store rejects it and gives
+// MingTab its own ID (sync.config.json → storeExtensionId once it's known).
+const store = process.env.VITE_STORE === '1';
 
 export default defineManifest({
   manifest_version: 3,
   name: 'MingTab',
   // Public key that fixes the extension ID (sync.config.json → extensionId)
   // on every machine; Google sign-in redirects to that ID.
-  key: sync.manifestKey,
+  ...(store ? {} : { key: sync.manifestKey }),
   description: pkg.description,
   version: pkg.version,
   icons: {

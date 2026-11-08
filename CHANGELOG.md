@@ -3,6 +3,15 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Added
+
+- **Chrome Web Store build.** `npm run package:store` makes a zip for the store: no fixed extension ID, and no
+  GitHub update checks or notices (the store updates MingTab itself). Listing text, screenshots and steps are
+  in `docs/store/`.
+- **Vivaldi:** setup steps in the README (the board opens on new tabs through Vivaldi's Homepage setting).
+
 ## 0.11.0 — 2026-10-31
 
 ### Added

@@ -1,6 +1,7 @@
 node_modules/
 dist/
 dist-test/
+dist-store/
 test-results/
 playwright-report/
 *.local

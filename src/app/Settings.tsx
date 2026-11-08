@@ -17,7 +17,7 @@ import { findDuplicates, type DuplicateGroup } from '../dedupe/dedupe';
 import { downloadJson, readJsonFile, timestamp } from './files';
 import { SyncSettings } from '../sync/SyncSettings';
 import { FourOuncesMark } from './FourOuncesMark';
-import { AUTO_KEY, checkForUpdate, readUpdateState, runningVersion, isNewer, type UpdateState } from '../update/update';
+import { AUTO_KEY, STORE_BUILD, checkForUpdate, readUpdateState, runningVersion, isNewer, type UpdateState } from '../update/update';
 import type { Scheme, Theme } from './prefs';
 
 interface Props {
@@ -393,6 +393,16 @@ function Updates() {
   }, []);
   const running = typeof chrome !== 'undefined' && chrome.runtime ? runningVersion() : '';
   const latest = state?.latest;
+  if (STORE_BUILD) {
+    return (
+      <section className="settings-section" aria-labelledby="updates-heading">
+        <h3 id="updates-heading">Updates</h3>
+        <p>
+          You have MingTab {running}. The Chrome Web Store keeps it up to date.
+        </p>
+      </section>
+    );
+  }
   return (
     <section className="settings-section" aria-labelledby="updates-heading">
       <h3 id="updates-heading">Updates</h3>

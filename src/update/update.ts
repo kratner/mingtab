@@ -8,6 +8,12 @@
 export const RELEASES_URL: string =
   (import.meta.env.VITE_UPDATE_URL as string | undefined) || 'https://api.github.com/repos/kratner/mingtab/releases/latest';
 
+/**
+ * The Chrome Web Store build (`npm run package:store`). The store updates MingTab
+ * itself, so this build never checks GitHub and never shows an update notice.
+ */
+export const STORE_BUILD: boolean = import.meta.env.VITE_STORE === '1';
+
 export const UPDATE_KEY = 'mingtab.update';
 export const SKIPPED_KEY = 'mingtab.update.skipped';
 export const AUTO_KEY = 'mingtab.update.auto';
@@ -116,11 +122,13 @@ export async function checkForUpdate(): Promise<UpdateState> {
 
 /** The daily check, when automatic checks are on and the last one is a day old. */
 export async function checkIfDue(): Promise<void> {
+  if (STORE_BUILD) return;
   const { state, auto } = await readUpdateState();
   if (auto && (!state || Date.now() - state.checkedAt > DAY_MS)) await checkForUpdate();
 }
 
 export async function currentNotice(): Promise<UpdateNotice> {
+  if (STORE_BUILD) return { kind: 'none' };
   const [{ state, skipped }, disk] = await Promise.all([readUpdateState(), diskVersion()]);
   return decideNotice({ running: runningVersion(), disk, latest: state?.latest ?? null, skipped });
 }
