@@ -10,8 +10,8 @@ tested · ❓ unknown · ❌ not available
 
 | | Chrome | Edge | Brave | Vivaldi | Opera / Arc |
 |---|---|---|---|---|---|
-| Install the release zip (developer mode) | ✅ | 🟡 `edge://extensions` | 🟡 `brave://extensions` | 🟡 `vivaldi://extensions` | ❓ |
-| Board on new tab | ✅ | 🟡 | 🟡 | 🟡 | ❓ |
+| Install the release zip (developer mode) | ✅ | 🟡 `edge://extensions` | 🟡 `brave://extensions` | ✅ `vivaldi://extensions` (2026-11-08) | ❓ |
+| Board on new tab | ✅ | 🟡 | 🟡 | ✅ via **Settings → General → Homepage** set to the board's address (README, Install); not offered under New Tab Page → Controlled by Extension | ❓ |
 | Side panel | ✅ | 🟡 | 🟡 | 🟡 Vivaldi says it supports the Side Panel API (shown as a Web Panel); otherwise use **Settings → Toolbar button → popup** | ❓ |
 | Save windows, open tabs pane | ✅ | 🟡 | 🟡 | 🟡 | ❓ |
 | Tab groups (save/restore with color) | ✅ | 🟡 | 🟡 | ❓ Vivaldi has its own tab stacks | ❓ |

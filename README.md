@@ -121,8 +121,16 @@ Now:
 > Chrome can only give each to one extension. Turn the other extension off in
 > `chrome://extensions`, then restart Chrome (⌘Q) if it still wins.
 
-Other browsers: Edge, Brave and Vivaldi load the same zip from their own extensions page. See
-[BROWSERS.md](BROWSERS.md) for what's tested and what isn't.
+Other browsers: Edge, Brave and Vivaldi load the same zip from their own extensions page
+(`edge://extensions`, `brave://extensions`, `vivaldi://extensions`). See [BROWSERS.md](BROWSERS.md)
+for what's tested and what isn't.
+
+> **Vivaldi:** a new tab opens Vivaldi's Start Page, not MingTab, and MingTab isn't offered under
+> **Settings → Tabs → New Tab Page → Controlled by Extension**. Instead, in **Settings → General**,
+> set **Homepage** to
+> `chrome-extension://jclkedgbnlmbonoihhobgnmdoehmddpo/src/newtab/index.html`
+> New tabs (⌘T) then open the MingTab board. If they don't, set **Settings → Tabs → New Tab Page**
+> to **Homepage**.
 
 ### 3. Sign in to sync
 
