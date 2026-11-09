@@ -260,6 +260,10 @@ function OpenTabRow({
       role="listitem"
       aria-roledescription="draggable tab"
     >
+      {/* Shown on hover; kept (invisible) on tabs that can't be saved so every row lines up. */}
+      <span className={`row-grip ${savable ? '' : 'off'}`} aria-hidden="true" title={savable ? 'Drag into a collection' : undefined}>
+        ⠿
+      </span>
       <button type="button" className="open-tab-main" title={tab.url} onClick={() => focusTab(tab)}>
         {icon ? <img className="favicon" src={icon} alt="" /> : <span className="favicon favicon-blank" aria-hidden />}
         <span className="open-tab-title">{title}</span>

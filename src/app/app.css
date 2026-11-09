@@ -604,7 +604,7 @@ a {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 5px 4px 5px 8px;
+  padding: 5px 4px 5px 2px;
 }
 
 .favicon {
@@ -1015,6 +1015,51 @@ button:disabled {
 .card,
 .open-tab {
   touch-action: none;
+}
+
+/* Grip on saved cards and open tabs: hidden until the row is hovered or focused (always faintly visible where
+   there's no hover), so drag and drop is discoverable without cluttering the list. */
+.row-grip {
+  flex-shrink: 0;
+  width: 10px;
+  margin-right: -4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: -1px;
+  cursor: grab;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.card:hover .row-grip,
+.card:focus-within .row-grip,
+.card:focus .row-grip,
+.open-tab:hover .row-grip,
+.open-tab:focus-within .row-grip,
+.open-tab:focus .row-grip {
+  opacity: 1;
+}
+
+.open-tab > .row-grip {
+  margin-left: 2px;
+}
+
+.row-grip.off {
+  visibility: hidden;
+}
+
+@media (hover: none) {
+  .row-grip {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-grip {
+    transition: none;
+  }
 }
 
 .dragging {

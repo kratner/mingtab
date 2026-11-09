@@ -75,6 +75,34 @@ test('drag an open tab into a collection; the tab stays open', async ({ page, ex
   expect(await openSiteTabs(sw, site)).toHaveLength(1);
 });
 
+test('hovering a card or an open tab shows its grip; dragging by the grip moves and saves', async ({
+  page,
+  extensionId,
+  serviceWorker: sw,
+  site,
+}) => {
+  await setUp(page, extensionId);
+  const card = page.locator('.card', { hasText: 'a2' });
+  const grip = card.locator('.row-grip');
+  await expect(grip).toHaveCSS('opacity', '0');
+  await card.hover();
+  await expect(grip).toHaveCSS('opacity', '1');
+  // The grip sits left of the favicon.
+  const [g, f] = [(await grip.boundingBox())!, (await card.locator('.favicon').boundingBox())!];
+  expect(g.x + g.width).toBeLessThanOrEqual(f.x);
+
+  const b = page.getByRole('region', { name: 'B', exact: true });
+  await dragTo(page, grip, b.locator('.card', { hasText: 'b2' }));
+  await expect.poll(() => cardTitles(page, 'B')).toEqual(['b1', 'a2', 'b2']);
+
+  await openWindow(sw, urls(site, ['gripme']));
+  const tab = page.getByRole('complementary', { name: 'Open tabs' }).locator('.open-tab', { hasText: 'Page gripme' });
+  await tab.hover();
+  await expect(tab.locator('.row-grip')).toHaveCSS('opacity', '1');
+  await dragTo(page, tab.locator('.row-grip'), page.getByRole('region', { name: 'C', exact: true }).locator('.collection-header'));
+  await expect.poll(() => cardTitles(page, 'C')).toEqual(['c1', 'Page gripme']);
+});
+
 test('drag a collection onto another space in the sidebar', async ({ page, extensionId }) => {
   await setUp(page, extensionId);
   const nav = page.getByRole('navigation', { name: 'Spaces' });

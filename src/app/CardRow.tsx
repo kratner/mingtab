@@ -92,6 +92,12 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
     >
       <div className="card-main">
         {selecting && <SelectBox id={card.id} label={title} />}
+        {/* The whole row drags (6px threshold); the grip, shown on hover, is the visible cue. */}
+        {!selecting && !editing && (
+          <span className="row-grip" aria-hidden="true" title="Drag to move">
+            ⠿
+          </span>
+        )}
         <Favicon card={card} />
         <div className="card-text">
           {isNote ? (

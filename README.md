@@ -173,10 +173,10 @@ Then click **Remove** on MingTab in `chrome://extensions`.
 | Save a whole window | Open tabs pane → **Save window** |
 | Save every window at once | Open tabs pane → **Save all**. One collection named "All windows <date, time>"; **Open all** on it reopens each window where it was on screen, with its tab groups |
 | Save a tab group | Open tabs pane → **Save group** on the group |
-| Save one tab | Hover it in the open tabs pane → **⤓** → pick a collection, or drag it onto one (board only) |
+| Save one tab | Hover it in the open tabs pane → **⤓** → pick a collection, or drag it by its **⠿** grip onto one (board only) |
 | Reopen a collection | **⧉** in its header (a saved tab group comes back as a group) |
 | Search | Type in the search box, or press **/** from anywhere. **Esc** clears. |
-| Reorder | Drag a collection by **⠿**, or drag a card. Keyboard: focus it, **Space**, arrow keys, **Space**. |
+| Reorder | Drag a collection by **⠿**, or drag a card by the **⠿** grip that appears when you hover it (to another collection, too). Keyboard: focus it, **Space**, arrow keys, **Space**. |
 | Move a collection to another space | Drag its **⠿** onto the space in the sidebar |
 | Pick cards from anywhere | **Select** in a space's header (or above search results), tick cards, then use the bar along the bottom. Shift-click ticks a range; a collection's header box ticks all of it. **Esc** or **Done** to finish. |
 | Make a collection from picked cards | Select mode → **New collection…** (move or copy them in) |
