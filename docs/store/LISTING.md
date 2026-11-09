@@ -13,6 +13,8 @@ in this folder.
 | 2026-11-08 | Sync made ready for the store ID: OAuth redirect URI `https://ofeenikhemghdanmdfcjjmogniooejjd.chromiumapp.org/` added; Worker `ALLOWED_ORIGINS` updated and deployed (checked: the service answers the store origin). |
 | 2026-11-08 | **Submitted for review.** Once it passes, it publishes (or, if staged, must be published within 30 days). |
 
+Promo video (Four Ounces YouTube channel, unlisted): <https://youtu.be/Gw_fAAaf64g>. **After approval:** Store listing → Global promo video → paste `https://www.youtube.com/watch?v=Gw_fAAaf64g`, save, submit. Built by `scripts/promo-video.mjs`.
+
 Dashboard: <https://chrome.google.com/webstore/devconsole/5c1e66c1-20e2-4dba-918c-185d258c3a1a/ofeenikhemghdanmdfcjjmogniooejjd/edit>
 Store page once published: <https://chromewebstore.google.com/detail/ofeenikhemghdanmdfcjjmogniooejjd>
 
