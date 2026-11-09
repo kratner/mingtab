@@ -15,6 +15,15 @@ in this folder.
 
 Promo video (Four Ounces YouTube channel, unlisted): <https://youtu.be/Gw_fAAaf64g>. **After approval:** Store listing → Global promo video → paste `https://www.youtube.com/watch?v=Gw_fAAaf64g`, save, submit. Built by `scripts/promo-video.mjs`.
 
+**After approval, also:**
+
+1. fourounces.live (four-ounces-brand repo, `site/index.html`, MingTab row): change the **Download** link from the
+   GitHub release to the store page <https://chromewebstore.google.com/detail/ofeenikhemghdanmdfcjjmogniooejjd>
+   (label it "Chrome Web Store"; keep GitHub), then `scripts/deploy-site.sh`.
+2. README: add the store link above the GitHub install steps.
+3. Video description: swap the GitHub link for the store URL; make the video and the MingTab playlist Public.
+4. Add a row to the Status table above.
+
 Dashboard: <https://chrome.google.com/webstore/devconsole/5c1e66c1-20e2-4dba-918c-185d258c3a1a/ofeenikhemghdanmdfcjjmogniooejjd/edit>
 Store page once published: <https://chromewebstore.google.com/detail/ofeenikhemghdanmdfcjjmogniooejjd>
 
