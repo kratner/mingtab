@@ -10,10 +10,19 @@ What's new in each MingTab release. Downloads and install steps are on the
 - **Chrome Web Store build.** `npm run package:store` makes a zip for the store: no fixed extension ID, and no
   GitHub update checks or notices (the store updates MingTab itself). Listing text, screenshots and steps are
   in `docs/store/`.
+- **Vivaldi:** setup steps in the README (the board opens on new tabs through Vivaldi's Homepage setting).
 - **Drag handles on tabs.** Hover a saved tab or an open tab and a grip (⠿) appears left of its icon: drag it to
   another collection, or from the open tabs pane into a collection to save it. (Rows could already be dragged;
   the grip makes it visible.)
-- **Vivaldi:** setup steps in the README (the board opens on new tabs through Vivaldi's Homepage setting).
+- **Drop line.** While you drag a tab, a line shows exactly where it will land: above or below the tab under the
+  pointer (whichever half you're over), or at the end of a collection when you're over its header. It lands there.
+  The other tabs no longer slide around while you drag.
+
+### Fixed
+
+- Moving a saved tab with the keyboard (focus it, **Space**, arrow keys, **Space**) did nothing: the arrow keys
+  stepped onto the tab's own collection instead of the next tab.
+
 
 ## 0.11.0 — 2026-10-31
 

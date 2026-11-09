@@ -10,7 +10,7 @@ import {
   mergeCollections,
 } from '../db/repo';
 import type { Collection, Space } from '../db/schema';
-import { handleDrop } from './drop';
+import { edgeFor, handleDrop } from './drop';
 
 let db: MingTabDB;
 let s1: Space, s2: Space;
@@ -76,6 +76,45 @@ describe('cards', () => {
     const z = await createCollection(db, s2.id, 'Z');
     await handleDrop(db, { type: 'card', card: await card(a.id, 'a1') }, { type: 'space', space: s2 });
     expect(await titles(z.id)).toEqual(['a1']);
+  });
+});
+
+describe('drop line (edge)', () => {
+  it('lands on the side the line showed, within a collection', async () => {
+    await handleDrop(db, { type: 'card', card: await card(a.id, 'a3') }, { type: 'card', card: await card(a.id, 'a1') }, 'after');
+    expect(await titles(a.id)).toEqual(['a1', 'a3', 'a2']);
+    await handleDrop(db, { type: 'card', card: await card(a.id, 'a1') }, { type: 'card', card: await card(a.id, 'a2') }, 'before');
+    expect(await titles(a.id)).toEqual(['a3', 'a1', 'a2']);
+  });
+
+  it('lands after a card in another collection, including after the last one', async () => {
+    await handleDrop(db, { type: 'card', card: await card(a.id, 'a1') }, { type: 'card', card: await card(b.id, 'b1') }, 'after');
+    expect(await titles(b.id)).toEqual(['b1', 'a1', 'b2']);
+    await handleDrop(db, { type: 'card', card: await card(a.id, 'a2') }, { type: 'card', card: await card(b.id, 'b2') }, 'after');
+    expect(await titles(b.id)).toEqual(['b1', 'a1', 'b2', 'a2']);
+  });
+
+  it('dropping next to itself changes nothing', async () => {
+    const a2 = await card(a.id, 'a2');
+    expect(await handleDrop(db, { type: 'card', card: a2 }, { type: 'card', card: await card(a.id, 'a1') }, 'after')).toBeNull();
+    expect(await handleDrop(db, { type: 'card', card: a2 }, { type: 'card', card: await card(a.id, 'a3') }, 'before')).toBeNull();
+    expect(await titles(a.id)).toEqual(['a1', 'a2', 'a3']);
+  });
+
+  it('an open tab lands before or after a card', async () => {
+    const tab = { url: 'https://tab.example/', title: 'Tab', favIconUrl: '' };
+    await handleDrop(db, { type: 'tab', tab }, { type: 'card', card: await card(a.id, 'a3') }, 'after');
+    expect(await titles(a.id)).toEqual(['a1', 'a2', 'a3', 'Tab']);
+    await handleDrop(db, { type: 'tab', tab: { ...tab, title: 'Tab2' } }, { type: 'card', card: await card(a.id, 'a1') }, 'before');
+    expect(await titles(a.id)).toEqual(['Tab2', 'a1', 'a2', 'a3', 'Tab']);
+  });
+
+  it('edgeFor: top half before, bottom half after, the middle goes to the tie', () => {
+    const r = { top: 100, height: 40 }; // middle at 120
+    expect(edgeFor(105, r, 'after')).toBe('before');
+    expect(edgeFor(135, r, 'before')).toBe('after');
+    expect(edgeFor(121, r, 'after')).toBe('after');
+    expect(edgeFor(119, r, 'before')).toBe('before');
   });
 });
 

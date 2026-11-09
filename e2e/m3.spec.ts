@@ -1,5 +1,5 @@
 import path from 'node:path';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { dragTo, openSiteTabs, openWindow, urls } from './helpers';
 
@@ -101,6 +101,59 @@ test('hovering a card or an open tab shows its grip; dragging by the grip moves 
   await expect(tab.locator('.row-grip')).toHaveCSS('opacity', '1');
   await dragTo(page, tab.locator('.row-grip'), page.getByRole('region', { name: 'C', exact: true }).locator('.collection-header'));
   await expect.poll(() => cardTitles(page, 'C')).toEqual(['c1', 'Page gripme']);
+});
+
+test('keyboard: a card moves one place down with Space, ArrowDown, Space', async ({ page, extensionId }) => {
+  await setUp(page, extensionId);
+  await page.locator('.card', { hasText: 'a1' }).focus();
+  for (const key of ['Space', 'ArrowDown', 'Space']) {
+    await page.keyboard.press(key);
+    await page.waitForTimeout(300);
+  }
+  await expect.poll(() => cardTitles(page, 'A')).toEqual(['a2', 'a1', 'a3']);
+});
+
+test('a drop line shows where a dragged card or tab will land, and it lands there', async ({
+  page,
+  extensionId,
+  serviceWorker: sw,
+  site,
+}) => {
+  await setUp(page, extensionId);
+  const b = page.getByRole('region', { name: 'B', exact: true });
+  const b1 = b.locator('.card', { hasText: 'b1' });
+
+  // Press, nudge past the 6px threshold, then glide to a y offset inside the target.
+  async function dragOver(from: Locator, to: Locator, fraction: number) {
+    const f = (await from.boundingBox())!;
+    const t = (await to.boundingBox())!;
+    await page.mouse.move(f.x + f.width / 2, f.y + f.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(f.x + f.width / 2 + 12, f.y + f.height / 2 + 4, { steps: 4 });
+    await page.mouse.move(t.x + t.width / 2, t.y + t.height * fraction, { steps: 15 });
+  }
+
+  // Lower half of b1: the line is below b1, and the card lands between b1 and b2.
+  await dragOver(page.locator('.card', { hasText: 'a1' }), b1, 0.8);
+  await expect(b1).toHaveClass(/drop-after/);
+  await expect(page.locator('.drop-before, .drop-after')).toHaveCount(1);
+  await page.mouse.up();
+  await expect.poll(() => cardTitles(page, 'B')).toEqual(['b1', 'a1', 'b2']);
+  await expect(page.locator('.drop-before, .drop-after, .drop-append')).toHaveCount(0);
+
+  // Upper half of b1: the line is above it.
+  await dragOver(page.locator('.card', { hasText: 'a3' }), b1, 0.15);
+  await expect(b1).toHaveClass(/drop-before/);
+  await page.mouse.up();
+  await expect.poll(() => cardTitles(page, 'B')).toEqual(['a3', 'b1', 'a1', 'b2']);
+
+  // An open tab over the collection header: the line goes after the last card, and the tab is appended.
+  await openWindow(sw, urls(site, ['lineme']));
+  const tab = page.getByRole('complementary', { name: 'Open tabs' }).locator('.open-tab', { hasText: 'Page lineme' });
+  await dragOver(tab, page.getByRole('region', { name: 'C', exact: true }).locator('.collection-header'), 0.5);
+  await expect(page.getByRole('region', { name: 'C', exact: true })).toHaveClass(/drop-append/);
+  await page.mouse.up();
+  await expect.poll(() => cardTitles(page, 'C')).toEqual(['c1', 'Page lineme']);
 });
 
 test('drag a collection onto another space in the sidebar', async ({ page, extensionId }) => {

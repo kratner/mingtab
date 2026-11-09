@@ -14,6 +14,7 @@ import {
   removeTagFromCollection,
   updateCollection,
 } from '../db/repo';
+import { useDropIndicator } from '../dnd/DndProvider';
 import { dragId, type DragData } from '../dnd/drop';
 import type { Collection } from '../db/schema';
 import { GROUP_COLORS, openCards, openSession } from '../tabs/tabs';
@@ -83,6 +84,8 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
   const tags = collection.tagIds.map((id) => allTags.find((t) => t.id === id)).filter((t) => !!t);
   const activeType = (active?.data.current as DragData | undefined)?.type;
   const isDropTarget = isOver && (activeType === 'card' || activeType === 'tab');
+  // Over the collection itself (header, gaps): the card or tab goes to the end, so the line sits after the last card.
+  const appendLine = useDropIndicator()?.over === dragId.collection(collection.id);
 
   const submit = async () => {
     const normalized = normalizeUrl(url);
@@ -109,7 +112,7 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
         el.current = node;
       }}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={`collection ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''} ${flash ? 'flash' : ''}`}
+      className={`collection ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''} ${appendLine ? 'drop-append' : ''} ${flash ? 'flash' : ''}`}
       data-collection-id={collection.id}
       aria-label={collection.title}
     >

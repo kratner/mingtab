@@ -36,11 +36,33 @@ export const ACCEPTS: Record<DragData['type'], DropData['type'][]> = {
   next: ['next'],
 };
 
+/** Which side of a card a dragged card or tab lands on; the board draws a line there while dragging. */
+export type Edge = 'before' | 'after';
+
+/** Pixels either side of a card's middle where the pointer counts as "on the middle". */
+const MIDDLE = 3;
+
 /**
- * Applies a drop to the database. Returns a short description for the
+ * The edge of `over` that `y` (the pointer, or the dragged item's centre for the keyboard) is nearer. Right on the
+ * middle, `tie` decides: the keyboard lands there, and so does a pointer released dead centre.
+ */
+export function edgeFor(y: number, over: { top: number; height: number }, tie: Edge): Edge {
+  const mid = over.top + over.height / 2;
+  if (Math.abs(y - mid) <= MIDDLE) return tie;
+  return y < mid ? 'before' : 'after';
+}
+
+/**
+ * Applies a drop to the database. On a card, `edge` says which side to land on (as the drop line showed); without
+ * it a card moved within its collection follows sortable "arrayMove" rules and anything else lands before. Returns a short description for the
  * status line (and screen readers), or null when nothing changed.
  */
-export async function handleDrop(db: MingTabDB, active: DragData, over: DropData): Promise<string | null> {
+export async function handleDrop(
+  db: MingTabDB,
+  active: DragData,
+  over: DropData,
+  edge: Edge | null = null,
+): Promise<string | null> {
   if (!ACCEPTS[active.type].includes(over.type)) return null;
 
   if (active.type === 'next' && over.type === 'next') {
@@ -81,13 +103,14 @@ export async function handleDrop(db: MingTabDB, active: DragData, over: DropData
     targetId = over.card.collectionId;
     const siblings = await listCards(db, targetId);
     index = siblings.findIndex((s) => s.id === over.card.id);
+    if (index < 0) return null;
   }
 
   if (active.type === 'tab') {
     const card = await addCard(db, targetId, tabToCard(active.tab));
     if (index !== null) {
       const siblings = (await listCards(db, targetId)).filter((s) => s.id !== card.id);
-      await updateCard(db, card.id, { position: positionAt(siblings, index) });
+      await updateCard(db, card.id, { position: positionAt(siblings, index + (edge === 'after' ? 1 : 0)) });
     }
     return `Saved "${card.title}".`;
   }
@@ -95,7 +118,14 @@ export async function handleDrop(db: MingTabDB, active: DragData, over: DropData
   const card = active.card;
   const siblings = await listCards(db, targetId);
   let position: string | null;
-  if (targetId === card.collectionId) {
+  if (edge && over.type === 'card') {
+    if (over.card.id === card.id) return null;
+    const rest = siblings.filter((s) => s.id !== card.id);
+    const at = rest.findIndex((s) => s.id === over.card.id) + (edge === 'after' ? 1 : 0);
+    // Already there: dropping just above or below itself.
+    if (targetId === card.collectionId && siblings.findIndex((s) => s.id === card.id) === at) return null;
+    position = positionAt(rest, at);
+  } else if (targetId === card.collectionId) {
     position = over.type === 'card' ? reorderPosition(siblings, card.id, over.card.id) : null;
   } else {
     const rest = siblings.filter((s) => s.id !== card.id);

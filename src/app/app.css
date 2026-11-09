@@ -1066,6 +1066,41 @@ button:disabled {
   opacity: 0.4;
 }
 
+/* Drop line: where a dragged card or tab will land. Cards stay put while dragging, so the line does the
+   showing. Drawn in the 2px gap between rows, so nothing shifts. */
+.card {
+  position: relative;
+}
+
+.card.drop-before::before,
+.card.drop-after::after,
+.collection.drop-append .cards::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent-ink);
+  pointer-events: none;
+}
+
+.card.drop-before::before {
+  top: -2px;
+}
+
+.card.drop-after::after {
+  bottom: -2px;
+}
+
+.collection.drop-append .cards {
+  position: relative;
+}
+
+.collection.drop-append .cards::after {
+  bottom: -2px;
+}
+
 .collection.drop-target,
 .space-link.drop-target {
   outline: 2px dashed var(--accent-ink);

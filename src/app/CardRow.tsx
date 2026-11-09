@@ -1,11 +1,11 @@
 import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { useEffect, useState } from 'react';
 import { db } from '../db/db';
 import { addToNext } from '../db/next';
 import { deleteCard, updateCard } from '../db/repo';
 import { displayTitle, type Card } from '../db/schema';
 import { setCardShortcut, ShortcutError } from '../db/shortcuts';
+import { useDropIndicator } from '../dnd/DndProvider';
 import { dragId } from '../dnd/drop';
 import { NoteBody } from '../notes/NoteBody';
 import { SelectBox, useSelection } from '../select/selection';
@@ -37,7 +37,9 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
   const selecting = sel.active;
   const selected = selecting && sel.ids.has(card.id);
   // The whole row is the drag source; the 6px activation distance keeps clicks working.
-  const { setNodeRef, attributes: sortableAttrs, listeners, transform, transition, isDragging } = useSortable({
+  const indicator = useDropIndicator();
+  const dropLine = indicator?.over === dragId.card(card.id) ? `drop-${indicator.edge}` : '';
+  const { setNodeRef, attributes: sortableAttrs, listeners, isDragging } = useSortable({
     id: dragId.card(card.id),
     data: { type: 'card', card },
     // No dragging in select mode: a click ticks the card instead.
@@ -75,8 +77,8 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
   return (
     <li
       ref={setNodeRef}
-      style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={`card ${isDragging ? 'dragging' : ''} ${isNote ? 'note-card' : ''} ${selected ? 'selected' : ''}`}
+      // Cards stay put while dragging; the drop line (drop-before / drop-after) shows where it will land.
+      className={`card ${isDragging ? 'dragging' : ''} ${isNote ? 'note-card' : ''} ${selected ? 'selected' : ''} ${dropLine}`}
       data-card-id={card.id}
       onClick={(e) => {
         // In select mode a click anywhere on the row ticks it, links included; the box handles its own clicks.
