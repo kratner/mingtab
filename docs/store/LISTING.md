@@ -4,6 +4,18 @@ Everything the developer dashboard asks for, ready to paste, plus the steps arou
 The store zip comes from `npm run package:store` (`release/mingtab-<version>-store.zip`); images are
 in this folder.
 
+## Status
+
+| Date | What happened |
+|---|---|
+| 2026-11-08 | Developer account created on keith.ratner@gmail.com ($5 paid). Publisher **Four Ounces**, contact email keith@fourounces.live (verified), **non-trader**. Publisher ID `5c1e66c1-20e2-4dba-918c-185d258c3a1a`. New accounts are limited to **2 items** for now. |
+| 2026-11-08 | MingTab 0.11.0 (`mingtab-0.11.0-store.zip`) uploaded. Store ID **`ofeenikhemghdanmdfcjjmogniooejjd`**. Listing, privacy and distribution filled in as below; visibility **Unlisted**, free, all regions. |
+| 2026-11-08 | Sync made ready for the store ID: OAuth redirect URI `https://ofeenikhemghdanmdfcjjmogniooejjd.chromiumapp.org/` added; Worker `ALLOWED_ORIGINS` updated and deployed (checked: the service answers the store origin). |
+| 2026-11-08 | **Submitted for review.** Once it passes, it publishes (or, if staged, must be published within 30 days). |
+
+Dashboard: <https://chrome.google.com/webstore/devconsole/5c1e66c1-20e2-4dba-918c-185d258c3a1a/ofeenikhemghdanmdfcjjmogniooejjd/edit>
+Store page once published: <https://chromewebstore.google.com/detail/ofeenikhemghdanmdfcjjmogniooejjd>
+
 ## Before the first upload
 
 1. **Developer account.** Sign in at <https://chrome.google.com/webstore/devconsole> with your personal Google
