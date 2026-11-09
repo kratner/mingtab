@@ -346,6 +346,10 @@ and this README). Earlier versions, KR and gold-on-ink, are in `branding/retired
 - ⏳ Chrome bookmarks in the sidebar and in search
 - ⏳ S2 phone web app
 
+## Licence
+
+MIT: see [LICENSE](LICENSE). The bundled fonts keep their own OFL licences (`public/fonts/licenses/`).
+
 ---
 
 <p align="center">
