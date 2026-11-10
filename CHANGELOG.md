@@ -20,7 +20,17 @@ What's new in each MingTab release. Downloads and install steps are on the
   appears where the drop would actually move the tab (not over the tab's own spot, or just above or below it).
   Dropping a tab on its own collection's header moves it to the end.
 
+- **Edit a saved tab's address.** The edit form (✎) has an **Address** field; a bare domain like `imdb.com`
+  gets `https://`.
+- **Shortcuts in Vivaldi.** Vivaldi ignores extension address-bar keywords, so `to/` never worked there.
+  Settings → Address-bar shortcuts now gives a search-engine address to add in Vivaldi (nickname `to`), with a
+  Copy button; then `to docs` opens the shortcut. Behind it, opening the board at `#go=<shortcut>` jumps to
+  that shortcut's page (or searches, if there's no such shortcut).
+
 ### Fixed
+
+- The shortcut field's help text broke onto separate lines ("Shortcut: type / to/ / , Space, then…"). It now
+  sits under the field as one sentence that uses the shortcut you're typing.
 
 - Moving a saved tab with the keyboard (focus it, **Space**, arrow keys, **Space**) did nothing: the arrow keys
   stepped onto the tab's own collection instead of the next tab.

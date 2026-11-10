@@ -4,13 +4,14 @@ import { db } from '../db/db';
 import { addToNext } from '../db/next';
 import { deleteCard, updateCard } from '../db/repo';
 import { displayTitle, type Card } from '../db/schema';
-import { setCardShortcut, ShortcutError } from '../db/shortcuts';
+import { normalizeShortcut, setCardShortcut, ShortcutError } from '../db/shortcuts';
 import { useDropIndicator } from '../dnd/DndProvider';
 import { dragId } from '../dnd/drop';
 import { NoteBody } from '../notes/NoteBody';
 import { SelectBox, useSelection } from '../select/selection';
 import { taskCounts } from '../notes/markdown';
 import { chromeFaviconUrl, hostOf } from './favicon';
+import { normalizeUrl } from './address';
 
 function Favicon({ card }: { card: Card }) {
   const sources = [chromeFaviconUrl(card.url), card.favIconUrl].filter((s): s is string => !!s);
@@ -25,6 +26,7 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
   const [customTitle, setCustomTitle] = useState(card.customTitle);
   const [note, setNote] = useState(card.note);
   const [shortcut, setShortcut] = useState(card.shortcut ?? '');
+  const [url, setUrl] = useState(card.url);
   const [error, setError] = useState('');
   const [queued, setQueued] = useState('');
   // Ticking a checklist item shows at once; the save follows.
@@ -53,18 +55,25 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
     setCustomTitle(card.customTitle);
     setNote(card.note);
     setShortcut(card.shortcut ?? '');
+    setUrl(card.url);
     setError('');
     setEditing(true);
   };
 
   const save = async () => {
+    const nextUrl = isNote ? card.url : normalizeUrl(url);
+    if (nextUrl === null) return setError('Enter a web address, like example.com or https://example.com/page.');
     try {
       if (!isNote && shortcut.trim() !== (card.shortcut ?? '')) await setCardShortcut(db, card.id, shortcut);
     } catch (e) {
       if (e instanceof ShortcutError) return setError(e.message);
       throw e;
     }
-    await updateCard(db, card.id, { customTitle: customTitle.trim(), note: note.replace(/\s+$/, '') });
+    await updateCard(db, card.id, {
+      customTitle: customTitle.trim(),
+      note: note.replace(/\s+$/, ''),
+      ...(nextUrl !== card.url ? { url: nextUrl } : {}),
+    });
     setEditing(false);
   };
 
@@ -183,6 +192,12 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
               onChange={(e) => setCustomTitle(e.target.value)}
             />
           </label>
+          {!isNote && (
+            <label>
+              Address
+              <input type="text" inputMode="url" autoComplete="off" spellCheck={false} value={url} onChange={(e) => setUrl(e.target.value)} />
+            </label>
+          )}
           <label>
             Note
             <textarea
@@ -193,13 +208,18 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
             />
           </label>
           {!isNote && (
-            <label>
-              Shortcut: type <b>to/</b>, Space, then this in the address bar
-              <span className="shortcut-input">
-                <span aria-hidden>to/</span>
-                <input aria-label="Shortcut" value={shortcut} placeholder="docs" onChange={(e) => setShortcut(e.target.value)} />
-              </span>
-            </label>
+            <div className="shortcut-field">
+              <label>
+                Shortcut
+                <span className="shortcut-input">
+                  <span aria-hidden>to/</span>
+                  <input aria-label="Shortcut" value={shortcut} placeholder="docs" onChange={(e) => setShortcut(e.target.value)} />
+                </span>
+              </label>
+              <p className="hint">
+                {shortcutHint(normalizeShortcut(shortcut))}
+              </p>
+            </div>
           )}
           {error && (
             <p className="error" role="alert">
@@ -217,5 +237,16 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
         </form>
       )}
     </li>
+  );
+}
+
+/** How to use a shortcut, under the field: Chrome's to/ keyword, and Vivaldi's search-engine nickname. */
+function shortcutHint(name: string) {
+  const n = name || 'docs';
+  return (
+    <>
+      Chrome, Edge, Brave: type <kbd>to/</kbd> in the address bar, press <kbd>Space</kbd>, then <kbd>{n}</kbd> and{' '}
+      <kbd>Enter</kbd>. Vivaldi: type <kbd>to {n}</kbd> once it's set up (Settings → Address-bar shortcuts).
+    </>
   );
 }

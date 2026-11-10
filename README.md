@@ -131,6 +131,11 @@ for what's tested and what isn't.
 > `chrome-extension://jclkedgbnlmbonoihhobgnmdoehmddpo/src/newtab/index.html`
 > New tabs (⌘T) then open the MingTab board. If they don't, set **Settings → Tabs → New Tab Page**
 > to **Homepage**.
+>
+> Vivaldi also doesn't let extensions add address-bar keywords, so `to/` shortcuts need a search
+> engine instead: **Settings → Search → +**, name it MingTab, nickname `to`, URL
+> `chrome-extension://jclkedgbnlmbonoihhobgnmdoehmddpo/src/newtab/index.html#go=%s`
+> (MingTab's Settings has a Copy button for it). Then type `to docs` in the address bar.
 
 ### 3. Sign in to sync
 
@@ -186,7 +191,8 @@ Then click **Remove** on MingTab in `chrome://extensions`.
 | See starred collections | **★ Starred** at the top of the spaces list |
 | Line up what to read next | **▶** on a card or an open tab; then **▶ Next** at the top of the spaces list. Tick items off, drag to reorder. |
 | Write a note | **✎** in a collection's header. `- [ ] task` makes a checklist; `**bold**`, `*italic*` and links work. |
-| Jump to a page from the address bar | Give a card a shortcut (✎ → Shortcut), then type **to/**, press Space, and type the shortcut: `to/ docs`. All shortcuts are listed in Settings. If another extension also uses `to/`, turn it off. |
+| Change a saved tab's address | ✎ → **Address**. A bare domain (`imdb.com`) gets `https://`. |
+| Jump to a page from the address bar | Give a card a shortcut (✎ → Shortcut), then type **to/**, press Space, and type the shortcut: `to/ docs`. All shortcuts are listed in Settings. If another extension also uses `to/`, turn it off. In Vivaldi, add the search engine described under Vivaldi above and type `to docs`. |
 | Use a popup instead of the side panel | Settings → **Toolbar button** |
 | Sync another profile or computer | Settings → **Sign in with Google** |
 | Remove duplicates | Settings → **Find duplicates** (nothing is removed until you confirm) |

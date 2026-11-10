@@ -111,9 +111,38 @@ test('to/ shortcuts: set on a card, unique, resolved the way the address bar doe
   await page.goto(fallback);
   await expect(page.getByRole('searchbox', { name: 'Search' })).toHaveValue('quarterly plan');
 
+  // #go=<shortcut> (Vivaldi's search-engine route) opens the shortcut's page; an unknown one searches.
+  await page.context().route('https://a1.example/**', (r) => r.fulfill({ contentType: 'text/html', body: '<title>a1</title>' }));
+  await page.goto(`chrome-extension://${extensionId}/src/newtab/index.html#go=team-docs`);
+  await page.waitForURL('https://a1.example/');
+  await page.goto(`chrome-extension://${extensionId}/src/newtab/index.html#go=quarterly%20plan`);
+  await expect(page.getByRole('searchbox', { name: 'Search' })).toHaveValue('quarterly plan');
+
   await page.goto(`chrome-extension://${extensionId}/src/newtab/index.html`);
   await page.getByRole('button', { name: 'Settings' }).click();
-  await expect(page.getByRole('region', { name: 'Address-bar shortcuts' })).toContainText('to/team-docs');
+  const section = page.getByRole('region', { name: 'Address-bar shortcuts' });
+  await expect(section).toContainText('to/team-docs');
+  await expect(section).toContainText(`chrome-extension://${extensionId}/src/newtab/index.html#go=%s`);
+});
+
+test("a saved tab's address can be edited; the shortcut field explains how to use it", async ({ page, extensionId }) => {
+  await setUp(page, extensionId);
+  const card = page.locator('.card', { hasText: 'a1' });
+  await card.hover();
+  await card.getByRole('button', { name: 'Edit a1' }).click();
+  await card.getByLabel('Shortcut').fill('imdb');
+  await expect(card.locator('.shortcut-field .hint')).toContainText('to/ in the address bar, press Space, then imdb and Enter');
+  await expect(card.locator('.shortcut-field .hint')).toContainText('Vivaldi: type to imdb');
+
+  const address = card.getByLabel('Address');
+  await expect(address).toHaveValue('https://a1.example/');
+  await address.fill('imdb');
+  await card.getByRole('button', { name: 'Save' }).click();
+  await expect(card.getByRole('alert')).toContainText('Enter a web address');
+  await address.fill('www.imdb.com/chart/top');
+  await card.getByRole('button', { name: 'Save' }).click();
+  await expect(card.getByRole('link', { name: /a1/ })).toHaveAttribute('href', 'https://www.imdb.com/chart/top');
+  await expect(card).toContainText('to/imdb');
 });
 
 test('toolbar button: side panel by default, popup when chosen', async ({ page, extensionId, serviceWorker: sw }) => {

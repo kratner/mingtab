@@ -1534,6 +1534,43 @@ button:disabled {
   min-width: 0;
 }
 
+.shortcut-field {
+  display: grid;
+  gap: 4px;
+}
+
+.shortcut-field .hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.shortcut-field kbd,
+.settings-section kbd {
+  font-family: var(--fo-font-mono);
+  font-size: 11px;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.copy-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+
+.copy-value {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
 .shortcut-list {
   margin: 4px 0 0;
   padding-left: 18px;

@@ -513,13 +513,27 @@ function ToolbarButton() {
 /** Every to/ shortcut, so they're easy to remember. Set them in a card's edit form. */
 function Shortcuts() {
   const cards = useLiveQuery(() => db.cards.filter((c) => c.deletedAt === null && !!c.shortcut).toArray());
+  // The board's #go route: Vivaldi's search engine replaces %s with what was typed after the nickname.
+  const goUrl = `${chrome.runtime.getURL('src/newtab/index.html')}#go=%s`;
+  const [copied, setCopied] = useState(false);
   return (
     <section className="settings-section" aria-labelledby="shortcuts-heading">
       <h3 id="shortcuts-heading">Address-bar shortcuts</h3>
       <p className="muted">
-        Type <b>to/</b> in Chrome's address bar, press Space, then a shortcut to open that card: <code>to/ docs</code>.
-        Give a card a shortcut from its edit form (✎). If Toby is also installed it owns <b>to/</b> too: turn Toby off
-        in chrome://extensions.
+        Give a tab a shortcut from its edit form (✎). In Chrome, Edge and Brave, type <kbd>to/</kbd> in the address bar,
+        press <kbd>Space</kbd>, then the shortcut and <kbd>Enter</kbd>: <code>to/ docs</code>. If Toby is also
+        installed it owns <b>to/</b> too: turn Toby off on the extensions page.
+      </p>
+      <p className="muted">
+        <b>Vivaldi</b> doesn't let extensions add address-bar keywords, so set it up once as a search engine: Settings →
+        Search → <b>+</b>, name it MingTab, nickname <code>to</code>, and paste this address as the URL. Then type{' '}
+        <kbd>to docs</kbd> in the address bar.
+      </p>
+      <p className="copy-row">
+        <code className="copy-value">{goUrl}</code>
+        <button type="button" onClick={() => void navigator.clipboard.writeText(goUrl).then(() => setCopied(true))}>
+          {copied ? 'Copied' : 'Copy'}
+        </button>
       </p>
       {cards && cards.length > 0 && (
         <ul className="shortcut-list">

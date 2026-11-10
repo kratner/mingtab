@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useRef, useState } from 'react';
 import { db } from '../db/db';
 import { createSpace, listSpaces } from '../db/repo';
+import { resolveOmnibox } from '../omnibox';
 import { DndProvider } from '../dnd/DndProvider';
 import { SearchResults } from '../search/SearchResults';
 import { SelectionBar, SelectionNotice } from '../select/SelectionBar';
@@ -67,6 +68,21 @@ export function App({ surface }: { surface: Surface }) {
     };
     addEventListener('hashchange', onHash);
     return () => removeEventListener('hashchange', onHash);
+  }, []);
+
+  // #go=<shortcut> opens that shortcut's page (or searches for it). Browsers without extension keywords in the
+  // address bar (Vivaldi) reach shortcuts this way: a search engine whose URL is the board with #go=%s.
+  useEffect(() => {
+    const go = async () => {
+      const m = /^#go=(.*)$/.exec(location.hash);
+      if (!m) return;
+      const board = location.href.replace(/#.*$/, '');
+      const target = await resolveOmnibox(db, decodeURIComponent(m[1]!.replace(/\+/g, ' ')), board);
+      location.replace(target);
+    };
+    void go();
+    addEventListener('hashchange', go);
+    return () => removeEventListener('hashchange', go);
   }, []);
 
   // "/" jumps to search from anywhere that isn't a text field.
