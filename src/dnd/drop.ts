@@ -126,7 +126,9 @@ export async function handleDrop(
     if (targetId === card.collectionId && siblings.findIndex((s) => s.id === card.id) === at) return null;
     position = positionAt(rest, at);
   } else if (targetId === card.collectionId) {
-    position = over.type === 'card' ? reorderPosition(siblings, card.id, over.card.id) : null;
+    // On a card: sortable "arrayMove" rules. On its own collection's header: to the end, unless already last.
+    if (over.type === 'card') position = reorderPosition(siblings, card.id, over.card.id);
+    else position = siblings.at(-1)?.id === card.id ? null : positionAfterLast(siblings.filter((s) => s.id !== card.id));
   } else {
     const rest = siblings.filter((s) => s.id !== card.id);
     position = index === null ? positionAfterLast(rest) : positionAt(rest, index);

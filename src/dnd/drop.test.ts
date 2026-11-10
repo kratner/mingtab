@@ -101,6 +101,13 @@ describe('drop line (edge)', () => {
     expect(await titles(a.id)).toEqual(['a1', 'a2', 'a3']);
   });
 
+  it("on its own collection's header a card moves to the end, unless it's already last", async () => {
+    const col = { type: 'collection' as const, collection: a };
+    await handleDrop(db, { type: 'card', card: await card(a.id, 'a1') }, col);
+    expect(await titles(a.id)).toEqual(['a2', 'a3', 'a1']);
+    expect(await handleDrop(db, { type: 'card', card: await card(a.id, 'a1') }, col)).toBeNull();
+  });
+
   it('an open tab lands before or after a card', async () => {
     const tab = { url: 'https://tab.example/', title: 'Tab', favIconUrl: '' };
     await handleDrop(db, { type: 'tab', tab }, { type: 'card', card: await card(a.id, 'a3') }, 'after');

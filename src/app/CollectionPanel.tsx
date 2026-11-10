@@ -1,4 +1,4 @@
-import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, useSortable, type SortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useRef, useState } from 'react';
@@ -31,6 +31,12 @@ function normalizeUrl(input: string): string | null {
     return null;
   }
 }
+
+/**
+ * Cards don't slide aside while a card is dragged: the drop line shows where it will land. dnd-kit measures the
+ * hovered card where the strategy would have slid it, so a sliding strategy here puts the line on the wrong card.
+ */
+const cardsStayPut: SortingStrategy = () => null;
 
 interface Props {
   collection: Collection;
@@ -320,7 +326,7 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
             </form>
           )}
           {cards.length > 0 ? (
-            <SortableContext items={cards.map((c) => dragId.card(c.id))} strategy={verticalListSortingStrategy}>
+            <SortableContext items={cards.map((c) => dragId.card(c.id))} strategy={cardsStayPut}>
               <ul className="cards">
                 {cards.map((c) => (
                   <CardRow key={c.id} card={c} startEditing={c.id === newNoteId} />

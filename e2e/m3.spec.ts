@@ -133,9 +133,9 @@ test('a drop line shows where a dragged card or tab will land, and it lands ther
     await page.mouse.move(t.x + t.width / 2, t.y + t.height * fraction, { steps: 15 });
   }
 
-  // Lower half of b1: the line is below b1, and the card lands between b1 and b2.
+  // Lower half of b1: the line is between b1 and b2 (drawn on b2's top edge), and the card lands there.
   await dragOver(page.locator('.card', { hasText: 'a1' }), b1, 0.8);
-  await expect(b1).toHaveClass(/drop-after/);
+  await expect(b.locator('.card', { hasText: 'b2' })).toHaveClass(/drop-before/);
   await expect(page.locator('.drop-before, .drop-after')).toHaveCount(1);
   await page.mouse.up();
   await expect.poll(() => cardTitles(page, 'B')).toEqual(['b1', 'a1', 'b2']);
@@ -154,6 +154,48 @@ test('a drop line shows where a dragged card or tab will land, and it lands ther
   await expect(page.getByRole('region', { name: 'C', exact: true })).toHaveClass(/drop-append/);
   await page.mouse.up();
   await expect.poll(() => cardTitles(page, 'C')).toEqual(['c1', 'Page lineme']);
+});
+
+test('within one collection: the line skips spots that would not move the card, and the card lands on the line', async ({
+  page,
+  extensionId,
+}) => {
+  await setUp(page, extensionId);
+  const a = page.getByRole('region', { name: 'A', exact: true });
+  const row = (t: string) => a.locator('.card', { hasText: t });
+  const lines = page.locator('.drop-before, .drop-after, .drop-append');
+
+  // Pick a3 up by its grip and glide upward, stopping at points inside the cards.
+  await row('a3').hover();
+  const g = (await row('a3').locator('.row-grip').boundingBox())!;
+  const x = g.x + g.width / 2;
+  await page.mouse.move(x, g.y + g.height / 2);
+  await page.mouse.down();
+  const glideTo = async (t: string, fraction: number) => {
+    const r = (await row(t).boundingBox())!;
+    await page.mouse.move(x, r.y + r.height * fraction, { steps: 8 });
+  };
+
+  await glideTo('a3', 0.3); // its own slot
+  await expect(lines).toHaveCount(0);
+  await glideTo('a2', 0.8); // just above itself
+  await expect(lines).toHaveCount(0);
+  await glideTo('a2', 0.2); // between a1 and a2
+  await expect(row('a2')).toHaveClass(/drop-before/);
+  await glideTo('a1', 0.8); // the same gap, from a1's side: still drawn on a2, so it doesn't jump
+  await expect(row('a2')).toHaveClass(/drop-before/);
+  await expect(lines).toHaveCount(1);
+  // The line fades in.
+  await expect
+    .poll(() => row('a2').evaluate((el) => getComputedStyle(el, '::before').opacity))
+    .toBe('1');
+  expect(await row('a1').evaluate((el) => getComputedStyle(el, '::after').transitionDuration)).not.toBe('0s');
+  await page.mouse.up();
+  await expect.poll(() => cardTitles(page, 'A')).toEqual(['a1', 'a3', 'a2']);
+
+  // Onto its own collection's header: to the end.
+  await dragTo(page, row('a1'), a.locator('.collection-header'));
+  await expect.poll(() => cardTitles(page, 'A')).toEqual(['a3', 'a2', 'a1']);
 });
 
 test('drag a collection onto another space in the sidebar', async ({ page, extensionId }) => {

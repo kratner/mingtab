@@ -16,12 +16,16 @@ What's new in each MingTab release. Downloads and install steps are on the
   the grip makes it visible.)
 - **Drop line.** While you drag a tab, a line shows exactly where it will land: above or below the tab under the
   pointer (whichever half you're over), or at the end of a collection when you're over its header. It lands there.
-  The other tabs no longer slide around while you drag.
+  The other tabs no longer slide around while you drag. The line fades in and out as it moves, and it only
+  appears where the drop would actually move the tab (not over the tab's own spot, or just above or below it).
+  Dropping a tab on its own collection's header moves it to the end.
 
 ### Fixed
 
 - Moving a saved tab with the keyboard (focus it, **Space**, arrow keys, **Space**) did nothing: the arrow keys
   stepped onto the tab's own collection instead of the next tab.
+- Moving a tab within its own collection: the drop line could sit on the wrong tab (and over the tab's own spot
+  or the gaps between tabs it jumped to the end of the collection), so the tab often didn't land where you aimed.
 
 
 ## 0.11.0 — 2026-10-31

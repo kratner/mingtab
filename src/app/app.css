@@ -1067,14 +1067,16 @@ button:disabled {
 }
 
 /* Drop line: where a dragged card or tab will land. Cards stay put while dragging, so the line does the
-   showing. Drawn in the 2px gap between rows, so nothing shifts. */
-.card {
+   showing. Drawn in the 2px gap between rows, so nothing shifts. Every row carries the line, hidden, so it can
+   fade (and widen from the middle) in and out as the drop spot moves. */
+.card,
+.cards {
   position: relative;
 }
 
-.card.drop-before::before,
-.card.drop-after::after,
-.collection.drop-append .cards::after {
+.card::before,
+.card::after,
+.cards::after {
   content: '';
   position: absolute;
   left: 2px;
@@ -1083,22 +1085,35 @@ button:disabled {
   border-radius: 2px;
   background: var(--accent-ink);
   pointer-events: none;
+  opacity: 0;
+  transform: scaleX(0.7);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
 }
 
-.card.drop-before::before {
+.card::before {
   top: -2px;
 }
 
-.card.drop-after::after {
+.card::after,
+.cards::after {
   bottom: -2px;
 }
 
-.collection.drop-append .cards {
-  position: relative;
-}
-
+.card.drop-before::before,
+.card.drop-after::after,
 .collection.drop-append .cards::after {
-  bottom: -2px;
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card::before,
+  .card::after,
+  .cards::after {
+    transition: none;
+  }
 }
 
 .collection.drop-target,
