@@ -206,7 +206,7 @@ Pinned tabs are never saved with a window or closed.
 
 Everything is stored **locally, inside the extension, in the Chrome profile you loaded it into**
 (IndexedDB, plus a few display preferences in local storage). Your collections leave the machine
-only if you sign in to sync. Otherwise the only network requests are the daily update check and
+only if you turn on sync. Otherwise the only network requests are the daily update check and
 site icons: Chrome's own icon cache comes first, and if it doesn't have one, the icon saved with
 the card loads from that site.
 
@@ -221,10 +221,27 @@ backup** replaces what's in MingTab with the file's contents.
 
 ### Sync across machines
 
-Settings → **Sign in with Google** in each Chrome profile, on each computer. Everything syncs
-through the MingTab sync service (`worker/`, a Cloudflare Worker with a D1 database on Keith's
-Cloudflare account), which accepts only the allowed Google account. Syncing runs every minute,
-at startup, and a couple of seconds after any change. Signing out keeps your data on that device.
+Settings → **Sync with Google Drive** in each Chrome profile, on each computer, with the same
+Google account. Your spaces, collections, cards, tags and Next list are stored in a **hidden
+MingTab folder in your own Google Drive** (Drive's "app data" folder): there is no MingTab server
+in between, and MingTab can only see that folder, not your other files. The folder holds one file
+per device and counts toward your Drive storage (a few hundred kilobytes for a large library).
+Syncing runs every minute, at startup, and a couple of seconds after any change.
+
+- **Sign out** stops syncing on that device. Your collections stay there and your Drive copy stays too.
+- **Delete synced data** removes MingTab's files from your Drive. Every other device stops syncing
+  on its next sync (its collections stay on it). You can also remove MingTab's access, and its hidden
+  data, from your Google account (Security → Your connections to third-party apps) or in Google Drive
+  (Settings → Manage apps → MingTab → Delete hidden app data).
+- Google sign-in lasts about an hour at a time and MingTab renews it quietly. If you sign out of
+  Google in the browser, Settings shows **Reconnect Google Drive**.
+
+**MingTab sync server (invite only).** Under Settings → Sync → *Other ways to sync*, the original
+sync service (`worker/`, a Cloudflare Worker with a D1 database) is still there for the Google
+accounts it was set up for (`ALLOWED_EMAILS`). A device uses one or the other. To move a device
+from the server to Drive, click **Move to Google Drive** in Settings: it turns on Drive sync, signs
+that device out of the server, and uploads what's on the device. Do it on each device; they merge.
+See [SYNC.md](SYNC.md).
 
 The phone version (a web app, since Chrome on phones doesn't run extensions) is next; see
 [SYNC.md](SYNC.md).
@@ -239,8 +256,9 @@ The phone version (a web app, since Chrome on phones doesn't run extensions) is 
 | `favicon` | Show site icons from Chrome's own cache (no third-party icon service) |
 | `history` (optional) | Only if you turn on history search; Chrome asks first |
 | `identity` | Google sign-in for sync |
+| Access to `www.googleapis.com` (optional) | Asked for only when you turn on Google Drive sync: reading and writing MingTab's own hidden Drive folder |
 | `alarms` | Sync every minute, and check for updates about once a day |
-| Access to `mingtab-sync.mingtab-sync.workers.dev` | The sync service, and no other site |
+| Access to `mingtab-sync.mingtab-sync.workers.dev` | The invite-only MingTab sync server |
 | Reading `api.github.com` (needs no permission) | The daily update check reads this repository's latest release; nothing is sent |
 | Address-bar keyword `to/` | `to/ docs` opens your shortcut (only one extension can have a keyword) |
 | New-tab page override | Show the board on new tabs |

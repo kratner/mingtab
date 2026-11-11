@@ -698,6 +698,21 @@ a.card-title:hover {
   font-size: 15px;
 }
 
+/* Settings → Sync → "Other ways to sync". Sizes restated: extension pages get body{font-size:75%}. */
+.sync-other {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.sync-other summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.sync-other p {
+  margin: 8px 0;
+}
+
 .segmented {
   display: flex;
   flex-wrap: wrap;

@@ -104,24 +104,25 @@ top of the item's page. Then fill in each tab:
   | `sidePanel` | Shows the user's collections in Chrome's side panel. |
   | `favicon` | Shows each saved page's icon from Chrome's local icon cache. |
   | `alarms` | Runs optional sync in the background once a minute. |
-  | `identity` | Google sign-in for optional sync (OpenID: email and name only). |
+  | `identity` | Google sign-in for optional sync: email address, plus access to MingTab's own hidden app folder in the user's Google Drive (`drive.appdata`) when they choose Google Drive sync. |
   | `history` (optional) | Requested only if the user turns on history search; history is searched on the device and never stored or sent. |
-  | Host permission `https://mingtab-sync.mingtab-sync.workers.dev/*` | The optional sync service; MingTab contacts no other host. |
+  | Host permission `https://mingtab-sync.mingtab-sync.workers.dev/*` | The optional, invite-only MingTab sync server. |
+  | Optional host permission `https://www.googleapis.com/*` | Requested only when the user turns on Google Drive sync: the Google Drive API, used to read and write MingTab's own files in the hidden app folder of the user's Drive. |
   | New tab override | The board is the extension's main page and opens on each new tab. |
 
 - **Remote code:** No, MingTab doesn't use remote code.
-- **Data usage**, tick: *Personally identifiable information* (email and name, only when the user signs in to
-  sync) and *Website content* (the addresses and titles of tabs the user saves, synced only when the user signs
-  in). Leave the rest unticked. Certify all three: not sold, not used for unrelated purposes, not used for
+- **Data usage**, tick: *Personally identifiable information* (email address, only when the user turns on sync)
+  and *Website content* (the addresses and titles of tabs the user saves, synced only when the user turns sync
+  on: to the user's own Google Drive app folder, or to the invite-only sync server). Leave the rest unticked. Certify all three: not sold, not used for unrelated purposes, not used for
   credit decisions.
 - **Privacy policy URL:** https://fourounces.live/mingtab/privacy/
 
 ### Distribution
 
-- **Visibility: start with Unlisted.** Only people with the link can install it. Sync accepts only the author's
-  Google account (`worker/wrangler.jsonc` → `ALLOWED_EMAILS`), so for anyone else Settings → Sync would fail.
-  Switch to Public after deciding how sync should work for other people (hide it in the store build, or open
-  the service to everyone).
+- **Visibility: start with Unlisted.** Only people with the link can install it. Google Drive sync works for
+  anyone once the OAuth consent screen is **In production** with the `drive.appdata` scope (see SYNC.md →
+  "Google Cloud setup"); until then only its test users can turn it on. The invite-only sync server still
+  accepts only `ALLOWED_EMAILS`. Switch to Public after that.
 - **Regions:** all.
 
 ## After the upload: make sync work with the new ID
