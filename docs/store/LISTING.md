@@ -12,6 +12,7 @@ in this folder.
 | 2026-11-08 | MingTab 0.11.0 (`mingtab-0.11.0-store.zip`) uploaded. Store ID **`ofeenikhemghdanmdfcjjmogniooejjd`**. Listing, privacy and distribution filled in as below; visibility **Unlisted**, free, all regions. |
 | 2026-11-08 | Sync made ready for the store ID: OAuth redirect URI `https://ofeenikhemghdanmdfcjjmogniooejjd.chromiumapp.org/` added; Worker `ALLOWED_ORIGINS` updated and deployed (checked: the service answers the store origin). |
 | 2026-11-08 | **Submitted for review.** Once it passes, it publishes (or, if staged, must be published within 30 days). |
+| 2026-11-09 | **Approved and published** (Unlisted): <https://chromewebstore.google.com/detail/mingtab/ofeenikhemghdanmdfcjjmogniooejjd>, version 0.11.0 (store page "Updated November 9, 2026"; seen 2026-11-11). |
 
 Promo video (Four Ounces YouTube channel, unlisted): <https://youtu.be/Gw_fAAaf64g>. **After approval:** Store listing → Global promo video → paste `https://www.youtube.com/watch?v=Gw_fAAaf64g`, save, submit. Built by `scripts/promo-video.mjs`.
 
