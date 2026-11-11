@@ -1,6 +1,6 @@
 {
   "name": "mingtab",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "private": true,
   "license": "MIT",
   "description": "A local-first tab manager for Chrome: save, organize and restore tabs.",
