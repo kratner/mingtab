@@ -352,6 +352,10 @@ and this README). Earlier versions, KR and gold-on-ink, are in `branding/retired
 - ⏳ Chrome bookmarks in the sidebar and in search
 - ⏳ S2 phone web app
 
+## Support
+
+MingTab is free, with no ads and no paid features. If it helps you, you can [support it on Ko-fi](https://ko-fi.com/fourounces).
+
 ## Licence
 
 MIT: see [LICENSE](LICENSE). The bundled fonts keep their own OFL licences (`public/fonts/licenses/`).

@@ -77,6 +77,7 @@ top of the item's page. Then fill in each tab:
   > you like.
   >
   > MingTab is made by Four Ounces: https://fourounces.live
+  > MingTab is free. If it helps you, you can support it at ko-fi.com/fourounces.
 
 - **Category:** Workflow & Planning (or Tools).
 - **Language:** English.
@@ -86,6 +87,7 @@ top of the item's page. Then fill in each tab:
   `npm run build && node scripts/store-screenshots.mjs`.
 - **Small promo tile** (440×280): `promo-small-440x280.png`.
 - **Official URL / homepage:** https://fourounces.live — **Support URL:** https://github.com/kratner/mingtab/issues
+- **Donations:** the description ends with "MingTab is free. If it helps you, you can support it at ko-fi.com/fourounces." (Ko-fi page renamed from ko-fi.com/deprogrammer on 2026-11-11; same account.)
 
 ### Privacy practices
 

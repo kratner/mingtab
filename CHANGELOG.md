@@ -3,6 +3,13 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Added
+
+- **Support MingTab.** About now has a link to the Four Ounces page on Ko-fi (ko-fi.com/fourounces). MingTab stays
+  free; tips are optional and don't unlock anything.
+
 ## 0.12.0 — 2026-11-11
 
 ### Added

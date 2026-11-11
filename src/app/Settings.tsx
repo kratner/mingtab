@@ -17,6 +17,7 @@ import { findDuplicates, type DuplicateGroup } from '../dedupe/dedupe';
 import { downloadJson, readJsonFile, timestamp } from './files';
 import { SyncSettings } from '../sync/SyncSettings';
 import { FourOuncesMark } from './FourOuncesMark';
+import { KOFI_URL } from './support';
 import { AUTO_KEY, STORE_BUILD, checkForUpdate, readUpdateState, runningVersion, isNewer, type UpdateState } from '../update/update';
 import type { Scheme, Theme } from './prefs';
 
@@ -470,6 +471,15 @@ export function About() {
           Forty open tabs are a cluttered approach. MingTab keeps yours clear: put away what you aren't using, and find it
           again when you need it.
         </p>
+        {KOFI_URL && (
+          <p className="support">
+            MingTab is free. If it helps you,{' '}
+            <a href={KOFI_URL} target="_blank" rel="noreferrer">
+              support it on Ko-fi
+            </a>
+            .
+          </p>
+        )}
         {version && <p className="muted">Version {version}</p>}
         <p className="by-fo">
           <a href="https://fourounces.live/" target="_blank" rel="noreferrer">
