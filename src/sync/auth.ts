@@ -6,7 +6,7 @@ import { getSyncState, patchSyncState } from './state';
 // the work account). Google returns an ID token; the sync service checks it
 // and issues this device its own token.
 
-function deviceName() {
+export function deviceName() {
   const ua = navigator.userAgent;
   const os = /Mac OS X/.test(ua) ? 'macOS' : /Windows/.test(ua) ? 'Windows' : /CrOS/.test(ua) ? 'ChromeOS' : /Linux/.test(ua) ? 'Linux' : 'unknown OS';
   return `Chrome on ${os}`;
@@ -45,14 +45,26 @@ export async function signInWithGoogle(): Promise<string> {
   const body = (await res.json().catch(() => ({}))) as { token?: string; email?: string; error?: string };
   if (!res.ok || !body.token) throw new Error(body.error ?? `Sync service error (${res.status})`);
   // Fresh start: push everything local, pull everything remote.
-  await patchSyncState({ token: body.token, email: body.email ?? null, cursor: 0, pushMark: 0, lastError: null });
+  await patchSyncState({
+    backend: 'cloudflare',
+    token: body.token,
+    email: body.email ?? null,
+    cursor: 0,
+    pushMark: 0,
+    lastError: null,
+    needsReconnect: false,
+  });
   return body.email ?? '';
+}
+
+/** Ends this device's session on the sync server (best effort). */
+export async function endServerSession(token: string | null) {
+  if (!token) return;
+  await fetch(`${SYNC_URL}/v1/auth/signout`, { method: 'POST', headers: { authorization: `Bearer ${token}` } }).catch(() => {});
 }
 
 export async function signOut() {
   const { token } = await getSyncState();
-  if (token) {
-    await fetch(`${SYNC_URL}/v1/auth/signout`, { method: 'POST', headers: { authorization: `Bearer ${token}` } }).catch(() => {});
-  }
-  await patchSyncState({ token: null, email: null, cursor: 0, pushMark: 0, lastError: null, lastSyncAt: null });
+  await endServerSession(token);
+  await patchSyncState({ backend: null, token: null, email: null, cursor: 0, pushMark: 0, lastError: null, lastSyncAt: null });
 }

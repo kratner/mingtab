@@ -15,6 +15,8 @@ import path from 'node:path';
 export const SYNC_PORT = 8789;
 /** e2e/update.spec.ts serves a fake GitHub "latest release" here. */
 export const UPDATE_PORT = 8790;
+/** e2e/drive-sync.spec.ts serves a fake Google Drive + OAuth endpoint here. */
+export const DRIVE_PORT = 8791;
 const root = path.resolve(import.meta.dirname, '..');
 const workerDir = path.join(root, 'worker');
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
@@ -43,6 +45,8 @@ export default async function globalSetup() {
       ...process.env,
       VITE_SYNC_URL: syncUrl,
       VITE_UPDATE_URL: `http://127.0.0.1:${UPDATE_PORT}/releases/latest`,
+      VITE_DRIVE_URL: `http://127.0.0.1:${DRIVE_PORT}`,
+      VITE_GOOGLE_AUTH_URL: `http://127.0.0.1:${DRIVE_PORT}/o/oauth2/v2/auth`,
       VITE_CONFIG_NATIVE_IGNORE_WARNING: 'true',
     },
     stdio: 'ignore',

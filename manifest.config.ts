@@ -3,6 +3,11 @@ import pkg from './package.json' with { type: 'json' };
 import sync from './sync.config.json' with { type: 'json' };
 
 const syncOrigin = new URL(process.env.VITE_SYNC_URL || sync.syncUrl).origin;
+// Google Drive sync talks to the Drive API. It's an *optional* host
+// permission, asked for when someone turns Drive sync on, so installing or
+// updating MingTab shows no new warning. Test builds point at a local fake
+// Drive (VITE_DRIVE_URL) and grant it up front.
+const testDriveOrigin = process.env.VITE_DRIVE_URL ? new URL(process.env.VITE_DRIVE_URL).origin : null;
 // The Chrome Web Store build leaves out `key`: the store rejects it and gives
 // MingTab its own ID (sync.config.json → storeExtensionId once it's known).
 const store = process.env.VITE_STORE === '1';
@@ -39,8 +44,10 @@ export default defineManifest({
     newtab: 'src/newtab/index.html',
   },
   permissions: ['sidePanel', 'storage', 'unlimitedStorage', 'tabs', 'tabGroups', 'favicon', 'identity', 'alarms'],
-  // Only the MingTab sync service.
-  host_permissions: [`${syncOrigin}/*`],
+  // Only the MingTab sync server (invite only).
+  host_permissions: [`${syncOrigin}/*`, ...(testDriveOrigin ? [`${testDriveOrigin}/*`] : [])],
+  // Google Drive API, requested when Drive sync is turned on.
+  optional_host_permissions: [`${testDriveOrigin ?? 'https://www.googleapis.com'}/*`],
   // Requested only when history search is turned on in Settings.
   optional_permissions: ['history'],
 });

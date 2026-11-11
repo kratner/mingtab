@@ -7,6 +7,16 @@ What's new in each MingTab release. Downloads and install steps are on the
 
 ### Added
 
+- **Sync with Google Drive, for everyone.** Settings → Sync → **Sync with Google Drive** keeps MingTab the same
+  in every Chrome profile and on every computer signed in to the same Google account. Your data goes in a hidden
+  MingTab folder in your own Google Drive (Drive's app data folder, the only part of your Drive MingTab can
+  see), one file per device, with no MingTab server in between. Edits made on two computers at the same time
+  both survive; for the same item, the later edit wins. **Sign out** keeps your data; **Delete synced data**
+  removes MingTab's files from Drive and turns sync off on every device. If Google sign-in lapses, Settings
+  shows **Reconnect Google Drive**. Chrome asks for access to Google Drive only when you turn this on.
+- The original MingTab sync server is still there for the accounts it was set up for (Settings → Sync →
+  *Other ways to sync*), and a device on it can **Move to Google Drive**.
+
 - **Support MingTab.** About now has a link to the Four Ounces page on Ko-fi (ko-fi.com/fourounces). MingTab stays
   free; tips are optional and don't unlock anything.
 

@@ -1,7 +1,8 @@
 # MingTab — Profiles, storage and sync (design, 2026-10-23)
 
 Decision record for how MingTab gets from one Chrome on one Mac to every machine, every Chrome
-profile and a phone. Nothing here is built yet; it's the plan for phase 2 in [PLAN.md](PLAN.md).
+profile and a phone. S1 (the Cloudflare server) was built 2026-10-23; Google Drive sync for
+everyone was added 2026-11-11 (last section).
 
 ## Where data lives today
 
@@ -118,3 +119,112 @@ recommended: it doesn't grow into mobile or sharing.
   the work profile (or the PC) signs in and an edit crosses between them within a minute.
 - Tests: Worker (11, real D1 in Miniflare), sync engine with two simulated devices (7), and two
   real Chromium profiles syncing through the Worker running locally (`e2e/sync.spec.ts`).
+
+## Google Drive sync (option C), built 2026-11-11
+
+Why now: MingTab is on the Chrome Web Store, and anyone who installs it should be able to sync
+without Keith paying for, or storing, anyone's data. The Cloudflare server can't be opened to
+everyone under that rule; each person's own Google Drive can. The Drive API is free, and the data
+counts against the person's own Drive storage. (The 2026-10-23 worry about C, several writers
+merging one snapshot, is designed away below: no file has more than one writer.)
+
+### Layout in the app folder
+
+Drive's `appDataFolder` is a hidden folder per app per Google account: only MingTab's OAuth client
+can see it, and MingTab can see nothing else (scope `drive.appdata`, Google's non-sensitive tier).
+
+```
+appDataFolder/
+  mingtab-device-<deviceId>.json    one per Chrome profile that turned Drive sync on
+```
+
+Each file is that device's full snapshot: `{ format: "mingtab-drive-sync", formatVersion: 1,
+deviceId, deviceName, writtenAt, tables: { spaces, collections, cards, tags, next } }`, every
+record with its tombstone (`deletedAt`). `appProperties.device` holds the device name ("Chrome on
+macOS"). `deviceId` is random, kept in `chrome.storage.local` across sign-outs, so a device that
+signs back in reuses its file.
+
+### Conflicts and concurrency
+
+**Each device writes only its own file.** Two devices syncing in the same second never touch the
+same file, so there is no lost update to guard against: no ETags, no locks, no read-modify-write
+retry. Merging happens on the reader's side with the same rule as the Cloudflare server
+(`applyRemoteChanges` in `src/sync/engine.ts`): per record, the newest `updatedAt` wins (a tie
+keeps the incoming copy, as before); deletions are tombstones, so they win when they're newer.
+
+One sync (`src/sync/drive/engine.ts`):
+
+1. `t0 = now`; local edits = records with `updatedAt > pushMark` (same as the server sync).
+2. **List** the app folder (1 request). For every other device's file whose Drive `version`
+   changed since we last merged it, **download** it and merge.
+3. If there were local edits, or this device has no file yet, **upload** our snapshot, taken
+   after the merge (1 request; Drive's resumable protocol above 5 MB).
+4. `pushMark = t0 - 1`.
+
+Request budget: an idle sync is **1 request** (the list); a local edit adds 1 upload; each remote
+edit costs each other device 1 download. At one sync a minute that's about 1,500 requests per
+device per day, far under Drive's per-user limits.
+
+Deletion: if this device's own file has vanished, the synced data was deleted (Settings → Delete
+synced data on another device, or Drive → Manage apps → Delete hidden app data). The device turns
+sync off and says so, rather than silently uploading everything again; its local collections stay.
+
+Not done (yet): pruning files of devices that are gone for good. A stale file is read once and
+then skipped (its version doesn't change), and its records lose to newer ones, so it's harmless;
+it only costs a new device one extra download.
+
+### Sign-in and tokens
+
+`chrome.identity.launchWebAuthFlow` (works in Edge/Vivaldi/Brave; any Google account), Google's
+token response (`response_type=token id_token`, scopes `openid email drive.appdata`, a nonce
+checked against the ID token). If the person unticks the Drive box on Google's consent screen,
+MingTab explains that it needs it. The access token (about an hour) is kept in
+`chrome.storage.session` (memory only). When it expires, or the API answers 401, the background
+worker renews it silently (`prompt=none`, `login_hint`, `interactive: false`); if Google needs the
+person (signed out of Google in that browser, access removed), Settings shows **Reconnect Google
+Drive**. Google discourages the token (implicit) flow for web pages; for an extension with a
+public client it avoids shipping a client secret, which Google's code flow requires for this
+client type. Revisit if Google retires it.
+
+The Drive API host (`https://www.googleapis.com/*`) is an **optional** host permission, asked for
+when someone clicks Sync with Google Drive, so the update that adds Drive sync shows existing users
+no new permission warning.
+
+### Two backends, one device at a time
+
+| | Google Drive (default) | MingTab sync server (Cloudflare) |
+|---|---|---|
+| Who | Anyone | `ALLOWED_EMAILS` only (Keith) |
+| Where in Settings | **Sync with Google Drive** | *Other ways to sync* → **Sign in to the MingTab sync server** |
+| Data | Person's own Drive | Keith's Cloudflare D1 |
+
+`mingtab.sync.backend` says which one a device uses; state saved before this change has no
+`backend`, and a server token means `cloudflare`, so Keith's signed-in devices carry on untouched.
+The Worker is unchanged. A device on the server shows **Move to Google Drive**: it turns on Drive
+sync, ends the server session, and uploads everything on the device (pushMark reset). Keith can
+move one device at a time; since local data stays put and both merges are last-writer-wins, the
+devices converge once all of them are on Drive. The Worker can be retired after that (or kept for
+the phone web app, which can't use the extension's Drive flow).
+
+### Google Cloud setup (manual, Keith)
+
+Project `mingtab`, OAuth client `453066917507-acsc56hkjjnrl461cvga9fmkqnlnllp0`, in the Google
+Cloud console → **Google Auth Platform**:
+
+1. **APIs & Services → Library → Google Drive API → Enable** (the project must have the API
+   enabled before any Drive call works).
+2. **Data Access → Add or remove scopes**: add `https://www.googleapis.com/auth/drive.appdata`
+   (listed as non-sensitive). `openid` and `email` are already implied by sign-in. Save.
+3. **Clients → MingTab extension**: both redirect URIs are already there
+   (`https://jclkedgbnlmbonoihhobgnmdoehmddpo.chromiumapp.org/`,
+   `https://ofeenikhemghdanmdfcjjmogniooejjd.chromiumapp.org/`). Nothing to change.
+4. **Testing first**: under **Audience**, add the Google accounts to test with as test users (while
+   in Testing, only test users can sign in, and they see Google's "hasn't verified this app"
+   screen).
+5. **Going public: Audience → Publish app** (In production). Because every scope MingTab asks for
+   is non-sensitive, Google's docs say app verification is **not mandatory** and there's no
+   sensitive-scope review, demo video or security assessment (CASA is only for restricted scopes).
+   Optional but recommended: **brand verification** (Branding → Verify branding), so the consent
+   screen shows the MingTab name and logo. It needs a homepage on a domain verified in Google
+   Search Console (fourounces.live) that describes MingTab, and the privacy policy on the same
+   domain, linked from the homepage and the consent screen. No fee is mentioned in Google's docs.

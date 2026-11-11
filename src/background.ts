@@ -1,6 +1,6 @@
 import { db } from './db/db';
 import { omniboxSuggestions, resolveOmnibox } from './omnibox';
-import { runSync } from './sync/runner';
+import { deleteDriveData, runSync } from './sync/runner';
 import { AUTO_KEY, SKIPPED_KEY, UPDATE_KEY, checkIfDue, currentNotice } from './update/update';
 
 const ALARM = 'mingtab-sync';
@@ -51,6 +51,13 @@ chrome.runtime.onMessage.addListener((msg: { type?: string }, _sender, reply) =>
   if (msg?.type === 'mingtab:sync-now') {
     runSync().then(() => reply(true), () => reply(false));
     return true; // reply asynchronously
+  }
+  if (msg?.type === 'mingtab:drive-delete') {
+    deleteDriveData().then(
+      (count) => reply({ ok: true, count }),
+      (e: Error) => reply({ ok: false, error: e.message || 'Could not delete the synced data' }),
+    );
+    return true;
   }
   if (msg?.type === 'mingtab:sync-soon') {
     clearTimeout(soon);

@@ -103,7 +103,7 @@ test('two devices stay in sync: create, edit, delete; edits sync on their own; s
     await b.getByRole('button', { name: 'Settings' }).click();
     await expect(b.getByRole('status', { name: 'Sync status' })).toContainText('Signed in as keith.ratner@gmail.com');
     await b.getByRole('button', { name: 'Sign out' }).click();
-    await expect(b.getByRole('button', { name: 'Sign in with Google' })).toBeVisible();
+    await expect(b.getByRole('button', { name: 'Sync with Google Drive' })).toBeVisible();
   } finally {
     await Promise.all(contexts.map((c) => c.close()));
   }
