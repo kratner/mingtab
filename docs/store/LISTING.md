@@ -45,36 +45,33 @@ top of the item's page. Then fill in each tab:
 ### Store listing
 
 - **Description** (the summary line comes from the manifest: "A local-first tab manager for Chrome: save,
-  organize and restore tabs."):
+  organize and restore tabs."). Paste it as plain text with real line breaks, one line per bullet
+  (an earlier paste lost them and every bullet ran together):
 
-  > Keep your tab bar clear. MingTab saves your open tabs as collections, sorts them into spaces, and brings
-  > them back when you need them. Everything stays on your computer.
+  > Keep your tab bar clear. MingTab saves your open tabs as collections, sorts them into spaces, and brings them back when you need them. Everything stays on your computer unless you turn on sync.
   >
   > SAVE AND RESTORE
-  > • Save a window, a tab group or a single tab as a collection. Saving closes the tabs, or keeps them open if
-  >   you prefer.
+  > • Save a window, a tab group or a single tab as a collection. Saving closes the tabs, or keeps them open if you prefer.
   > • Save all keeps every window in one go; Open all puts each window back, tab groups included.
   > • A collection saved from a tab group reopens as a group with the same name and color.
   >
   > ORGANISE
   > • Spaces, collections and cards: drag to reorder, move cards between collections, tag, star, sort and merge.
-  > • Select mode: tick cards anywhere, then make a new collection from them, move, copy, open or delete them.
-  >   Every action can be undone.
-  > • Stats: your biggest collections, most-saved sites, empty collections and duplicates. Remove extra copies in
-  >   one click.
+  > • Select mode: tick cards anywhere, then make a new collection from them, move, copy, open or delete them. Every action can be undone.
+  > • Stats: your biggest collections, most-saved sites, empty collections and duplicates. Remove extra copies in one click.
   >
   > FIND AND USE
-  > • One search for everything you've saved, your open tabs and (if you turn it on) your browsing history.
-  >   Press / from anywhere.
-  > • A Next list for things to read, notes with checklists, and address-bar shortcuts: type "to/ docs" to open the
-  >   card you named docs.
+  > • One search for everything you've saved, your open tabs and (if you turn it on) your browsing history. Press / from anywhere.
+  > • A Next list for things to read, notes with checklists, and address-bar shortcuts: type "to/ docs" to open the card you named docs.
   > • See every open window and tab group; rename and recolor groups; merge all windows into one.
   > • The board opens on every new tab, and a side panel keeps it one click away.
   > • Light and dark themes.
   >
+  > SYNC (OPTIONAL)
+  > • Keep MingTab the same on all your computers through a hidden MingTab folder in your own Google Drive. MingTab can see only that folder, and no MingTab server is involved.
+  >
   > PRIVATE BY DESIGN
-  > No ads, no analytics, no tracking. Your collections live in your browser. Back them up to a file whenever
-  > you like.
+  > No ads, no analytics, no tracking. Your collections live in your browser. Back them up to a file whenever you like.
   >
   > MingTab is made by Four Ounces: https://fourounces.live
   > MingTab is free. If it helps you, you can support it at ko-fi.com/fourounces.
