@@ -43,6 +43,25 @@ export function tabToCard(tab: Pick<chrome.tabs.Tab, 'url' | 'title' | 'favIconU
   };
 }
 
+/** An open tab's place: which window, and where in it (Chrome's tab index). */
+export type TabPlace = Pick<chrome.tabs.Tab, 'index' | 'windowId'>;
+
+/**
+ * The index to pass to chrome.tabs.move so a tab lands on the `edge` side of `target`. Chrome's index is the tab's
+ * final position, so moving down within one window lands one place earlier than the gap it's dropped in.
+ */
+export function moveIndex(from: TabPlace, target: TabPlace, edge: 'before' | 'after'): number {
+  const gap = target.index + (edge === 'after' ? 1 : 0);
+  return from.windowId === target.windowId && from.index < gap ? gap - 1 : gap;
+}
+
+/** True when dropping `from` on that side of `target` would leave it where it is. */
+export function isSameTabPlace(from: TabPlace, target: TabPlace, edge: 'before' | 'after'): boolean {
+  if (from.windowId !== target.windowId) return false;
+  const gap = target.index + (edge === 'after' ? 1 : 0);
+  return gap === from.index || gap === from.index + 1;
+}
+
 export function sessionTitle(d = new Date(), prefix = 'Session'): string {
   const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
@@ -277,6 +296,26 @@ export async function openCards(cards: Card[], group?: { title: string; color: s
 export async function focusTab(tab: chrome.tabs.Tab) {
   await chrome.tabs.update(tab.id!, { active: true });
   await chrome.windows.update(tab.windowId, { focused: true });
+}
+
+/**
+ * Moves an open tab next to another (any window), joining the target's tab group or leaving its own group to match
+ * where it lands. Chrome refuses to move a tab into the middle of a group ("would disrupt group continuity"), so the
+ * group changes first (which carries the tab to that group, in the target's window), then the tab moves to its spot
+ * using fresh indexes.
+ */
+export async function moveOpenTab(
+  tab: { id?: number; groupId?: number },
+  target: { id?: number; groupId?: number },
+  edge: 'before' | 'after',
+) {
+  if (tab.id === undefined || target.id === undefined || tab.id === target.id) return;
+  const group = target.groupId ?? -1;
+  if (group >= 0 && tab.groupId !== group) await chrome.tabs.group({ groupId: group, tabIds: tab.id });
+  else if (group < 0 && (tab.groupId ?? -1) >= 0) await chrome.tabs.ungroup(tab.id);
+  const [now, there] = await Promise.all([chrome.tabs.get(tab.id), chrome.tabs.get(target.id)]);
+  if (isSameTabPlace(now, there, edge)) return;
+  await chrome.tabs.move(tab.id, { windowId: there.windowId, index: moveIndex(now, there, edge) });
 }
 
 export async function closeTab(tab: chrome.tabs.Tab) {

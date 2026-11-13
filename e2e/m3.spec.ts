@@ -261,3 +261,76 @@ test('tab-group controls: group, rename, recolor, ungroup; merge windows', async
     .toBe(1);
   expect(await openSiteTabs(sw, site)).toHaveLength(3);
 });
+
+test('open tabs reorder by drag: a drop line shows, the tab moves in Chrome, across windows and into a group', async ({
+  page,
+  extensionId,
+  serviceWorker: sw,
+  site,
+}) => {
+  await setUp(page, extensionId);
+  const win = await openWindow(sw, urls(site, ['ra', 'rb', 'rc', 'rd']));
+  const order = (windowId: number) =>
+    sw.evaluate(async (id) => (await chrome.tabs.query({ windowId: id })).map((t) => t.title), windowId);
+  const pane = page.getByRole('complementary', { name: 'Open tabs' });
+  const row = (name: string) => pane.locator('.open-tab', { hasText: `Page ${name}` });
+  // The pane redraws a moment after Chrome moves a tab: wait for it before aiming the next drag.
+  const paneOrder = () => pane.locator('.open-tab-title').allTextContents();
+  const settled = async (...windows: number[]) => {
+    const want = (await Promise.all(windows.map(order))).flat();
+    await expect.poll(async () => (await paneOrder()).filter((t) => want.includes(t))).toEqual(want);
+  };
+  await expect(row('rd')).toBeVisible();
+
+  async function dragOver(from: Locator, to: Locator, fraction: number) {
+    const f = (await from.boundingBox())!;
+    const t = (await to.boundingBox())!;
+    await page.mouse.move(f.x + f.width / 2, f.y + f.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(f.x + f.width / 2 + 12, f.y + f.height / 2 + 4, { steps: 4 });
+    await page.mouse.move(t.x + t.width / 2, t.y + t.height * fraction, { steps: 15 });
+  }
+
+  // Down within the window: lower half of rc puts ra between rc and rd.
+  await dragOver(row('ra'), row('rc'), 0.8);
+  await expect(row('rc')).toHaveClass(/drop-after/);
+  await expect(page.locator('.drop-before, .drop-after')).toHaveCount(1);
+  await page.mouse.up();
+  await expect.poll(() => order(win)).toEqual(['Page rb', 'Page rc', 'Page ra', 'Page rd']);
+  await expect(page.locator('.drop-before, .drop-after')).toHaveCount(0);
+  await settled(win);
+
+  // Up: upper half of rb puts rd first.
+  await dragOver(row('rd'), row('rb'), 0.15);
+  await expect(row('rb')).toHaveClass(/drop-before/);
+  await page.mouse.up();
+  await expect.poll(() => order(win)).toEqual(['Page rd', 'Page rb', 'Page rc', 'Page ra']);
+  await settled(win);
+
+  // Right above or below itself: no line, nothing moves.
+  await dragOver(row('rb'), row('rc'), 0.15);
+  await expect(page.locator('.drop-before, .drop-after')).toHaveCount(0);
+  await page.mouse.up();
+  await expect.poll(() => order(win)).toEqual(['Page rd', 'Page rb', 'Page rc', 'Page ra']);
+
+  // Into another window, into its tab group.
+  const other = await openWindow(sw, urls(site, ['g1', 'g2']), { group: { title: 'G', color: 'blue' } });
+  await expect(row('g2')).toBeVisible();
+  await settled(win, other);
+  await dragOver(row('rc'), row('g1'), 0.8);
+  await expect(row('g1')).toHaveClass(/drop-after/);
+  await page.mouse.up();
+  await expect.poll(() => order(other)).toEqual(['Page g1', 'Page rc', 'Page g2']);
+  await expect.poll(() => order(win)).toEqual(['Page rd', 'Page rb', 'Page ra']);
+  const grouped = await sw.evaluate(async (id) => {
+    const tabs = await chrome.tabs.query({ windowId: id });
+    return new Set(tabs.map((t) => t.groupId)).size === 1 && tabs[0]!.groupId !== -1;
+  }, other);
+  expect(grouped).toBe(true);
+  await settled(win, other);
+
+  // Saving into a collection still works from the same rows.
+  await dragOver(row('rb'), page.getByRole('region', { name: 'C', exact: true }).locator('.collection-header'), 0.5);
+  await page.mouse.up();
+  await expect.poll(() => cardTitles(page, 'C')).toEqual(['c1', 'Page rb']);
+});

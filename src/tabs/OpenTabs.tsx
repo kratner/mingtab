@@ -1,4 +1,4 @@
-import { useDraggable } from '@dnd-kit/core';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { db } from '../db/db';
@@ -23,6 +23,7 @@ import {
   type SaveResult,
 } from './tabs';
 import { dragId } from '../dnd/drop';
+import { useDropIndicator } from '../dnd/DndProvider';
 import { addToNext } from '../db/next';
 import { runsOf, useOpenWindows } from './useOpenWindows';
 
@@ -235,12 +236,20 @@ function OpenTabRow({
   const title = tab.title || tab.url || 'Untitled';
   const icon = tab.favIconUrl && /^(https?:|data:)/.test(tab.favIconUrl) ? tab.favIconUrl : chromeFaviconUrl(tab.url ?? '');
   const savable = isSavableUrl(tab.url, origin);
-  const { setNodeRef, attributes: dragAttrs, listeners, isDragging } = useDraggable({
+  // Every open tab can be dragged to reorder it; only savable ones can also be dropped into a collection.
+  const { setNodeRef: setDragRef, attributes: dragAttrs, listeners, isDragging } = useDraggable({
     id: dragId.tab(tab.id!),
-    data: { type: 'tab', tab },
-    disabled: !savable,
+    data: { type: 'tab', tab, savable },
   });
+  // ...and each row is a drop target, so tabs can be reordered (within a window or across windows).
+  const { setNodeRef: setDropRef } = useDroppable({ id: dragId.openTab(tab.id!), data: { type: 'openTab', tab } });
+  const setNodeRef = (el: HTMLElement | null) => {
+    setDragRef(el);
+    setDropRef(el);
+  };
   const { 'aria-disabled': _disabled, ...attributes } = dragAttrs; // see CardRow
+  const indicator = useDropIndicator();
+  const dropLine = indicator?.over === dragId.openTab(tab.id!) ? `drop-${indicator.edge}` : '';
 
   const saveTo = async (choice: string) => {
     setPicking(false);
@@ -254,14 +263,18 @@ function OpenTabRow({
   return (
     <li
       ref={setNodeRef}
-      className={`open-tab ${tab.active ? 'active' : ''} ${isDragging ? 'dragging' : ''}`}
+      className={`open-tab ${tab.active ? 'active' : ''} ${isDragging ? 'dragging' : ''} ${dropLine}`}
       {...attributes}
       {...listeners}
       role="listitem"
       aria-roledescription="draggable tab"
     >
-      {/* Shown on hover; kept (invisible) on tabs that can't be saved so every row lines up. */}
-      <span className={`row-grip ${savable ? '' : 'off'}`} aria-hidden="true" title={savable ? 'Drag into a collection' : undefined}>
+      {/* Shown on hover. */}
+      <span
+        className="row-grip"
+        aria-hidden="true"
+        title={savable ? 'Drag to reorder, or into a collection' : 'Drag to reorder'}
+      >
         ⠿
       </span>
       <button type="button" className="open-tab-main" title={tab.url} onClick={() => focusTab(tab)}>

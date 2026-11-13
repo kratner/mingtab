@@ -17,7 +17,8 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
 import { db } from '../db/db';
 import { displayTitle } from '../db/schema';
-import { ACCEPTS, edgeFor, handleDrop, type DragData, type DropData, type Edge } from './drop';
+import { isSameTabPlace } from '../tabs/tabs';
+import { ACCEPTS, dragId, edgeFor, handleDrop, type DragData, type DropData, type Edge } from './drop';
 
 /**
  * Where the dragged card or tab will land, for the drop line: `over` is the droppable id (`card:…` or
@@ -53,12 +54,28 @@ function indicatorFor(e: DragMoveEvent): DropIndicator | null {
     }
     return { over: String(over.id), edge: 'after' };
   }
-  if (target.type !== 'card') return null;
   // Pointer drags follow the pointer; the keyboard moves the item's centre onto the target.
   const start = e.activatorEvent as Partial<PointerEvent> | null;
   const box = e.active.rect.current.translated;
   const y =
     typeof start?.clientY === 'number' ? start.clientY + e.delta.y : box ? box.top + box.height / 2 : over.rect.top;
+  if (target.type === 'openTab') {
+    // An open tab among the open tabs: reorder it in Chrome (any window).
+    if (active.type !== 'tab' || active.tab.id === target.tab.id) return null;
+    const initial = e.active.rect.current.initial;
+    const edge = edgeFor(y, over.rect, initial && initial.top < over.rect.top ? 'after' : 'before');
+    const { tab } = active;
+    if (
+      tab.index !== undefined &&
+      tab.windowId !== undefined &&
+      target.tab.index !== undefined &&
+      target.tab.windowId !== undefined &&
+      isSameTabPlace({ index: tab.index, windowId: tab.windowId }, { index: target.tab.index, windowId: target.tab.windowId }, edge)
+    )
+      return null;
+    return { over: String(over.id), edge };
+  }
+  if (target.type !== 'card') return null;
   // Dead centre: within its own list moving down lands after (as sortable lists do); otherwise before.
   const initial = e.active.rect.current.initial;
   const sameList = active.type === 'card' && active.card.collectionId === target.card.collectionId;
@@ -89,11 +106,18 @@ function shown(line: DropIndicator | null, over: DragMoveEvent['over']): DropInd
  * contains it); with the keyboard, the closest accepted target.
  */
 const collision: CollisionDetection = (args) => {
-  const type = (args.active.data.current as DragData | undefined)?.type;
+  const data = args.active.data.current as DragData | undefined;
+  const type = data?.type;
   if (!type) return [];
-  const accepts = ACCEPTS[type];
+  // A tab that can't be saved (a new-tab or MingTab page) can only be reordered among the open tabs.
+  const accepts = data.type === 'tab' && data.savable === false ? (['openTab'] as DropData['type'][]) : ACCEPTS[type];
+  // An open tab's row is both the drag source (`tab:…`) and a drop target (`opentab:…`): never itself.
+  const self = data.type === 'tab' && data.tab.id !== undefined ? dragId.openTab(data.tab.id) : null;
   const droppableContainers = args.droppableContainers.filter(
-    (c) => c.id !== args.active.id && accepts.includes((c.data.current as DropData | undefined)?.type as DropData['type']),
+    (c) =>
+      c.id !== args.active.id &&
+      c.id !== self &&
+      accepts.includes((c.data.current as DropData | undefined)?.type as DropData['type']),
   );
   if (!args.pointerCoordinates) {
     // Keyboard: never the dragged card's own collection, whose box surrounds it and is always "closest".
@@ -210,9 +234,13 @@ export function DndProvider({ children }: { children: ReactNode }) {
     const over = e.over?.data.current as DropData | undefined;
     // No line means the drop would leave things as they are (or isn't a card or tab landing in a collection).
     if (!active || !over) return;
-    if ((active.type === 'card' || active.type === 'tab') && (over.type === 'card' || over.type === 'collection') && !line)
+    if (
+      (active.type === 'card' || active.type === 'tab') &&
+      (over.type === 'card' || over.type === 'collection' || over.type === 'openTab') &&
+      !line
+    )
       return;
-    const edge = line && line.over === String(e.over!.id) && over.type === 'card' ? line.edge : null;
+    const edge = line && line.over === String(e.over!.id) && (over.type === 'card' || over.type === 'openTab') ? line.edge : null;
     const result = await handleDrop(db, active, over, edge);
     if (result) {
       setMessage(result);

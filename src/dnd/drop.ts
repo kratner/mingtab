@@ -3,7 +3,7 @@ import { positionAfterLast, positionAt, reorderPosition } from '../db/position';
 import { addCard, listCards, listCollections, updateCard, updateCollection } from '../db/repo';
 import { moveNext } from '../db/next';
 import type { Card, Collection, NextItem, Space } from '../db/schema';
-import { tabToCard } from '../tabs/tabs';
+import { moveOpenTab, tabToCard } from '../tabs/tabs';
 
 // What can be dragged, and what it can land on. dnd-kit carries these in
 // `active.data` / `over.data`; ids are prefixed by type (see dragId).
@@ -11,19 +11,27 @@ import { tabToCard } from '../tabs/tabs';
 export type DragData =
   | { type: 'collection'; collection: Collection }
   | { type: 'card'; card: Card }
-  | { type: 'tab'; tab: Pick<chrome.tabs.Tab, 'url' | 'title' | 'favIconUrl'> }
+  /** An open tab. `savable: false` (a new-tab or MingTab page): it can be reordered among open tabs but not saved. */
+  | { type: 'tab'; tab: OpenTab; savable?: boolean }
   | { type: 'next'; item: NextItem };
+
+/** The parts of an open tab that dragging uses. */
+export type OpenTab = Pick<chrome.tabs.Tab, 'url' | 'title' | 'favIconUrl'> &
+  Partial<Pick<chrome.tabs.Tab, 'id' | 'index' | 'windowId' | 'groupId' | 'pinned'>>;
 
 export type DropData =
   | { type: 'collection'; collection: Collection }
   | { type: 'card'; card: Card }
   | { type: 'space'; space: Space }
+  | { type: 'openTab'; tab: OpenTab }
   | { type: 'next'; item: NextItem };
 
 export const dragId = {
   collection: (id: string) => `collection:${id}`,
   card: (id: string) => `card:${id}`,
   tab: (id: number) => `tab:${id}`,
+  /** An open tab as a drop target (its row is also draggable as `tab:…`). */
+  openTab: (id: number) => `opentab:${id}`,
   space: (id: string) => `space:${id}`,
   next: (id: string) => `next:${id}`,
 };
@@ -32,7 +40,7 @@ export const dragId = {
 export const ACCEPTS: Record<DragData['type'], DropData['type'][]> = {
   collection: ['collection', 'space'],
   card: ['card', 'collection', 'space'],
-  tab: ['card', 'collection'],
+  tab: ['openTab', 'card', 'collection'],
   next: ['next'],
 };
 
@@ -71,6 +79,16 @@ export async function handleDrop(
     return 'Moved in Next.';
   }
   if (active.type === 'next' || over.type === 'next') return null;
+
+  if (over.type === 'openTab') {
+    if (active.type !== 'tab' || !edge) return null;
+    const { tab } = active;
+    const target = over.tab;
+    if (tab.id === undefined || target.id === undefined || tab.id === target.id) return null;
+    await moveOpenTab({ id: tab.id, groupId: tab.groupId }, { id: target.id, groupId: target.groupId }, edge);
+    return 'Moved tab.';
+  }
+  if (active.type === 'tab' && active.savable === false) return null;
 
   if (active.type === 'collection') {
     const c = active.collection;

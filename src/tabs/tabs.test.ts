@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isSavableUrl, planClose, planRestore, savableTabs, sessionTitle, snapshotWindows, tabToCard } from './tabs';
+import { isSameTabPlace, isSavableUrl, moveIndex, planClose, planRestore, savableTabs, sessionTitle, snapshotWindows, tabToCard } from './tabs';
 
 const ext = 'chrome-extension://abc/';
 
@@ -185,5 +185,28 @@ describe('planRestore', () => {
       { url: 'https://lost.example', group: null },
       { url: 'https://g.example', group: null },
     ]);
+  });
+});
+
+describe('moveIndex / isSameTabPlace', () => {
+  const at = (index: number, windowId = 1) => ({ index, windowId });
+  it('moving down in one window lands one earlier than the gap', () => {
+    expect(moveIndex(at(0), at(2), 'after')).toBe(2);
+    expect(moveIndex(at(0), at(2), 'before')).toBe(1);
+  });
+  it('moving up lands on the gap', () => {
+    expect(moveIndex(at(3), at(1), 'before')).toBe(1);
+    expect(moveIndex(at(3), at(1), 'after')).toBe(2);
+  });
+  it('another window: the gap itself', () => {
+    expect(moveIndex(at(0, 1), at(2, 2), 'before')).toBe(2);
+    expect(moveIndex(at(5, 1), at(2, 2), 'after')).toBe(3);
+  });
+  it('just above or below itself is no move', () => {
+    expect(isSameTabPlace(at(2), at(2), 'before')).toBe(true);
+    expect(isSameTabPlace(at(2), at(1), 'after')).toBe(true);
+    expect(isSameTabPlace(at(2), at(3), 'before')).toBe(true);
+    expect(isSameTabPlace(at(2), at(3), 'after')).toBe(false);
+    expect(isSameTabPlace(at(2, 1), at(2, 2), 'before')).toBe(false);
   });
 });

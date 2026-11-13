@@ -1085,13 +1085,16 @@ button:disabled {
    showing. Drawn in the 2px gap between rows, so nothing shifts. Every row carries the line, hidden, so it can
    fade (and widen from the middle) in and out as the drop spot moves. */
 .card,
-.cards {
+.cards,
+.open-tab {
   position: relative;
 }
 
 .card::before,
 .card::after,
-.cards::after {
+.cards::after,
+.open-tab::before,
+.open-tab::after {
   content: '';
   position: absolute;
   left: 2px;
@@ -1107,17 +1110,21 @@ button:disabled {
     transform 140ms ease;
 }
 
-.card::before {
+.card::before,
+.open-tab::before {
   top: -2px;
 }
 
 .card::after,
-.cards::after {
+.cards::after,
+.open-tab::after {
   bottom: -2px;
 }
 
 .card.drop-before::before,
 .card.drop-after::after,
+.open-tab.drop-before::before,
+.open-tab.drop-after::after,
 .collection.drop-append .cards::after {
   opacity: 1;
   transform: none;
@@ -1126,7 +1133,9 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   .card::before,
   .card::after,
-  .cards::after {
+  .cards::after,
+  .open-tab::before,
+  .open-tab::after {
     transition: none;
   }
 }

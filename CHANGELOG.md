@@ -3,6 +3,15 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Added
+
+- **Reorder open tabs by dragging.** In the Open tabs pane, drag a tab onto another and it moves there in Chrome,
+  with the same drop line as saved tabs. It works across windows, and a tab dropped among a tab group's tabs joins
+  that group (one dropped outside a group leaves its group). New-tab and MingTab pages can be dragged to reorder too,
+  but only web pages can be dropped into a collection.
+
 ## 0.13.0 — 2026-11-11
 
 ### Added
