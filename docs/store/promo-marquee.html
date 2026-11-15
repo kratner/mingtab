@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+  Chrome Web Store marquee promo tile (1400x560). Render:
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --hide-scrollbars \
+    --window-size=1400,560 --screenshot=docs/store/promo-marquee-1400x560.png docs/store/promo-marquee.html
+  then flatten to 24-bit RGB (the store rejects alpha):
+  python3 -c "from PIL import Image; Image.open('docs/store/promo-marquee-1400x560.png').convert('RGB').save('docs/store/promo-marquee-1400x560.png')"
+-->
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: 'Archivo Black'; src: url(../../public/fonts/ArchivoBlack-Regular.latin.woff2); }
+@font-face { font-family: 'Inter'; src: url(../../public/fonts/Inter.latin.woff2); }
+html, body { margin: 0; width: 1400px; height: 560px; overflow: hidden; background: #0f0e0c; }
+body { position: relative; font-family: 'Inter', sans-serif; color: #f2efe8; }
+.text { position: absolute; left: 96px; top: 50%; transform: translateY(-50%); width: 520px; }
+.brand { display: flex; align-items: center; gap: 26px; }
+.brand img { width: 104px; height: 104px; border-radius: 22px; }
+.brand h1 { margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 64px; letter-spacing: 3px; }
+.tag { margin: 40px 0 0; font-size: 33px; line-height: 1.4; font-weight: 500; color: #e6e1d6; }
+.by { margin-top: 30px; font-size: 19px; color: #9b958a; }
+.shot { position: absolute; left: 690px; top: 70px; width: 820px; border-radius: 14px; overflow: hidden;
+  border: 1px solid #3a3731; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.shot img { display: block; width: 100%; }
+</style></head>
+<body>
+  <div class="text">
+    <div class="brand"><img src="../../public/icons/icon-128.png" alt=""><h1>MINGTAB</h1></div>
+    <p class="tag">Save tabs into collections.<br>Find anything. Bring it all back.</p>
+    <div class="by">A Four Ounces tool · free</div>
+  </div>
+  <div class="shot"><img src="screenshot-1-board-dark.png" alt=""></div>
+</body></html>
