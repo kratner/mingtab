@@ -806,12 +806,41 @@ button:disabled {
 
 .window-title {
   font-weight: 600;
+  flex-shrink: 0;
+}
+
+
+.window-header .window-title,
+.window-header .count,
+.window-header button {
+  white-space: nowrap;
+}
+
+.window-header .icon-btn {
+  min-width: 22px;
+  padding: 2px 4px;
+  flex-shrink: 0;
 }
 
 .save-name {
   display: flex;
   gap: 6px;
   margin-bottom: 6px;
+}
+
+.confirm-close {
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.confirm-close .confirm-text {
+  flex: 1 1 100%;
+}
+
+.confirm-close .danger-btn {
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 .save-name input {

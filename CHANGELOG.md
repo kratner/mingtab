@@ -3,6 +3,14 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Added
+
+- **Close a whole window from the Open tabs pane.** Each window's header has a ✕ that closes the window and all its
+  tabs. A window with more than one tab asks first ("Close Window 2 and its 16 tabs?"); a one-tab window closes at
+  once. To make room, the header's "Save window" button now reads **Save**.
+
 ## 0.13.1 — 2026-11-13
 
 ### Added

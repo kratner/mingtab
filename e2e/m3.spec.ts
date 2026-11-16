@@ -334,3 +334,39 @@ test('open tabs reorder by drag: a drop line shows, the tab moves in Chrome, acr
   await page.mouse.up();
   await expect.poll(() => cardTitles(page, 'C')).toEqual(['c1', 'Page rb']);
 });
+
+test('close a whole window from the Open tabs pane: asks first for several tabs, closes one-tab windows at once', async ({
+  page,
+  extensionId,
+  serviceWorker: sw,
+  site,
+}) => {
+  await setUp(page, extensionId);
+  const many = await openWindow(sw, urls(site, ['x1', 'x2', 'x3']));
+  const one = await openWindow(sw, urls(site, ['y1']));
+  const pane = page.getByRole('complementary', { name: 'Open tabs' });
+  const windowWith = (text: string) => pane.getByRole('region').filter({ hasText: text });
+  const alive = (id: number) =>
+    sw.evaluate(async (wid) => (await chrome.windows.getAll()).some((w) => w.id === wid), id);
+
+  // Several tabs: the ✕ asks first; Cancel keeps the window.
+  const manyWin = windowWith('Page x1');
+  await manyWin.getByRole('button', { name: /^Close Window/ }).click();
+  const ask = manyWin.getByRole('group', { name: /^Close Window \d+\?$/ });
+  await expect(ask).toContainText('and its 3 tabs?');
+  await ask.getByRole('button', { name: 'Cancel' }).click();
+  await expect(ask).toHaveCount(0);
+  expect(await alive(many)).toBe(true);
+
+  // Confirm: the window and its tabs are gone, and the pane says so.
+  await manyWin.getByRole('button', { name: /^Close Window/ }).click();
+  await ask.getByRole('button', { name: 'Close window', exact: true }).click();
+  await expect.poll(() => alive(many)).toBe(false);
+  await expect(pane.getByRole('status')).toContainText('(3 tabs)');
+  await expect(pane.getByText('Page x1')).toHaveCount(0);
+
+  // One tab: closes straight away, no question.
+  await windowWith('Page y1').getByRole('button', { name: /^Close Window/ }).click();
+  await expect.poll(() => alive(one)).toBe(false);
+  expect(await openSiteTabs(sw, site)).toHaveLength(0);
+});

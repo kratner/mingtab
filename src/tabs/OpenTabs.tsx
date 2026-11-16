@@ -8,6 +8,7 @@ import { InlineEdit } from '../app/InlineEdit';
 import {
   GROUP_COLORS,
   closeTab,
+  closeWindow,
   extensionOrigin,
   focusTab,
   groupLooseTabs,
@@ -39,6 +40,8 @@ export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
   const [status, setStatus] = useState('');
   /** The window whose "Save window" name field is open, and the name typed so far. */
   const [naming, setNaming] = useState<{ windowId: number; title: string } | null>(null);
+  /** The window whose "Close window?" confirmation is showing. */
+  const [closing, setClosing] = useState<number | null>(null);
 
   const ensureSpace = async () => {
     if (spaceId) return spaceId;
@@ -121,12 +124,53 @@ export function OpenTabs({ spaceId, onSpaceCreated, closeOnSave }: Props) {
                 className="primary small"
                 disabled={savable === 0}
                 aria-expanded={naming?.windowId === w.id}
+                aria-label="Save window"
                 title="Save this window's tabs as a new collection"
                 onClick={() => setNaming(naming?.windowId === w.id ? null : { windowId: w.id, title: sessionTitle() })}
               >
-                Save window
+                Save
+              </button>
+              <button
+                type="button"
+                className="icon-btn danger"
+                aria-label={`Close ${label}`}
+                aria-expanded={w.tabs.length > 1 ? closing === w.id : undefined}
+                title="Close this window and all its tabs"
+                onClick={async () => {
+                  if (w.tabs.length > 1) {
+                    setClosing(closing === w.id ? null : w.id);
+                    return;
+                  }
+                  await closeWindow(w.id);
+                  setStatus(`Closed ${label}.`);
+                }}
+              >
+                ✕
               </button>
             </header>
+            {closing === w.id && (
+              <div className="save-name confirm-close" role="group" aria-label={`Close ${label}?`}>
+                <span className="confirm-text">
+                  Close {label === 'This window' ? 'this window' : label} and its {w.tabs.length} tabs?
+                </span>
+                <button
+                  type="button"
+                  className="danger-btn small"
+                  autoFocus
+                  onClick={async () => {
+                    setClosing(null);
+                    await closeWindow(w.id);
+                    setStatus(`Closed ${label} (${w.tabs.length} tabs).`);
+                  }}
+                  onKeyDown={(e) => e.key === 'Escape' && setClosing(null)}
+                >
+                  Close window
+                </button>
+                <button type="button" className="small" onClick={() => setClosing(null)}>
+                  Cancel
+                </button>
+              </div>
+            )}
             {naming?.windowId === w.id && (
               <form
                 className="save-name"

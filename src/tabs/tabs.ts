@@ -322,6 +322,11 @@ export async function closeTab(tab: chrome.tabs.Tab) {
   await chrome.tabs.remove(tab.id!);
 }
 
+/** Closes a whole window and every tab in it (Chrome's "Close window"). */
+export async function closeWindow(windowId: number) {
+  await chrome.windows.remove(windowId);
+}
+
 // ---- tab-group and window controls (M3) --------------------------------------
 
 /** Groups the window's ungrouped, unpinned tabs into a new group. */
