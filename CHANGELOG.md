@@ -3,6 +3,14 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Changed
+
+- **Tidier toolbar in a narrow side panel.** When the view is under about 520px wide, **Select**, **+ Collection**,
+  **Expand all** and **Collapse all** become icon buttons (hover for the name), and the collections · tabs count stays
+  on one line instead of wrapping. Wider views keep the text labels.
+
 ## 0.13.2 — 2026-11-16
 
 ### Added

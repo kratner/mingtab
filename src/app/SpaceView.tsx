@@ -75,20 +75,25 @@ export function SpaceView({ space, sort, onSort, density, onDensity, highlightId
   const reorderable = sort === 'custom' && !tagFilter;
   const setAllCollapsed = (collapsed: boolean) =>
     Promise.all(shown.filter((c) => c.collapsed !== collapsed).map((c) => updateCollection(db, c.id, { collapsed })));
+  const countText =
+    (shown.length === collections.length
+      ? `${collections.length} collection${collections.length === 1 ? '' : 's'}`
+      : `${shown.length} of ${collections.length} collections`) +
+    (tabCount !== undefined ? ` · ${tabCount.toLocaleString()} tab${tabCount === 1 ? '' : 's'}` : '');
 
   return (
     <div className="space-view">
       <div className="space-toolbar">
         <h2>{space.name}</h2>
-        <span className="muted">
-          {shown.length === collections.length
-            ? `${collections.length} collection${collections.length === 1 ? '' : 's'}`
-            : `${shown.length} of ${collections.length} collections`}
-          {tabCount !== undefined && ` · ${tabCount.toLocaleString()} tab${tabCount === 1 ? '' : 's'}`}
+        <span className="muted space-count" title={countText}>
+          {countText}
         </span>
         <SelectToggle />
-        <button type="button" className="primary" onClick={add}>
-          + Collection
+        <button type="button" className="primary tb-btn" title="New collection" onClick={add}>
+          <span className="tb-icon" aria-hidden="true">
+            +
+          </span>
+          <span className="tb-label">+ Collection</span>
         </button>
       </div>
       {collections.length > 0 && (
@@ -110,11 +115,17 @@ export function SpaceView({ space, sort, onSort, density, onDensity, highlightId
               ))}
             </select>
           )}
-          <button type="button" className="small" onClick={() => setAllCollapsed(false)}>
-            Expand all
+          <button type="button" className="small tb-btn" title="Expand all" onClick={() => setAllCollapsed(false)}>
+            <span className="tb-icon" aria-hidden="true">
+              ⇊
+            </span>
+            <span className="tb-label">Expand all</span>
           </button>
-          <button type="button" className="small" onClick={() => setAllCollapsed(true)}>
-            Collapse all
+          <button type="button" className="small tb-btn" title="Collapse all" onClick={() => setAllCollapsed(true)}>
+            <span className="tb-icon" aria-hidden="true">
+              ⇈
+            </span>
+            <span className="tb-label">Collapse all</span>
           </button>
           <label className="check small-check">
             <input

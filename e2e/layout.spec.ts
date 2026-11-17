@@ -36,6 +36,16 @@ for (const width of [320, 400]) {
     await importLongTitles(page);
     expect(await overflowing(page)).toEqual([]);
     await page.screenshot({ path: test.info().outputPath(`sidepanel-${width}.png`) });
+    // Narrow toolbar: Select and + Collection are icon buttons of one height, and
+    // the count stays on one line (it used to wrap, and the buttons with it).
+    const toolbar = page.locator('.space-toolbar');
+    const select = await toolbar.getByRole('button', { name: 'Select', exact: true }).boundingBox();
+    const add = await toolbar.getByRole('button', { name: '+ Collection' }).boundingBox();
+    expect(select!.height).toBe(add!.height);
+    expect(select!.y).toBe(add!.y);
+    expect(add!.width).toBeLessThan(50);
+    const count = toolbar.locator('.space-count');
+    expect(await count.evaluate((el) => el.getClientRects().length === 1 && el.scrollHeight <= el.clientHeight + 1)).toBe(true);
     // Chrome's extension-page stylesheet sets body to 75%; card titles must still be 14px.
     expect(await page.locator('.card-title').first().evaluate((el) => getComputedStyle(el).fontSize)).toBe('14px');
     // Titles are clamped, not cut to nothing: the full text is in the tooltip.
@@ -50,5 +60,7 @@ for (const width of [768, 1280]) {
     await page.goto(`chrome-extension://${extensionId}/src/newtab/index.html`);
     await importLongTitles(page);
     expect(await overflowing(page)).toEqual([]);
+    // Wide enough for the text labels.
+    await expect(page.locator('.space-toolbar .primary .tb-label')).toBeVisible();
   });
 }
