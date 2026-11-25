@@ -47,7 +47,21 @@
   --warn: var(--fo-warning);
   --star: var(--fo-gold-ink);
   font-family: var(--fo-font-text);
-  font-size: 14px;
+  font-size: calc(14px * var(--text-scale));
+}
+
+/* Text size and corners (Settings → Appearance). Every font-size and px
+   line-height in this file is calc(Npx * var(--text-scale)), and every
+   border-radius except the round group dots is calc(Npx * var(--corner-scale)),
+   so one setting moves them all. applyAppearance() sets --text-scale inline on
+   <html>; this is the fallback, and the default is a little denser than the
+   sizes as written. */
+:root {
+  --text-scale: 0.9;
+  --corner-scale: 1;
+}
+:root[data-corners='square'] {
+  --corner-scale: 0;
 }
 
 /* Terracotta, light */
@@ -114,7 +128,7 @@
 body {
   margin: 0;
   font-family: var(--fo-font-text);
-  font-size: 14px;
+  font-size: calc(14px * var(--text-scale));
   background: var(--bg);
   color: var(--text);
 }
@@ -131,7 +145,7 @@ button {
   cursor: pointer;
   border: 1px solid var(--border);
   background: var(--surface);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   padding: 5px 10px;
 }
 
@@ -150,7 +164,7 @@ a.button {
   display: inline-block;
   border: 1px solid var(--border);
   background: var(--surface);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   padding: 5px 10px;
   text-decoration: none;
 }
@@ -173,7 +187,7 @@ a.button.primary {
   padding: 8px 16px;
   background: var(--accent-soft);
   border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
 }
 
 .update-banner > span {
@@ -185,7 +199,7 @@ select,
 textarea {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   padding: 5px 8px;
 }
 
@@ -260,7 +274,7 @@ a {
   margin: 0;
   font-family: var(--fo-font-display);
   font-weight: 400;
-  font-size: 15px;
+  font-size: calc(15px * var(--text-scale));
   color: var(--text);
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -274,12 +288,12 @@ a {
 
 .surface-tag {
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .header-settings {
   margin-left: auto;
-  font-size: 16px;
+  font-size: calc(16px * var(--text-scale));
 }
 
 .app-main {
@@ -314,7 +328,7 @@ a {
 
 .empty.small {
   margin: 4px 0 8px 34px;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
 }
 
 /* ---- spaces ---- */
@@ -334,7 +348,7 @@ a {
   padding: 0 8px 8px;
   color: var(--muted);
   font-family: var(--fo-font-display);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -352,7 +366,7 @@ a {
   border: none;
   background: none;
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -376,7 +390,7 @@ a {
   margin-top: 16px;
   padding: 10px 0 0;
   border-top: 1px solid var(--border);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .sidebar-totals > span {
@@ -401,24 +415,24 @@ a {
   padding: 10px 12px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner-scale));
 }
 
 .stat-value {
   font-family: var(--fo-font-display);
-  font-size: 26px;
+  font-size: calc(26px * var(--text-scale));
   line-height: 1.1;
 }
 
 .stat-label {
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .stat-tile .link-btn {
   align-self: flex-start;
   margin-top: 4px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .stat-panels {
@@ -431,7 +445,7 @@ a {
   padding: 12px 14px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner-scale));
 }
 
 .stat-panel h3 {
@@ -439,7 +453,7 @@ a {
   color: var(--muted);
   font-family: var(--fo-font-display);
   font-weight: 400;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -488,7 +502,7 @@ a {
   margin: 0;
   font-family: var(--fo-font-display);
   font-weight: 400;
-  font-size: 20px;
+  font-size: calc(20px * var(--text-scale));
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
@@ -520,7 +534,7 @@ a {
   min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: calc(8px * var(--corner-scale));
   padding: 6px 8px;
 }
 
@@ -539,7 +553,7 @@ a {
 .inline-edit.collection-title {
   font-family: var(--fo-font-display);
   font-weight: 400;
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--text-scale));
   text-transform: uppercase;
   letter-spacing: 0.01em;
 }
@@ -551,7 +565,7 @@ a {
 
 .count {
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .inline-edit {
@@ -580,7 +594,7 @@ a {
 .card-edit label {
   display: grid;
   gap: 2px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   color: var(--muted);
 }
 
@@ -593,7 +607,7 @@ a {
 }
 
 .card {
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
 }
 
 .card:hover {
@@ -612,7 +626,7 @@ a {
   height: 16px;
   margin-top: 2px;
   flex-shrink: 0;
-  border-radius: 3px;
+  border-radius: calc(3px * var(--corner-scale));
 }
 
 .favicon-blank {
@@ -646,7 +660,7 @@ a.card-title:hover {
 .card-note {
   display: block;
   margin: 1px 0 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   color: var(--muted);
 }
 
@@ -672,9 +686,9 @@ a.card-title:hover {
 }
 
 .badge {
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale));
   padding: 0 5px;
-  border-radius: 4px;
+  border-radius: calc(4px * var(--corner-scale));
   background: var(--surface-2);
   color: var(--muted);
 }
@@ -688,20 +702,20 @@ a.card-title:hover {
 .settings-section {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: calc(8px * var(--corner-scale));
   padding: 12px 16px;
   margin-bottom: 12px;
 }
 
 .settings-section h3 {
   margin: 0 0 8px;
-  font-size: 15px;
+  font-size: calc(15px * var(--text-scale));
 }
 
 /* Settings → Sync → "Other ways to sync". Sizes restated: extension pages get body{font-size:75%}. */
 .sync-other {
   margin-top: 12px;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
 }
 
 .sync-other summary {
@@ -718,6 +732,25 @@ a.card-title:hover {
   flex-wrap: wrap;
   gap: 12px;
   margin: 8px 0;
+}
+
+.text-size {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.text-size input[type='range'] {
+  flex: 1 1 140px;
+  max-width: 260px;
+  accent-color: var(--accent-ink);
+}
+
+.text-size-value {
+  min-width: 4ch;
+  font-variant-numeric: tabular-nums;
 }
 
 .file {
@@ -750,7 +783,7 @@ a.card-title:hover {
 button.small,
 a.button.small {
   padding: 2px 8px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 button:disabled {
@@ -777,7 +810,7 @@ button:disabled {
 .pane-title {
   margin: 0 0 8px;
   font-family: var(--fo-font-display);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   font-weight: 400;
   color: var(--muted);
   text-transform: uppercase;
@@ -787,9 +820,9 @@ button:disabled {
 .pane-status {
   margin: 0 0 8px;
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   background: var(--accent-soft);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .window {
@@ -831,7 +864,7 @@ button:disabled {
 .confirm-close {
   align-items: center;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
 }
 
 .confirm-close .confirm-text {
@@ -846,7 +879,7 @@ button:disabled {
 .save-name input {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
 }
 
 .window-header button,
@@ -861,7 +894,7 @@ button:disabled {
 }
 
 .tab-group-title {
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
   font-weight: 600;
 }
 
@@ -882,7 +915,7 @@ button:disabled {
 .open-tab {
   display: flex;
   align-items: center;
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
 }
 
 .open-tab:hover {
@@ -917,12 +950,12 @@ button:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
 }
 
 .open-tab select {
   max-width: 150px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .open-tab .icon-btn {
@@ -1068,8 +1101,8 @@ button:disabled {
   width: 10px;
   margin-right: -4px;
   color: var(--muted);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: calc(12px * var(--text-scale));
+  line-height: calc(20px * var(--text-scale));
   letter-spacing: -1px;
   cursor: grab;
   user-select: none;
@@ -1129,7 +1162,7 @@ button:disabled {
   left: 2px;
   right: 2px;
   height: 2px;
-  border-radius: 2px;
+  border-radius: calc(2px * var(--corner-scale));
   background: var(--accent-ink);
   pointer-events: none;
   opacity: 0;
@@ -1178,7 +1211,7 @@ button:disabled {
 .drag-overlay {
   max-width: 280px;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   background: var(--surface);
   border: 1px solid var(--accent-border);
   box-shadow: 0 8px 24px rgb(0 0 0 / 30%);
@@ -1199,7 +1232,7 @@ button:disabled {
   transform: translateX(-50%);
   max-width: calc(100vw - 32px);
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: calc(8px * var(--corner-scale));
   background: var(--accent);
   color: var(--accent-text);
   border: 1px solid var(--accent-border);
@@ -1311,7 +1344,7 @@ button:disabled {
   width: 100%;
   padding: 6px 8px;
   border: none;
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   background: none;
   text-align: left;
   text-decoration: none;
@@ -1334,7 +1367,7 @@ button:disabled {
 }
 
 .result-meta {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1350,13 +1383,13 @@ button:disabled {
 }
 
 .view-controls select {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   padding: 3px 6px;
 }
 
 .small-check {
   margin: 0 0 0 4px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .app[data-density='compact'] .card-host {
@@ -1392,9 +1425,9 @@ button:disabled {
   gap: 2px;
   padding: 0 7px;
   border: 1px solid;
-  border-radius: 999px;
-  font-size: 11px;
-  line-height: 18px;
+  border-radius: calc(999px * var(--corner-scale));
+  font-size: calc(11px * var(--text-scale));
+  line-height: calc(18px * var(--text-scale));
 }
 
 .tag-remove {
@@ -1406,7 +1439,7 @@ button:disabled {
 }
 
 .tag-add input {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   padding: 1px 6px;
   width: 120px;
 }
@@ -1423,7 +1456,7 @@ button:disabled {
   border: none;
   background: none;
   padding: 0 0 4px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   color: var(--muted);
 }
 
@@ -1433,7 +1466,7 @@ button:disabled {
   max-height: 420px;
   overflow-y: auto;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
 }
 
 .dupe-groups > li {
@@ -1443,7 +1476,7 @@ button:disabled {
 
 .dupe-groups .check {
   margin: 2px 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .dupe-title {
@@ -1474,7 +1507,7 @@ button:disabled {
 
 .about .by-fo {
   margin-top: 12px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .about .by-fo a {
@@ -1516,7 +1549,7 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   color: var(--muted);
 }
 
@@ -1529,7 +1562,7 @@ button:disabled {
 
 .note-body {
   margin-top: 2px;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
   color: var(--text);
 }
 
@@ -1594,7 +1627,7 @@ button:disabled {
 
 .shortcut-field .hint {
   margin: 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
   line-height: 1.5;
   color: var(--muted);
 }
@@ -1602,10 +1635,10 @@ button:disabled {
 .shortcut-field kbd,
 .settings-section kbd {
   font-family: var(--fo-font-mono);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale));
   padding: 0 4px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: calc(4px * var(--corner-scale));
   color: var(--text);
   white-space: nowrap;
 }
@@ -1621,7 +1654,7 @@ button:disabled {
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .shortcut-list {
@@ -1675,7 +1708,7 @@ button:disabled {
    so "all of these" and "this one" read as two levels. */
 .app[data-selecting] .collection-header {
   background: var(--surface-2);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
   padding: 2px 6px;
   margin-bottom: 4px;
 }
@@ -1691,7 +1724,7 @@ button:disabled {
   gap: 8px;
   padding: 6px 8px;
   background: var(--surface-2);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
 }
 
 .app[data-selecting] .card-actions {
@@ -1713,7 +1746,7 @@ button:disabled {
   align-items: flex-start;
   gap: 2px;
   padding-left: 8px;
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-scale));
 }
 
 .result-list li > .select-box {
@@ -1748,7 +1781,7 @@ button:disabled {
   align-items: center;
   gap: 6px;
   padding: 8px 10px 8px 16px;
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-scale));
   background: var(--text);
   color: var(--bg);
   box-shadow: 0 8px 30px rgb(0 0 0 / 35%);
@@ -1803,7 +1836,7 @@ button:disabled {
   width: min(440px, calc(100vw - 32px));
   padding: 18px 20px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: calc(14px * var(--corner-scale));
   background: var(--surface);
   color: var(--text);
 }
@@ -1814,14 +1847,14 @@ button:disabled {
 
 .select-dialog h3 {
   margin: 0 0 12px;
-  font-size: 15px;
+  font-size: calc(15px * var(--text-scale));
 }
 
 .select-dialog label {
   display: block;
   margin: 10px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .select-dialog label > input:not([type='radio']),
@@ -1830,7 +1863,7 @@ button:disabled {
   width: 100%;
   margin-top: 4px;
   color: var(--text);
-  font-size: 14px;
+  font-size: calc(14px * var(--text-scale));
 }
 
 .select-dialog .radios {
@@ -1841,7 +1874,7 @@ button:disabled {
 
 .select-dialog .radios legend {
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .select-dialog .radios label {
@@ -1849,7 +1882,7 @@ button:disabled {
   gap: 8px;
   align-items: flex-start;
   color: var(--text);
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale));
 }
 
 .select-dialog .row-end {
@@ -1868,7 +1901,7 @@ button:disabled {
   width: auto;
   gap: 4px;
   padding: 6px 8px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .app[data-surface='sidepanel'] .select-bar .select-count {
@@ -1877,7 +1910,7 @@ button:disabled {
 
 .app[data-surface='sidepanel'] .select-bar button {
   padding: 2px 7px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale));
 }
 
 .app[data-surface='sidepanel'][data-selecting] .app-main {
@@ -1931,11 +1964,11 @@ button:disabled {
 
   .tb-btn .tb-icon {
     display: inline;
-    font-size: 16px;
+    font-size: calc(16px * var(--text-scale));
   }
 
   .space-toolbar .primary.tb-btn .tb-icon {
-    font-size: 20px;
+    font-size: calc(20px * var(--text-scale));
     font-weight: 600;
   }
 

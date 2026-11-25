@@ -19,13 +19,17 @@ import { SyncSettings } from '../sync/SyncSettings';
 import { FourOuncesMark } from './FourOuncesMark';
 import { KOFI_URL } from './support';
 import { AUTO_KEY, STORE_BUILD, checkForUpdate, readUpdateState, runningVersion, isNewer, type UpdateState } from '../update/update';
-import type { Scheme, Theme } from './prefs';
+import { TEXT_SIZE, type Corners, type Scheme, type Theme } from './prefs';
 
 interface Props {
   theme: Theme;
   onTheme: (t: Theme) => void;
   scheme: Scheme;
   onScheme: (s: Scheme) => void;
+  textSize: number;
+  onTextSize: (n: number) => void;
+  corners: Corners;
+  onCorners: (c: Corners) => void;
   closeOnSave: boolean;
   onCloseOnSave: (v: boolean) => void;
   historySearch: boolean;
@@ -46,6 +50,10 @@ export function Settings({
   onTheme,
   scheme,
   onScheme,
+  textSize,
+  onTextSize,
+  corners,
+  onCorners,
   closeOnSave,
   onCloseOnSave,
   historySearch,
@@ -81,6 +89,30 @@ export function Settings({
             <label key={s.id}>
               <input type="radio" name="scheme" checked={scheme === s.id} onChange={() => onScheme(s.id)} />
               {s.label}
+            </label>
+          ))}
+        </div>
+        <div className="text-size">
+          <label htmlFor="text-size">Text size</label>
+          <input
+            id="text-size"
+            type="range"
+            min={TEXT_SIZE.min}
+            max={TEXT_SIZE.max}
+            step={TEXT_SIZE.step}
+            value={textSize}
+            onChange={(e) => onTextSize(Number(e.target.value))}
+          />
+          <span className="text-size-value" aria-hidden="true">{textSize}%</span>
+          <button type="button" disabled={textSize === TEXT_SIZE.default} onClick={() => onTextSize(TEXT_SIZE.default)}>
+            Reset
+          </button>
+        </div>
+        <div className="segmented" role="radiogroup" aria-label="Corners">
+          {(['rounded', 'square'] as const).map((c) => (
+            <label key={c}>
+              <input type="radio" name="corners" checked={corners === c} onChange={() => onCorners(c)} />
+              {c === 'rounded' ? 'Rounded corners' : 'Square corners'}
             </label>
           ))}
         </div>

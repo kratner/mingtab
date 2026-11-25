@@ -12,7 +12,18 @@ import { StatsView } from '../stats/StatsView';
 import { requestSync } from '../sync/state';
 import { OpenTabs } from '../tabs/OpenTabs';
 import { UpdateBanner } from '../update/UpdateBanner';
-import { applyTheme, usePref, type Density, type Scheme, type SortMode, type Theme } from './prefs';
+import {
+  applyAppearance,
+  applyTheme,
+  parseTextSize,
+  TEXT_SIZE,
+  usePref,
+  type Corners,
+  type Density,
+  type Scheme,
+  type SortMode,
+  type Theme,
+} from './prefs';
 import { Settings } from './Settings';
 import { NextView } from './NextView';
 import { NEXT, SpaceNav, STARRED, STATS } from './SpaceNav';
@@ -33,6 +44,10 @@ export function App({ surface }: { surface: Surface }) {
   const [sort, setSort] = usePref<SortMode>('mingtab.sort', 'custom');
   const [density, setDensity] = usePref<Density>('mingtab.density', 'comfortable');
   const [historySearch, setHistorySearch] = usePref<'on' | 'off'>('mingtab.historySearch', 'off');
+  const [savedTextSize, setTextSize] = usePref<string>('mingtab.textSize', String(TEXT_SIZE.default));
+  const textSize = parseTextSize(savedTextSize);
+  const [savedCorners, setCorners] = usePref<Corners>('mingtab.corners', 'rounded');
+  const corners: Corners = savedCorners === 'square' ? 'square' : 'rounded';
   const [view, setView] = useState<'board' | 'settings'>('board');
   // Board below 1100px: open-tabs pane is a drawer.
   const [paneOpen, setPaneOpen] = useState(false);
@@ -48,6 +63,7 @@ export function App({ surface }: { surface: Surface }) {
   const selecting = useSelection().active;
 
   useEffect(() => applyTheme(theme, scheme), [theme, scheme]);
+  useEffect(() => applyAppearance(textSize, corners), [textSize, corners]);
 
   // A local edit asks the background worker to sync in a couple of seconds.
   useEffect(() => {
@@ -182,6 +198,10 @@ export function App({ surface }: { surface: Surface }) {
             onTheme={setTheme}
             scheme={scheme}
             onScheme={setScheme}
+            textSize={textSize}
+            onTextSize={(n) => setTextSize(String(n))}
+            corners={corners}
+            onCorners={setCorners}
             closeOnSave={closeOnSave === 'true'}
             onCloseOnSave={(v) => setCloseOnSave(v ? 'true' : 'false')}
             historySearch={historySearch === 'on'}

@@ -35,6 +35,24 @@ export function usePref<T extends string>(key: string, fallback: T): [T, (v: T) 
   return [value, set];
 }
 
+export type Corners = 'rounded' | 'square';
+
+/** Text size as a percent of the sizes written in app.css. */
+export const TEXT_SIZE = { min: 75, max: 130, step: 5, default: 90 } as const;
+
+export function parseTextSize(saved: string): number {
+  const n = Number(saved);
+  if (saved === '' || !Number.isFinite(n)) return TEXT_SIZE.default;
+  return Math.min(TEXT_SIZE.max, Math.max(TEXT_SIZE.min, Math.round(n)));
+}
+
+export function applyAppearance(textSize: number, corners: Corners) {
+  const root = document.documentElement;
+  root.style.setProperty('--text-scale', String(textSize / 100));
+  if (corners === 'square') root.dataset.corners = 'square';
+  else delete root.dataset.corners;
+}
+
 export function applyTheme(theme: Theme, scheme: Scheme) {
   const root = document.documentElement.dataset;
   if (theme === 'system') delete root.theme;

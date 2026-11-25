@@ -3,6 +3,20 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Added
+
+- **Text size slider.** Settings → Appearance has a **Text size** slider (75% to 130%) with a Reset button. It changes
+  every font size on the board, the side panel and the popup together, and each device remembers its own setting.
+- **Square corners.** Settings → Appearance can switch panels, cards, buttons and fields from rounded to square
+  corners. Rounded stays the default.
+
+### Changed
+
+- **Denser text by default.** Text now starts at 90% of its old size, so more fits in the side panel. Move the slider
+  to 100% to get the old sizes back.
+
 ## 0.13.3 — 2026-11-17
 
 ### Changed

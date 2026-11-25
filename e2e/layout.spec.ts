@@ -46,8 +46,9 @@ for (const width of [320, 400]) {
     expect(add!.width).toBeLessThan(50);
     const count = toolbar.locator('.space-count');
     expect(await count.evaluate((el) => el.getClientRects().length === 1 && el.scrollHeight <= el.clientHeight + 1)).toBe(true);
-    // Chrome's extension-page stylesheet sets body to 75%; card titles must still be 14px.
-    expect(await page.locator('.card-title').first().evaluate((el) => getComputedStyle(el).fontSize)).toBe('14px');
+    // Chrome's extension-page stylesheet sets body to 75%; card titles must still be 14px
+    // times the default text size (90%).
+    expect(await page.locator('.card-title').first().evaluate((el) => getComputedStyle(el).fontSize)).toBe('12.6px');
     // Titles are clamped, not cut to nothing: the full text is in the tooltip.
     const title = page.locator('.card-title').first();
     await expect(title).toHaveAttribute('title', /Anchor Software: Address Validation/);
