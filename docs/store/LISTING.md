@@ -15,6 +15,8 @@ in this folder.
 | 2026-11-09 | **Approved and published** (Unlisted): <https://chromewebstore.google.com/detail/mingtab/ofeenikhemghdanmdfcjjmogniooejjd>, version 0.11.0 (store page "Updated November 9, 2026"; seen 2026-11-11). |
 | 2026-11-25 | Store page shows **0.13.2** (the 0.13.2 + promo video submission of 2026-11-16 passed). 0.13.3 was never uploaded. |
 | 2026-11-25 | **0.14.0** (`mingtab-0.14.0-store.zip`: text size slider, 90% default text, square corners; includes 0.13.3) **submitted for review**. |
+| 2026-11-27 | **0.14.0 approved and live** (store page shows 0.14.0). |
+| 2026-11-27 | **0.15.0** (`mingtab-0.15.0-store.zip`: sort by tabs / last opened, group by year and site, Restore dates from Toby, ⋯ header menu, MingTab tab title; same permissions as 0.14.0) **submitted for review**, publish automatically after review. Submit was blocked until the Support URL moved from GitHub issues to https://fourounces.live/mingtab/. |
 
 Promo video (Four Ounces YouTube channel, unlisted): <https://youtu.be/Gw_fAAaf64g>. **After approval:** Store listing → Global promo video → paste `https://www.youtube.com/watch?v=Gw_fAAaf64g`, save, submit. Built by `scripts/promo-video.mjs`.
 
@@ -85,7 +87,7 @@ top of the item's page. Then fill in each tab:
   `screenshot-3-search.png`, `screenshot-4-select.png`, `screenshot-5-stats.png`. Rebuild with
   `npm run build && node scripts/store-screenshots.mjs`.
 - **Small promo tile** (440×280): `promo-small-440x280.png`.
-- **Official URL / homepage:** https://fourounces.live — **Support URL:** https://github.com/kratner/mingtab/issues
+- **Official URL / homepage:** https://fourounces.live — **Support URL:** https://fourounces.live/mingtab/ (its Support section links to GitHub issues; changed 2026-11-27 because the store blocks submit when the Support URL doesn't answer, and GitHub repo pages were returning 504s)
 - **Donations:** the description ends with "MingTab is free. If it helps you, you can support it at ko-fi.com/fourounces." (Ko-fi page renamed from ko-fi.com/deprogrammer on 2026-11-11; same account.)
 
 ### Privacy practices
