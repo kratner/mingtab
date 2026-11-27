@@ -13,6 +13,7 @@ import {
   focusTab,
   groupLooseTabs,
   isSavableUrl,
+  openTabIcon,
   mergeWindowsInto,
   ungroup,
   updateGroup,
@@ -278,7 +279,7 @@ function OpenTabRow({
   const [picking, setPicking] = useState(false);
   const collections = useLiveQuery(() => (spaceId && picking ? listCollections(db, spaceId) : []), [spaceId, picking]);
   const title = tab.title || tab.url || 'Untitled';
-  const icon = tab.favIconUrl && /^(https?:|data:)/.test(tab.favIconUrl) ? tab.favIconUrl : chromeFaviconUrl(tab.url ?? '');
+  const icon = openTabIcon(tab, origin, chrome.runtime.getURL('icons/icon-32.png'), chromeFaviconUrl);
   const savable = isSavableUrl(tab.url, origin);
   // Every open tab can be dragged to reorder it; only savable ones can also be dropped into a collection.
   const { setNodeRef: setDragRef, attributes: dragAttrs, listeners, isDragging } = useDraggable({

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isSameTabPlace, isSavableUrl, moveIndex, planClose, planRestore, savableTabs, sessionTitle, snapshotWindows, tabToCard } from './tabs';
+import { isSameTabPlace, isSavableUrl, moveIndex, openTabIcon, planClose, planRestore, savableTabs, sessionTitle, snapshotWindows, tabToCard } from './tabs';
 
 const ext = 'chrome-extension://abc/';
 
@@ -208,5 +208,20 @@ describe('moveIndex / isSameTabPlace', () => {
     expect(isSameTabPlace(at(2), at(3), 'before')).toBe(true);
     expect(isSameTabPlace(at(2), at(3), 'after')).toBe(false);
     expect(isSameTabPlace(at(2, 1), at(2, 2), 'before')).toBe(false);
+  });
+});
+
+describe('openTabIcon', () => {
+  const origin = 'chrome-extension://abc/';
+  const own = 'chrome-extension://abc/icons/icon-32.png';
+  const cache = (u: string) => (u.startsWith('http') ? `cache:${u}` : null);
+  it('gives MingTab tabs the MingTab icon', () => {
+    expect(openTabIcon({ url: 'chrome://newtab/' }, origin, own, cache)).toBe(own);
+    expect(openTabIcon({ url: 'chrome-extension://abc/src/newtab/index.html', favIconUrl: '' }, origin, own, cache)).toBe(own);
+  });
+  it('keeps web favicons, else falls back to the cache', () => {
+    expect(openTabIcon({ url: 'https://a.com/', favIconUrl: 'https://a.com/f.ico' }, origin, own, cache)).toBe('https://a.com/f.ico');
+    expect(openTabIcon({ url: 'https://a.com/', favIconUrl: 'chrome://theme/x' }, origin, own, cache)).toBe('cache:https://a.com/');
+    expect(openTabIcon({ url: 'chrome://settings/' }, origin, own, cache)).toBeNull();
   });
 });

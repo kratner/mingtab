@@ -28,6 +28,27 @@ export function isSavableUrl(url: string | undefined, extensionOrigin: string): 
   return true;
 }
 
+/** True for MingTab's own pages: the new-tab override (Chrome reports it as chrome://newtab/) and any extension page. */
+export function isMingTabUrl(url: string | undefined, extensionOrigin: string): boolean {
+  if (!url) return false;
+  return url.startsWith('chrome://newtab') || (!!extensionOrigin && url.startsWith(extensionOrigin));
+}
+
+/**
+ * Icon for a row in Open tabs. Chrome gives MingTab's own tabs no favicon a page can load,
+ * so they get MingTab's icon; web tabs use theirs, else Chrome's favicon cache.
+ */
+export function openTabIcon(
+  tab: Pick<chrome.tabs.Tab, 'url' | 'favIconUrl'>,
+  extensionOrigin: string,
+  ownIcon: string,
+  cacheIcon: (url: string) => string | null,
+): string | null {
+  if (isMingTabUrl(tab.url, extensionOrigin)) return ownIcon;
+  if (tab.favIconUrl && /^(https?:|data:)/.test(tab.favIconUrl)) return tab.favIconUrl;
+  return cacheIcon(tab.url ?? '');
+}
+
 /** Pinned tabs stay put: they're excluded from window saves and never closed. */
 export function savableTabs<T extends Pick<chrome.tabs.Tab, 'url' | 'pinned'>>(tabs: T[], extensionOrigin: string): T[] {
   return tabs.filter((t) => !t.pinned && isSavableUrl(t.url, extensionOrigin));

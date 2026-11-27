@@ -3,6 +3,13 @@
 What's new in each MingTab release. Downloads and install steps are on the
 [Releases](https://github.com/kratner/mingtab/releases) page.
 
+## Unreleased
+
+### Fixed
+
+- **MingTab's own tabs show the MingTab icon in Open tabs.** They showed a blank square because Chrome gives
+  extension pages no icon a page can load. The MingTab pages also set the icon for Chrome's tab strip.
+
 ## 0.14.0 — 2026-11-25
 
 ### Added
