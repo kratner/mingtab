@@ -1,0 +1,35 @@
+{
+  "kind": "toby-space-map",
+  "version": 1,
+  "spaces": [
+    {
+      "id": "sp1",
+      "name": "Trips",
+      "org": "Me",
+      "type": "personal"
+    }
+  ],
+  "lists": [
+    {
+      "fp": "bb01087729eb",
+      "spaceId": "sp1",
+      "position": 0,
+      "star": false,
+      "createdAt": "2019-05-02T09:00:00.000Z"
+    },
+    {
+      "fp": "af756a20963a",
+      "spaceId": "sp1",
+      "position": 1,
+      "star": false,
+      "createdAt": "2023-01-15T09:00:00.000Z"
+    },
+    {
+      "fp": "d89f7ec228c6",
+      "spaceId": "sp1",
+      "position": 2,
+      "star": false,
+      "createdAt": "2021-11-30T09:00:00.000Z"
+    }
+  ]
+}

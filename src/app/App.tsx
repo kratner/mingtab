@@ -21,9 +21,11 @@ import {
   type Corners,
   type Density,
   type Scheme,
+  type GroupMode,
   type SortMode,
   type Theme,
 } from './prefs';
+import { asGroup, asSort } from '../organise/organise';
 import { Settings } from './Settings';
 import { NextView } from './NextView';
 import { NEXT, SpaceNav, STARRED, STATS } from './SpaceNav';
@@ -41,7 +43,10 @@ export function App({ surface }: { surface: Surface }) {
   const [savedScheme, setScheme] = usePref<Scheme>('mingtab.scheme', 'four-ounces');
   const scheme: Scheme = savedScheme === 'terracotta' ? 'terracotta' : 'four-ounces';
   const [closeOnSave, setCloseOnSave] = usePref<'true' | 'false'>('mingtab.closeOnSave', 'true');
-  const [sort, setSort] = usePref<SortMode>('mingtab.sort', 'custom');
+  const [savedSort, setSort] = usePref<SortMode>('mingtab.sort', 'custom');
+  const [savedGroup, setGroup] = usePref<GroupMode>('mingtab.group', 'none');
+  const sort = asSort(savedSort);
+  const group = asGroup(savedGroup);
   const [density, setDensity] = usePref<Density>('mingtab.density', 'comfortable');
   const [historySearch, setHistorySearch] = usePref<'on' | 'off'>('mingtab.historySearch', 'off');
   const [savedTextSize, setTextSize] = usePref<string>('mingtab.textSize', String(TEXT_SIZE.default));
@@ -264,6 +269,8 @@ export function App({ surface }: { surface: Surface }) {
                       space={selected}
                       sort={sort}
                       onSort={setSort}
+                      group={group}
+                      onGroup={setGroup}
                       density={density}
                       onDensity={setDensity}
                       highlightId={highlightId}

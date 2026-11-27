@@ -62,7 +62,8 @@ test('create, edit and delete a space, collection and card; edits persist', asyn
   await titleInput.press('Enter');
   await expect(page.getByRole('region', { name: 'Reading' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Add card to Reading' }).click();
+  await page.getByRole('button', { name: 'More actions for Reading' }).click();
+  await page.getByRole('menuitem', { name: 'Add card to Reading' }).click();
   await page.getByRole('textbox', { name: 'URL' }).fill('example.com/article');
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   const card = page.locator('.card').first();
@@ -89,7 +90,8 @@ test('create, edit and delete a space, collection and card; edits persist', asyn
   await page.reload();
   await expect(page.getByRole('button', { name: 'Unstar Reading' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Delete Reading' }).click();
+  await page.getByRole('button', { name: 'More actions for Reading' }).click();
+  await page.getByRole('menuitem', { name: 'Delete Reading' }).click();
   await expect(page.getByRole('region', { name: 'Reading' })).toHaveCount(0);
 });
 

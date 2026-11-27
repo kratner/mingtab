@@ -215,7 +215,8 @@ test('drag a collection onto another space in the sidebar', async ({ page, exten
 
 test('merge a collection into another', async ({ page, extensionId }) => {
   await setUp(page, extensionId);
-  await page.getByRole('button', { name: 'Merge A into another collection' }).click();
+  await page.getByRole('button', { name: 'More actions for A' }).click();
+  await page.getByRole('menuitem', { name: 'Merge A into another collection' }).click();
   await page.getByRole('combobox', { name: 'Merge A into' }).selectOption({ label: 'B' });
   await expect.poll(() => collectionOrder(page)).toEqual(['B', 'C']);
   await expect.poll(() => cardTitles(page, 'B')).toEqual(['b1', 'b2', 'a1', 'a2', 'a3']);

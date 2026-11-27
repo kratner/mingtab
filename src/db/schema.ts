@@ -27,6 +27,8 @@ export interface Collection extends Base {
   /** Set when the collection was saved from all windows at once; "Open all"
    * rebuilds those windows and their tab groups. Absent on older records. */
   session?: SessionLayout | null;
+  /** When a tab from this collection was last opened from MingTab. Absent until then (and on older records). */
+  lastOpenedAt?: number | null;
 }
 
 /** A saved window: its size and place on screen. */

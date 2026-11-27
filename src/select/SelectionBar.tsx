@@ -2,7 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useRef, useState } from 'react';
 import { db } from '../db/db';
 import { addToNext } from '../db/next';
-import { listAllCollectionsInOrder } from '../db/repo';
+import { listAllCollectionsInOrder, markOpened } from '../db/repo';
 import { displayTitle, type Space } from '../db/schema';
 import { openCards } from '../tabs/tabs';
 import { collectionFromCards, deleteSelected, placeCards, selectedInOrder, type Mode } from './actions';
@@ -33,6 +33,7 @@ export function SelectionBar({ spaces, spaceId, onGoTo }: Props) {
 
   const open = async () => {
     if (tabs.length > OPEN_WARN && !confirm(`Open ${tabs.length} tabs?`)) return;
+    await markOpened(db, tabs.map((c) => c.collectionId));
     await openCards(tabs);
   };
   const queue = async () => {

@@ -68,7 +68,8 @@ test('two devices stay in sync: create, edit, delete; edits sync on their own; s
     await a.getByRole('button', { name: '+ Collection' }).click();
     await a.getByRole('textbox', { name: 'Collection title' }).fill('Synced');
     await a.getByRole('textbox', { name: 'Collection title' }).press('Enter');
-    await a.getByRole('button', { name: 'Add card to Synced' }).click();
+    await a.getByRole('button', { name: 'More actions for Synced' }).click();
+    await a.getByRole('menuitem', { name: 'Add card to Synced' }).click();
     await a.getByRole('textbox', { name: 'URL' }).fill('example.com/synced');
     await a.getByRole('button', { name: 'Add', exact: true }).click();
     await expect.poll(() => lastSyncAt(mac.serviceWorker), { timeout: 15_000 }).not.toBe(before);
@@ -94,7 +95,8 @@ test('two devices stay in sync: create, edit, delete; edits sync on their own; s
     await expect(b.getByRole('navigation', { name: 'Spaces' }).getByRole('button', { name: /▶ Next/ })).toContainText('1');
 
     // Mac deletes the collection; PC loses it too.
-    await a.getByRole('button', { name: 'Delete Synced and renamed' }).click();
+    await a.getByRole('button', { name: 'More actions for Synced and renamed' }).click();
+    await a.getByRole('menuitem', { name: 'Delete Synced and renamed' }).click();
     await syncNow(a);
     await syncNow(b);
     await expect.poll(() => order(b)).toEqual([]);

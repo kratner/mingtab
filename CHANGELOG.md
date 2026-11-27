@@ -5,6 +5,28 @@ What's new in each MingTab release. Downloads and install steps are on the
 
 ## Unreleased
 
+### Added
+
+- **More ways to sort.** The Sort menu adds **Most tabs**, **Fewest tabs**, **Recently opened** and **Not opened
+  lately**. MingTab now records when you open a collection's tabs (a tab, Open all, a search result, a selection or a
+  `to/` shortcut), and the opened sorts show "Saved Mar 2021 · opened 3 days ago" under each title. Collections saved
+  over a year ago and not opened in the past year show that line in red. Older collections read "never opened" until
+  you next open one.
+- **Group menu.** **By year saved** splits the space into years, newest first, each with its collection and tab
+  counts. **By site** gathers every saved tab in the space by website, with the collection each one lives in; tabs
+  don't move, and in select mode you can tick a whole site at once. Both menus are remembered per device.
+- **Restore dates from Toby.** Toby imports before this version dated every collection the day of the import. Settings
+  → Restore dates from Toby takes the same Toby export and space map and puts back the dates they were made in Toby. It
+  matches by name and shared links, so renamed and de-duplicated collections still find their date, shows what it will
+  change first, and only ever moves a date earlier. New imports keep Toby's dates from the start.
+
+### Changed
+
+- **Quieter collection headers.** Add a link, Add a note, Tags, Merge into and Delete moved into a **⋯** menu (arrow
+  keys and Escape work in it). Open all and Star stay in the header.
+- **The new-tab page is titled "MingTab"** rather than "New Tab", so it's easy to spot in Open tabs and Chrome's tab
+  search.
+
 ### Fixed
 
 - **MingTab's own tabs show the MingTab icon in Open tabs.** They showed a blank square because Chrome gives

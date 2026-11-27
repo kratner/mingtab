@@ -10,6 +10,7 @@ import {
   listCards,
   listCollections,
   listTags,
+  markOpened,
   mergeCollections,
   removeTagFromCollection,
   updateCollection,
@@ -46,9 +47,83 @@ interface Props {
   /** Scroll to and flash this collection (arriving from search). */
   highlight?: boolean;
   onHighlightDone?: () => void;
+  /** "Saved Mar 2021 · opened 3 days ago", shown when sorting by opened or grouping by year. */
+  meta?: { text: string; stale: boolean };
 }
 
-export function CollectionPanel({ collection, isNew, reorderable = true, highlight, onHighlightDone }: Props) {
+interface MenuItem {
+  label: string;
+  /** Accessible name; keeps the names the header buttons had before they moved into the menu. */
+  aria: string;
+  icon: string;
+  run: () => unknown;
+  danger?: boolean;
+}
+
+/** The ⋯ menu in a collection's header: the less frequent actions, so the header stays quiet. */
+function ActionsMenu({ label, items }: { label: string; items: MenuItem[] }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    root.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+    const away = (e: PointerEvent) => !root.current?.contains(e.target as Node) && setOpen(false);
+    addEventListener('pointerdown', away);
+    return () => removeEventListener('pointerdown', away);
+  }, [open]);
+  const onKey = (e: React.KeyboardEvent) => {
+    const all = [...(root.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? [])];
+    const i = all.indexOf(document.activeElement as HTMLButtonElement);
+    if (e.key === 'Escape') {
+      setOpen(false);
+      button.current?.focus();
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      all[(i + (e.key === 'ArrowDown' ? 1 : all.length - 1)) % all.length]?.focus();
+    }
+  };
+  return (
+    <div className="menu-wrap" ref={root} onKeyDown={onKey}>
+      <button
+        ref={button}
+        type="button"
+        className="icon-btn"
+        aria-label={`More actions for ${label}`}
+        title="More"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+      >
+        ⋯
+      </button>
+      {open && (
+        <div className="menu" role="menu" aria-label={`Actions for ${label}`}>
+          {items.map((it) => (
+            <button
+              key={it.label}
+              type="button"
+              role="menuitem"
+              className={`menu-item ${it.danger ? 'danger' : ''}`}
+              aria-label={it.aria}
+              onClick={() => {
+                setOpen(false);
+                void it.run();
+              }}
+            >
+              <span className="menu-icon" aria-hidden>
+                {it.icon}
+              </span>
+              {it.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function CollectionPanel({ collection, isNew, reorderable = true, highlight, onHighlightDone, meta }: Props) {
   const cards = useLiveQuery(() => listCards(db, collection.id), [collection.id]) ?? [];
   const selecting = useSelection().active;
   const [adding, setAdding] = useState(false);
@@ -172,26 +247,17 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
           <button
             type="button"
             className="icon-btn"
-            aria-label={`Tag ${collection.title}`}
-            title="Tags"
-            aria-expanded={tagging}
-            onClick={() => setTagging(!tagging)}
-          >
-            #
-          </button>
-          <button
-            type="button"
-            className="icon-btn"
             aria-label={`Open all in ${collection.title}`}
             title={
               collection.session ? 'Reopen its windows and tab groups' : collection.groupColor ? 'Open all as a tab group' : 'Open all'
             }
             disabled={!cards.some((c) => c.url)}
-            onClick={() =>
-              collection.session
+            onClick={() => {
+              void markOpened(db, [collection.id]);
+              return collection.session
                 ? openSession(cards, collection.session)
-                : openCards(cards, collection.groupColor ? { title: collection.title, color: collection.groupColor } : null)
-            }
+                : openCards(cards, collection.groupColor ? { title: collection.title, color: collection.groupColor } : null);
+            }}
           >
             ⧉
           </button>
@@ -205,27 +271,23 @@ export function CollectionPanel({ collection, isNew, reorderable = true, highlig
           >
             {collection.starred ? '★' : '☆'}
           </button>
-          <button type="button" className="icon-btn" aria-label={`Add card to ${collection.title}`} title="Add a link" onClick={() => setAdding(true)}>
-            +
-          </button>
-          <button type="button" className="icon-btn" aria-label={`Add note to ${collection.title}`} title="Add a note" onClick={addNote}>
-            ✎
-          </button>
-          <button
-            type="button"
-            className="icon-btn"
-            aria-label={`Merge ${collection.title} into another collection`}
-            title="Merge into…"
-            aria-expanded={merging}
-            onClick={() => setMerging(!merging)}
-          >
-            ⇲
-          </button>
-          <button type="button" className="icon-btn danger" aria-label={`Delete ${collection.title}`} title="Delete collection" onClick={remove}>
-            ✕
-          </button>
+          <ActionsMenu
+            label={collection.title}
+            items={[
+              { label: 'Add a link', aria: `Add card to ${collection.title}`, icon: '+', run: () => setAdding(true) },
+              { label: 'Add a note', aria: `Add note to ${collection.title}`, icon: '✎', run: addNote },
+              { label: 'Tags…', aria: `Tag ${collection.title}`, icon: '#', run: () => setTagging(!tagging) },
+              { label: 'Merge into…', aria: `Merge ${collection.title} into another collection`, icon: '⇲', run: () => setMerging(!merging) },
+              { label: 'Delete collection', aria: `Delete ${collection.title}`, icon: '✕', run: remove, danger: true },
+            ]}
+          />
         </div>
       </header>
+      {meta && (
+        <p className={`collection-meta ${meta.stale ? 'stale' : ''}`} title={meta.stale ? 'Saved over a year ago and not opened in the past year' : undefined}>
+          {meta.text}
+        </p>
+      )}
 
       {(tags.length > 0 || tagging) && (
         <div className="tag-row">

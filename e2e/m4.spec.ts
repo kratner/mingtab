@@ -77,11 +77,13 @@ test('search works in the side panel even on the Open tabs view', async ({ page,
 test('tags: add, filter by tag, remove; persist after reload', async ({ page, extensionId }) => {
   await setUp(page, extensionId);
   for (const name of ['Lisbon trip', 'Zebra notes']) {
-    await page.getByRole('button', { name: `Tag ${name}` }).click();
+    await page.getByRole('button', { name: `More actions for ${name}` }).click();
+    await page.getByRole('menuitem', { name: `Tag ${name}` }).click();
     const input = page.getByRole('combobox', { name: `Add tag to ${name}` });
     await input.fill(name === 'Lisbon trip' ? 'Travel' : 'travel'); // same tag, any case
     await input.press('Enter');
-    await page.getByRole('button', { name: `Tag ${name}` }).click();
+    await page.getByRole('button', { name: `More actions for ${name}` }).click();
+    await page.getByRole('menuitem', { name: `Tag ${name}` }).click();
   }
   await page.reload();
   await expect(page.getByRole('region', { name: 'Lisbon trip' }).locator('.tag-chip')).toHaveText('Travel');
@@ -91,7 +93,8 @@ test('tags: add, filter by tag, remove; persist after reload', async ({ page, ex
   await expect(page.getByRole('button', { name: /^Drag / })).toHaveCount(0); // no reordering while filtered
 
   await page.getByRole('combobox', { name: 'Filter by tag' }).selectOption({ label: 'All tags' });
-  await page.getByRole('button', { name: 'Tag Zebra notes' }).click();
+  await page.getByRole('button', { name: 'More actions for Zebra notes' }).click();
+  await page.getByRole('menuitem', { name: 'Tag Zebra notes' }).click();
   await page.getByRole('button', { name: 'Remove tag Travel from Zebra notes' }).click();
   await expect(page.getByRole('region', { name: 'Zebra notes' }).locator('.tag-chip')).toHaveCount(0);
 });

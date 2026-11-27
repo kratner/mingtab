@@ -1,4 +1,6 @@
 import { db } from './db/db';
+import { markOpened } from './db/repo';
+import { findByShortcut } from './db/shortcuts';
 import { omniboxSuggestions, resolveOmnibox } from './omnibox';
 import { deleteDriveData, runSync } from './sync/runner';
 import { AUTO_KEY, SKIPPED_KEY, UPDATE_KEY, checkIfDue, currentNotice } from './update/update';
@@ -26,6 +28,8 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
 });
 chrome.omnibox.onInputEntered.addListener(async (text, disposition) => {
   const url = await resolveOmnibox(db, text, BOARD);
+  const card = await findByShortcut(db, text.trim());
+  if (card) await markOpened(db, [card.collectionId]);
   if (disposition === 'currentTab') await chrome.tabs.update({ url });
   else await chrome.tabs.create({ url, active: disposition === 'newForegroundTab' });
 });

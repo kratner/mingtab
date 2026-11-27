@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { useEffect, useState } from 'react';
 import { db } from '../db/db';
 import { addToNext } from '../db/next';
-import { deleteCard, updateCard } from '../db/repo';
+import { deleteCard, markOpened, updateCard } from '../db/repo';
 import { displayTitle, type Card } from '../db/schema';
 import { normalizeShortcut, setCardShortcut, ShortcutError } from '../db/shortcuts';
 import { useDropIndicator } from '../dnd/DndProvider';
@@ -13,7 +13,7 @@ import { taskCounts } from '../notes/markdown';
 import { chromeFaviconUrl, hostOf } from './favicon';
 import { normalizeUrl } from './address';
 
-function Favicon({ card }: { card: Card }) {
+export function Favicon({ card }: { card: Card }) {
   const sources = [chromeFaviconUrl(card.url), card.favIconUrl].filter((s): s is string => !!s);
   const [i, setI] = useState(0);
   if (!card.url) return <span className="favicon note-icon" aria-hidden>✎</span>;
@@ -128,6 +128,8 @@ export function CardRow({ card, startEditing = false }: { card: Card; startEditi
               rel="noreferrer"
               draggable={false}
               title={title === card.url ? card.url : `${title}\n${card.url}`}
+              onClick={() => void markOpened(db, [card.collectionId])}
+              onAuxClick={(e) => e.button === 1 && void markOpened(db, [card.collectionId])}
             >
               {title}
             </a>

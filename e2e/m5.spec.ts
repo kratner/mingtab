@@ -19,7 +19,8 @@ const nav = (page: Page) => page.getByRole('navigation', { name: 'Spaces' });
 
 test('notes: add one, format it, tick its checklist; it persists', async ({ page, extensionId }) => {
   await setUp(page, extensionId);
-  await page.getByRole('button', { name: 'Add note to C' }).click();
+  await page.getByRole('button', { name: 'More actions for C' }).click();
+  await page.getByRole('menuitem', { name: 'Add note to C' }).click();
   const note = page.locator('.card.note-card');
   await note.getByRole('textbox', { name: 'Title', exact: true }).fill('Launch');
   await note.getByRole('textbox', { name: 'Note', exact: true }).fill('- [ ] write post\n- [x] **record** demo\nsee https://example.com/brief');

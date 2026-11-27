@@ -24,7 +24,8 @@ export interface TobySpaceMap {
   kind: 'toby-space-map';
   version: 1;
   spaces: { id: string; name: string; org: string; type: string }[];
-  lists: { fp: string; spaceId: string; position: number; star: boolean }[];
+  /** createdAt: when the collection was made in Toby (ISO); in maps from scripts/toby-space-map.js. */
+  lists: { fp: string; spaceId: string; position: number; star: boolean; createdAt?: string }[];
 }
 
 export class ImportError extends Error {}
@@ -78,6 +79,8 @@ export interface PlannedCard {
 export interface PlannedCollection {
   title: string;
   starred: boolean;
+  /** When it was made in Toby, from the space map; else the import time. */
+  createdAt?: number;
   cards: PlannedCard[];
 }
 
@@ -138,7 +141,11 @@ export async function planTobyImport(
       };
     });
     const bucket = buckets.get(hit?.spaceId ?? '') ?? buckets.get('')!;
-    bucket.items.push({ pos: hit?.position ?? i, col: { title: list.title, starred: hit?.star ?? false, cards } });
+    const made = hit?.createdAt ? Date.parse(hit.createdAt) : NaN;
+    bucket.items.push({
+      pos: hit?.position ?? i,
+      col: { title: list.title, starred: hit?.star ?? false, cards, ...(Number.isFinite(made) ? { createdAt: made } : {}) },
+    });
   }
 
   const spaces: PlannedSpace[] = [...buckets.values()]
@@ -208,6 +215,7 @@ export async function applyImport(db: MingTabDB, plan: ImportPlan, mode: 'add' |
       ps.collections.forEach((pc, ci) => {
         const col: Collection = {
           ...meta(),
+          ...(pc.createdAt !== undefined && pc.createdAt < t ? { createdAt: pc.createdAt } : {}),
           spaceId: space.id,
           title: pc.title,
           position: colPos[ci]!,

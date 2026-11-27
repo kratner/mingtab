@@ -11,6 +11,8 @@ import {
   type TobyExport,
   type TobySpaceMap,
 } from '../import/toby';
+import { applyDateRestore, planDateRestore, type DateRestorePlan } from '../import/tobyDates';
+import { monthYear } from '../organise/organise';
 import { deleteCards, listAllCardsInOrder, listAllCollectionsInOrder, listSpaces } from '../db/repo';
 import { displayTitle } from '../db/schema';
 import { findDuplicates, type DuplicateGroup } from '../dedupe/dedupe';
@@ -151,6 +153,7 @@ export function Settings({
       <Duplicates />
 
       <TobyImport hasData={hasData} onImported={onDone} />
+      {hasData && <TobyDates />}
       <Backup />
       <Updates />
       <About />
@@ -274,6 +277,121 @@ function TobyImport({ hasData, onImported }: { hasData: boolean; onImported: () 
           <button type="button" className="primary" onClick={run}>
             Import
           </button>
+        </div>
+      )}
+      {status && <p role="status">{status}</p>}
+    </section>
+  );
+}
+
+/** One-time fix for imports before 0.15, which dated every collection the day of the import. */
+function TobyDates() {
+  const [data, setData] = useState<TobyExport | null>(null);
+  const [map, setMap] = useState<TobySpaceMap | null>(null);
+  const [plan, setPlan] = useState<DateRestorePlan | null>(null);
+  const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    let current = true;
+    if (!data || !map) {
+      setPlan(null);
+      return;
+    }
+    (async () => {
+      const [cols, cards] = await Promise.all([listAllCollectionsInOrder(db), listAllCardsInOrder(db)]);
+      const p = await planDateRestore(data, map, cols, cards);
+      if (current) setPlan(p);
+    })().catch((e) => current && setError((e as Error).message));
+    return () => {
+      current = false;
+    };
+  }, [data, map]);
+
+  const pick = async (file: File | undefined, kind: 'export' | 'map') => {
+    setError('');
+    setStatus('');
+    if (!file) return;
+    try {
+      const raw = await readJsonFile(file);
+      if (kind === 'export') setData(parseTobyExport(raw));
+      else {
+        const m = parseSpaceMap(raw);
+        if (!m.lists.some((l) => l.createdAt)) throw new Error('This space map has no dates. Make a new one with the current scripts/toby-space-map.js.');
+        setMap(m);
+      }
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
+  const run = async () => {
+    if (!plan || plan.changes.length === 0) return;
+    await applyDateRestore(db, plan);
+    setStatus(`Restored the Toby dates on ${plan.changes.length} collection${plan.changes.length === 1 ? '' : 's'}.`);
+    setPlan(null);
+    setData(null);
+    setMap(null);
+  };
+
+  const n = plan?.changes.length ?? 0;
+  return (
+    <section className="settings-section" aria-labelledby="toby-dates">
+      <h3 id="toby-dates">Restore dates from Toby</h3>
+      <p className="muted">
+        Collections imported from Toby before version 0.15 are dated the day you imported them, so "Newest first" and
+        "By year saved" can't tell them apart. Add the same Toby export and space map you imported from to put back the
+        dates they were made in Toby. Only dates move: nothing else changes, and a date is only ever moved earlier.
+      </p>
+      <label className="file">
+        Toby export (.json)
+        <input type="file" accept=".json,application/json" onChange={(e) => pick(e.target.files?.[0], 'export')} />
+      </label>
+      <label className="file">
+        Space map (.json)
+        <input type="file" accept=".json,application/json" onChange={(e) => pick(e.target.files?.[0], 'map')} />
+      </label>
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      {plan && (
+        <div className="import-preview" aria-label="Date restore preview">
+          <p>
+            {n > 0 ? (
+              <>
+                Will set <b data-testid="dates-changes">{n}</b> collection{n === 1 ? '' : 's'} back to {n === 1 ? 'its' : 'their'} Toby
+                date{n === 1 ? '' : 's'}, from {monthYear(plan.changes[0]!.to)} to {monthYear(plan.changes[n - 1]!.to)}.
+              </>
+            ) : (
+              <>Nothing to change: every matching collection already has its Toby date or an earlier one.</>
+            )}
+          </p>
+          {(plan.alreadyEarlier > 0 || plan.unmatched > 0) && (
+            <p className="muted">
+              {plan.alreadyEarlier > 0 && `${plan.alreadyEarlier} already have that date or an earlier one. `}
+              {plan.unmatched > 0 &&
+                `${plan.unmatched} Toby collection${plan.unmatched === 1 ? " isn't" : "s aren't"} in MingTab any more (deleted, merged or renamed past recognising).`}
+            </p>
+          )}
+          {n > 0 && (
+            <>
+              <details>
+                <summary>Show the changes</summary>
+                <ul className="report-spaces">
+                  {plan.changes.map((c) => (
+                    <li key={c.id}>
+                      {c.title}: {monthYear(c.to)}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+              <button type="button" className="primary" onClick={run}>
+                Restore dates
+              </button>
+            </>
+          )}
         </div>
       )}
       {status && <p role="status">{status}</p>}

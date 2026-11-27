@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { db } from '../db/db';
-import { listAllCardsInOrder, listAllCollectionsInOrder, listSpaces } from '../db/repo';
+import { listAllCardsInOrder, listAllCollectionsInOrder, listSpaces, markOpened } from '../db/repo';
 import { displayTitle } from '../db/schema';
 import { chromeFaviconUrl, hostOf } from '../app/favicon';
 import { extensionOrigin, focusTab, isSavableUrl } from '../tabs/tabs';
@@ -84,9 +84,13 @@ export function SearchResults({ query, historyEnabled, onGoTo }: Props) {
                 target="_blank"
                 rel="noreferrer"
                 title={c.url}
+                onAuxClick={(e) => e.button === 1 && c.url && void markOpened(db, [c.collectionId])}
                 onClick={(e) => {
                   // In select mode the row ticks the card rather than opening it.
-                  if (!sel.active) return;
+                  if (!sel.active) {
+                    if (c.url) void markOpened(db, [c.collectionId]);
+                    return;
+                  }
                   e.preventDefault();
                   sel.toggle(c.id, !sel.ids.has(c.id), e.shiftKey);
                 }}

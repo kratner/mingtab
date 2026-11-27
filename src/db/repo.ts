@@ -116,6 +116,13 @@ export const updateCollection = (
   changes: Partial<Pick<Collection, 'title' | 'starred' | 'collapsed' | 'tagIds' | 'spaceId' | 'position' | 'groupColor'>>,
 ) => db.collections.update(id, { ...changes, updatedAt: now() });
 
+/** Records that tabs from these collections were just opened (sort: Recently opened / Not opened lately). */
+export async function markOpened(db: MingTabDB, collectionIds: Iterable<string>) {
+  const t = now();
+  const ids = [...new Set(collectionIds)].filter(Boolean);
+  if (ids.length) await db.collections.where('id').anyOf(ids).modify({ lastOpenedAt: t, updatedAt: t });
+}
+
 async function softDeleteCollection(db: MingTabDB, id: string, t: number) {
   await db.cards.where('collectionId').equals(id).filter(live).modify({ deletedAt: t, updatedAt: t });
   await db.collections.update(id, { deletedAt: t, updatedAt: t });

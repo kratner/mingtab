@@ -1984,3 +1984,107 @@ button:disabled {
     border: 0;
   }
 }
+
+/* ---- Sort and group (0.15) ---- */
+.collection-meta {
+  margin: 0 0 4px 30px;
+  font-size: calc(11.5px * var(--text-scale));
+  color: var(--muted);
+}
+
+.collection-meta.stale {
+  color: var(--danger);
+}
+
+.view-note {
+  margin: 0 0 10px;
+  font-size: calc(12px * var(--text-scale));
+}
+
+.year-group + .year-group {
+  margin-top: 18px;
+}
+
+.group-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-family: var(--fo-font-display);
+  font-weight: 400;
+  font-size: calc(15px * var(--text-scale));
+}
+
+.group-heading .muted {
+  font-family: var(--fo-font-text);
+  font-size: calc(12px * var(--text-scale));
+}
+
+.site-host {
+  font-family: var(--fo-font-display);
+  font-weight: 400;
+  font-size: calc(11.5px * var(--text-scale));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-where {
+  display: block;
+  font-size: calc(11.5px * var(--text-scale));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Collection ⋯ menu ---- */
+.menu-wrap {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 30;
+  display: grid;
+  min-width: 180px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: calc(8px * var(--corner-scale));
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  padding: 6px 8px;
+  text-align: left;
+  color: var(--text);
+  font-size: calc(13px * var(--text-scale));
+  border-radius: calc(5px * var(--corner-scale));
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--surface-2);
+  outline: none;
+}
+
+.menu-item.danger {
+  color: var(--danger);
+}
+
+.menu-icon {
+  width: 16px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.menu-item.danger .menu-icon {
+  color: inherit;
+}
